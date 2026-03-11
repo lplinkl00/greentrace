@@ -1,0 +1,72 @@
+// ─── Windows Node.js v22 readlink fix ────────────────────────────────────────
+// On Node.js v22 on Windows, fs.readlink() returns EISDIR for any non-symlink
+// path. Next.js / @vercel/nft (build traces) and webpack both call readlink;
+// each must be patched in the context where it runs:
+//
+//  1. Main process: patch fs.promises.readlink here at module load time.
+//     @vercel/nft's collect-build-traces runs in the main process.
+//
+//  2. Webpack worker: webpack may run in a worker thread with an isolated
+//     module scope, so patching the parent fs is not sufficient. We patch
+//     compiler.inputFileSystem inside a webpack plugin's apply() method.
+
+import fs from 'node:fs'
+
+// Patch 1 – main process fs.promises.readlink (for @vercel/nft)
+;(function patchFsPromisesReadlink() {
+    const orig = fs.promises.readlink.bind(fs.promises)
+    fs.promises.readlink = async function (path, options) {
+        try {
+            return await orig(path, options)
+        } catch (err) {
+            if (err?.code === 'EISDIR') {
+                const e = new Error(`EINVAL: invalid argument, readlink '${path}'`)
+                e.code = 'EINVAL'; e.syscall = 'readlink'; e.path = path
+                throw e
+            }
+            throw err
+        }
+    }
+})()
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+    eslint: {
+        ignoreDuringBuilds: true,
+    },
+    webpack: (config) => {
+        const ifs = config.infrastructureLogging ?? {}
+        const inputFS = config.resolve?.fileSystem ?? null
+
+        // Patch the compiler's inputFileSystem once via a plugin.
+        // The plugin's apply() runs in the webpack worker context.
+        config.plugins = config.plugins ?? []
+        config.plugins.push({
+            apply(compiler) {
+                function patchReadlink(fs) {
+                    if (!fs || typeof fs.readlink !== 'function') return
+                    const orig = fs.readlink.bind(fs)
+                    fs.readlink = function (path, callback) {
+                        orig(path, function (err, result) {
+                            if (err?.code === 'EISDIR') {
+                                const e = new Error(`EINVAL: invalid argument, readlink '${path}'`)
+                                e.code = 'EINVAL'; e.syscall = 'readlink'; e.path = path
+                                callback(e)
+                            } else {
+                                callback(err, result)
+                            }
+                        })
+                    }
+                }
+                patchReadlink(compiler.inputFileSystem)
+                compiler.hooks.afterEnvironment.tap('ReadlinkEisdirFix', () => {
+                    patchReadlink(compiler.inputFileSystem)
+                })
+            },
+        })
+
+        return config
+    },
+}
+
+export default nextConfig;
