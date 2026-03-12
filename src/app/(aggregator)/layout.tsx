@@ -15,6 +15,7 @@ export default async function AggregatorLayout({
                 <nav className="space-y-2 text-sm text-gray-700 flex-1">
                     <a href="/aggregator/dashboard" className="block p-2 hover:bg-gray-100 rounded">Dashboard</a>
                     <a href="/aggregator/mills" className="block p-2 hover:bg-gray-100 rounded">Mills</a>
+                    <a href="/aggregator/checklists" className="block p-2 hover:bg-gray-100 rounded">Checklists</a>
                     <a href="/aggregator/users" className="block p-2 hover:bg-gray-100 rounded">Users</a>
                 </nav>
                 {user && <UserMenu name={user.name} email={user.email} role={user.role} />}

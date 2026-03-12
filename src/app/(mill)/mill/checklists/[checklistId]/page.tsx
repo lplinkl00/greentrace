@@ -109,7 +109,7 @@ export default function MillChecklistPage({
                         {checklist.items?.map((item: any) => (
                             <a
                                 key={item.id}
-                                href={`/checklists/${params.checklistId}/items/${item.id}`}
+                                href={`/mill/checklists/${params.checklistId}/items/${item.id}`}
                                 className="flex items-center justify-between px-4 py-3 hover:bg-gray-50"
                             >
                                 <div>
