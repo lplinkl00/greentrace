@@ -4,7 +4,7 @@ import { UserRole } from '@prisma/client'
 import { getShipments, createShipment } from '@/lib/shipments'
 import { MaterialType, ShipmentDirection, CertificationStatus } from '@prisma/client'
 
-export const GET = withAuth([UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, UserRole.MILL_MANAGER, UserRole.MILL_STAFF, UserRole.AUDITOR], async (request: Request, user) => {
+export const GET = withAuth([UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, UserRole.MILL_MANAGER, UserRole.MILL_STAFF, UserRole.AUDITOR], async (request: Request, _context: any, user) => {
 
     const { searchParams } = new URL(request.url)
     const millId = searchParams.get('millId')
@@ -24,7 +24,7 @@ export const GET = withAuth([UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, 
     return NextResponse.json({ data: shipments, error: null, meta: null })
 })
 
-export const POST = withAuth([UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, UserRole.MILL_MANAGER, UserRole.MILL_STAFF, UserRole.AUDITOR], async (request: Request, user) => {
+export const POST = withAuth([UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, UserRole.MILL_MANAGER, UserRole.MILL_STAFF, UserRole.AUDITOR], async (request: Request, _context: any, user) => {
 
     const body = await request.json()
 

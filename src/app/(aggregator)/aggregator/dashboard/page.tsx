@@ -108,7 +108,7 @@ export default function AggregatorDashboard() {
                                         return (
                                             <tr key={item.millId} className="hover:bg-gray-50">
                                                 <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900 border-l-4" style={{ borderLeftColor: diffDays <= 0 ? '#ef4444' : diffDays <= 60 ? '#f97316' : '#22c55e' }}>
-                                                    <Link href={`/mills/${item.millId}`} className="hover:underline hover:text-blue-600">
+                                                    <Link href={`/aggregator/mills/${item.millId}`} className="hover:underline hover:text-blue-600">
                                                         {item.millName}
                                                     </Link>
                                                 </td>

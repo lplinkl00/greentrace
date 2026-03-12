@@ -62,10 +62,16 @@ export default function MillDashboardPage() {
                         Regulation: {stats.regulation.replace(/_/g, ' ')}
                     </p>
                 </div>
-                <div>
+                <div className="flex items-center gap-3">
                     <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
                         {stats.status}
                     </span>
+                    <a
+                        href={`/mill/checklists/${stats.checklistId}`}
+                        className="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700"
+                    >
+                        View Checklist
+                    </a>
                 </div>
             </div>
 
