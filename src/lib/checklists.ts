@@ -24,6 +24,7 @@ export async function getChecklists(filters: {
         },
         include: {
             _count: { select: { items: true } },
+            mill: { select: { id: true, name: true, code: true } },
         },
         orderBy: { createdAt: 'desc' },
     })
