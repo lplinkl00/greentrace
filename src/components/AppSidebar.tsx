@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
     LayoutDashboard, Building2, ClipboardList, Users, FileText, Settings,
-    ClipboardCheck, Package, Ship, BarChart3, LogOut,
+    ClipboardCheck, Package, Ship, BarChart3, LogOut, Factory,
 } from 'lucide-react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -38,8 +38,9 @@ const NAV_CONFIG: Record<string, { items: NavItem[]; cta: RoleCta; roleLabel: st
         items: [
             { href: '/mill/dashboard', label: 'Dashboard', icon: LayoutDashboard },
             { href: '/mill/checklists', label: 'Compliance', icon: ClipboardCheck },
-            { href: '/mill/imports', label: 'Imports', icon: Package },
+            { href: '/mill/production', label: 'Production', icon: Factory },
             { href: '/mill/shipments', label: 'Trade Ledger', icon: Ship },
+            { href: '/mill/imports', label: 'Imports', icon: Package },
             { href: '/mill/settings', label: 'Settings', icon: Settings },
         ],
     },
