@@ -797,7 +797,7 @@ model ProductionRecord {
   ffbReceivedMt   Decimal          @db.Decimal(18, 4)
   cpoProducedMt   Decimal          @db.Decimal(18, 4)
   pkoProducedMt   Decimal          @db.Decimal(18, 4)
-  notes           String?
+  notes           String?          @db.Text
 
   source          ProductionSource @default(MANUAL)
 
