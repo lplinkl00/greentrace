@@ -128,6 +128,11 @@ enum ShipmentSource {
   API
 }
 
+enum ProductionSource {
+  MANUAL
+  CSV_IMPORT
+}
+
 enum LinkedEntityType {
   CHECKLIST_ITEM
   AUDIT_FINDING
@@ -217,6 +222,7 @@ model Mill {
   imports               ImportJob[]
   integrationConfigs    IntegrationConfig[]
   audits                Audit[]
+  productionRecords     ProductionRecord[]
 
   @@index([organisationId])
 }
@@ -250,6 +256,7 @@ model User {
   auditReportsReviewed      AuditReport[]
   imports                   ImportJob[]
   notifications             Notification[]
+  productionRecords         ProductionRecord[]
 
   @@index([supabaseUserId])
   @@index([millId])
@@ -777,4 +784,26 @@ model InviteToken {
   createdAt DateTime  @default(now())
   expiresAt DateTime             // 30 days from creation
   usedAt    DateTime?            // null = unused; set atomically on sign-up
+}
+
+model ProductionRecord {
+  id              String           @id @default(cuid())
+  millId          String
+  mill            Mill             @relation(fields: [millId], references: [id])
+  recordedById    String
+  recordedBy      User             @relation(fields: [recordedById], references: [id])
+
+  productionDate  DateTime         @db.Date
+  ffbReceivedMt   Decimal          @db.Decimal(18, 4)
+  cpoProducedMt   Decimal          @db.Decimal(18, 4)
+  pkoProducedMt   Decimal          @db.Decimal(18, 4)
+  notes           String?
+
+  source          ProductionSource @default(MANUAL)
+
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@unique([millId, productionDate])
+  @@index([millId, productionDate])
 }
