@@ -145,8 +145,8 @@ export default function SignupPage() {
                 <div className="flex items-center justify-between text-xs text-zinc-600">
                     <span>© 2024 GreenTrace Compliance</span>
                     <div className="flex gap-4">
-                        <a href="#" className="hover:text-zinc-400 transition">Privacy Policy</a>
-                        <a href="#" className="hover:text-zinc-400 transition">Terms of Service</a>
+                        <Link href="/privacy" className="hover:text-zinc-400 transition">Privacy Policy</Link>
+                        <Link href="/terms" className="hover:text-zinc-400 transition">Terms of Service</Link>
                     </div>
                 </div>
             </div>

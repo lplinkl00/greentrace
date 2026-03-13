@@ -176,7 +176,7 @@ export default function LandingPage() {
                     </div>
                     <div className="flex gap-8 text-xs text-zinc-500">
                         {['Privacy Policy', 'About', 'Press', 'Cookie Policy', 'Contact Us', 'Terms'].map(l => (
-                            <a key={l} href="#" className="hover:text-zinc-300 transition">{l}</a>
+                            <Link key={l} href={l === 'Privacy Policy' ? '/privacy' : l === 'Terms' ? '/terms' : '#'} className="hover:text-zinc-300 transition">{l}</Link>
                         ))}
                     </div>
                 </div>
