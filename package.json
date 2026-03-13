@@ -12,7 +12,8 @@
     "db:deploy": "prisma migrate deploy",
     "db:seed": "bunx tsx prisma/seed.ts",
     "supabase:start": "supabase start",
-    "setup:storage": "bunx tsx scripts/setup-storage.ts"
+    "setup:storage": "bunx tsx scripts/setup-storage.ts",
+    "generate-invite": "bun run scripts/generate-invite.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
