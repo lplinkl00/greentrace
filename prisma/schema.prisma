@@ -770,3 +770,11 @@ model Notification {
 
   @@index([userId])
 }
+
+model InviteToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique  // SHA-256 of the raw token — raw token is never stored
+  createdAt DateTime  @default(now())
+  expiresAt DateTime             // 30 days from creation
+  usedAt    DateTime?            // null = unused; set atomically on sign-up
+}
