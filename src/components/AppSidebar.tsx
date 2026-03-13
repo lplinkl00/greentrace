@@ -9,6 +9,7 @@ import {
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Logo from './Logo'
+import RoleSwitcher from './RoleSwitcher'
 
 type NavItem = {
     href: string
@@ -90,6 +91,7 @@ export default function AppSidebar({ role, user }: Props) {
                 <span className="mt-2.5 inline-block text-xs font-medium px-2 py-0.5 rounded bg-orange-500/15 text-orange-400 uppercase tracking-wide">
                     {config.roleLabel}
                 </span>
+                {user?.role === 'SUPER_ADMIN' && <RoleSwitcher />}
             </div>
 
             {/* Nav items */}
