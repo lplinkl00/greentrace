@@ -38,7 +38,9 @@ export async function middleware(request: NextRequest) {
 
     const { data: { user } } = await supabase.auth.getUser()
 
-    const isAuthRoute = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/reset-password')
+    const isAuthRoute = request.nextUrl.pathname.startsWith('/login')
+        || request.nextUrl.pathname.startsWith('/reset-password')
+        || request.nextUrl.pathname.startsWith('/signup')
 
     if (!user && !isAuthRoute) {
         return NextResponse.redirect(new URL('/login', request.url))
@@ -46,14 +48,16 @@ export async function middleware(request: NextRequest) {
 
     // Role-based redirect logic for root /
     if (user && request.nextUrl.pathname === '/') {
-        // Fetch custom claim or app_metadata if available, but for simplicity of middleware 
-        // we'll fetch from the DB via a fetch to a lightweight internal `/api/auth/session` route
-        // or just rely on a default dashboard redirect and let the dashboard layout handle route group checking
-        // Actually, Supabase injects raw_user_meta_data into the user object if we set it during User creation.
-        // Let's check `user.user_metadata.role` if it exists.
         const role = user.user_metadata?.role as UserRole | undefined
+        const activeView = request.cookies.get('activeView')?.value
 
         if (role === 'SUPER_ADMIN' || role === 'AGGREGATOR_MANAGER') {
+            if (role === 'SUPER_ADMIN' && activeView === 'mill') {
+                return NextResponse.redirect(new URL('/mill/dashboard', request.url))
+            }
+            if (role === 'SUPER_ADMIN' && activeView === 'auditor') {
+                return NextResponse.redirect(new URL('/auditor/dashboard', request.url))
+            }
             return NextResponse.redirect(new URL('/aggregator/dashboard', request.url))
         } else if (role === 'AUDITOR') {
             return NextResponse.redirect(new URL('/auditor/dashboard', request.url))
