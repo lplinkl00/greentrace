@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Eye, EyeOff, Mail, Lock, CheckCircle2 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
@@ -13,13 +14,15 @@ const testimonials = [
     'Trusted by 500+ industry leaders worldwide.',
 ]
 
-export default function LoginPage() {
+function LoginForm() {
     const router = useRouter()
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
+    const searchParams = useSearchParams()
+    const registered = searchParams.get('registered') === 'true'
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
@@ -57,6 +60,12 @@ export default function LoginPage() {
                     {error && (
                         <div className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm rounded-lg px-4 py-3">
                             {error}
+                        </div>
+                    )}
+
+                    {registered && (
+                        <div className="bg-green-500/10 border border-green-500/30 text-green-400 text-sm rounded-lg px-4 py-3">
+                            Account created! Sign in below.
                         </div>
                     )}
 
@@ -123,7 +132,7 @@ export default function LoginPage() {
 
                     <p className="text-center text-xs text-zinc-500">
                         Don&apos;t have an account?{' '}
-                        <span className="text-sunset-400 cursor-default">Contact Sales</span>
+                        <Link href="/signup" className="text-sunset-400 hover:text-sunset-300 transition">Sign up</Link>
                     </p>
                 </div>
 
@@ -167,5 +176,13 @@ export default function LoginPage() {
                 </p>
             </div>
         </div>
+    )
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense>
+            <LoginForm />
+        </Suspense>
     )
 }
