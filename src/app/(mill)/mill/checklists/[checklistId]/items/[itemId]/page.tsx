@@ -1,3 +1,5 @@
+import { ChecklistItemDataEntry } from '@/components/checklist-item-data-entry'
+
 export default function ChecklistItemDetailPage({
     params,
 }: {
@@ -15,47 +17,7 @@ export default function ChecklistItemDetailPage({
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Data Entry Form */}
                 <div className="lg:col-span-2 space-y-4">
-                    <div className="bg-white shadow rounded-lg p-6">
-                        <h2 className="font-semibold text-gray-800 mb-4">Data Entry</h2>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Entry Type</label>
-                                <select className="mt-1 block w-full border rounded-md p-2 text-sm">
-                                    <option>FORM01 — Absolute Quantity</option>
-                                    <option>FORM02 — Rate</option>
-                                    <option>Document Only</option>
-                                    <option>Text Response</option>
-                                </select>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Value</label>
-                                    <input type="number" step="0.01" className="mt-1 block w-full border rounded-md p-2 text-sm" placeholder="Enter value" />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">Unit</label>
-                                    <input type="text" className="mt-1 block w-full border rounded-md p-2 text-sm" placeholder="e.g. tCO2e, MWh" />
-                                </div>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Emission Factor</label>
-                                <select className="mt-1 block w-full border rounded-md p-2 text-sm">
-                                    <option value="">Select emission factor (optional)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Reporting Month</label>
-                                <input type="month" className="mt-1 block w-full border rounded-md p-2 text-sm" />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">Notes</label>
-                                <textarea className="mt-1 block w-full border rounded-md p-2 text-sm" rows={3} />
-                            </div>
-                            <button className="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700">
-                                Save Entry
-                            </button>
-                        </div>
-                    </div>
+                    <ChecklistItemDataEntry />
 
                     {/* Document Upload */}
                     <div className="bg-white shadow rounded-lg p-6">
@@ -81,10 +43,6 @@ export default function ChecklistItemDetailPage({
                             <div className="flex justify-between">
                                 <span className="text-gray-500">Assignee</span>
                                 <span className="font-medium">Unassigned</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-gray-500">Due Date</span>
-                                <span className="font-medium text-green-600">On Track</span>
                             </div>
                         </div>
                     </div>
