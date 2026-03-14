@@ -1,5 +1,6 @@
 import { config } from 'dotenv'
 import path from 'path'
+import fs from 'fs/promises'
 config({ path: path.resolve(process.cwd(), '.env.local') })
 
 import {
@@ -48,7 +49,78 @@ async function upsertSupabaseUser(email: string, password: string, role: string)
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
+async function seedRegulationProfiles() {
+    const fixtures = [
+        'prisma/fixtures/iscc-eu.json',
+        'prisma/fixtures/iscc-plus.json',
+        'prisma/fixtures/rspo-pc.json',
+        'prisma/fixtures/rspo-sccs.json',
+    ]
+
+    for (const fixturePath of fixtures) {
+        const raw = await fs.readFile(path.resolve(process.cwd(), fixturePath), 'utf8')
+        const fixture = JSON.parse(raw)
+
+        // Check if this regulation+version already exists
+        const existing = await prisma.regulationProfile.findUnique({
+            where: { regulation_version: { regulation: fixture.regulation, version: fixture.version } },
+        })
+
+        if (existing) {
+            console.log(`  ✓ Profile already exists: ${fixture.name} — skipping`)
+            continue
+        }
+
+        await prisma.regulationProfile.create({
+            data: {
+                regulation: fixture.regulation,
+                version: fixture.version,
+                name: fixture.name,
+                description: fixture.description ?? null,
+                isActive: true,
+                pillars: {
+                    create: fixture.pillars.map((pillar: any, pi: number) => ({
+                        code: pillar.code,
+                        name: pillar.name,
+                        displayOrder: pillar.displayOrder ?? pi,
+                        categories: {
+                            create: pillar.categories.map((cat: any, ci: number) => ({
+                                code: cat.code,
+                                name: cat.name,
+                                displayOrder: cat.displayOrder ?? ci,
+                                requirements: {
+                                    create: cat.requirements.map((req: any, ri: number) => ({
+                                        code: req.code,
+                                        name: req.name,
+                                        description: req.description,
+                                        guidanceText: req.guidanceText ?? null,
+                                        dataType: req.dataType,
+                                        requiresForm: req.requiresForm ?? true,
+                                        criticality: req.criticality ?? 'NON_CRITICAL',
+                                        ghgScope: req.ghgScope ?? null,
+                                        unit: req.unit ?? null,
+                                        displayOrder: req.displayOrder ?? ri,
+                                        isActive: true,
+                                    })),
+                                },
+                            })),
+                        },
+                    })),
+                },
+            },
+        })
+
+        console.log(`  ✓ Created profile: ${fixture.name}`)
+    }
+}
+
 async function main() {
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STEP 0 — Regulation Profiles
+    // ═══════════════════════════════════════════════════════════════════════════
+    console.log('\n─── Step 0: Regulation Profiles ───────────────────────────────────')
+    await seedRegulationProfiles()
 
     // ═══════════════════════════════════════════════════════════════════════════
     // STEP 1 — Supabase Auth Users

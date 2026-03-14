@@ -1,0 +1,65 @@
+{
+  "regulation": "ISCC_EU",
+  "version": "2024-v1",
+  "name": "ISCC EU 2024 v1",
+  "description": "International Sustainability and Carbon Certification for EU renewable energy and materials.",
+  "pillars": [
+    {
+      "code": "ENV",
+      "name": "Environmental",
+      "displayOrder": 1,
+      "categories": [
+        {
+          "code": "ENV-01",
+          "name": "GHG Emissions",
+          "displayOrder": 1,
+          "requirements": [
+            {
+              "code": "ENV-01-001",
+              "name": "GHG Emission Calculation",
+              "description": "Calculate and report total GHG emissions for the reporting period using the ISCC methodology.",
+              "guidanceText": "Use the ISCC GHG calculation tool. Report in tCO2e. Include Scope 1 direct emissions from processing.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "CRITICAL",
+              "ghgScope": "SCOPE1",
+              "unit": "tCO2e",
+              "requiresForm": true,
+              "displayOrder": 1
+            }
+          ]
+        },
+        {
+          "code": "ENV-02",
+          "name": "Land Use",
+          "displayOrder": 2,
+          "requirements": [
+            {
+              "code": "ENV-02-001",
+              "name": "Protection of Land with High Biodiversity Value (Criteria 1.1)",
+              "description": "Biomass is not produced on land with high biodiversity value.",
+              "guidanceText": "Check for primary forests, highly biodiverse forests, etc.",
+              "dataType": "DOCUMENT_ONLY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": false,
+              "displayOrder": 1
+            },
+            {
+              "code": "ENV-02-002",
+              "name": "Protection of Land with High Carbon Stock (Criteria 1.2)",
+              "description": "Biomass is not produced on land that had a high carbon stock in January 2008.",
+              "guidanceText": "Check for wetlands, continuously forested areas.",
+              "dataType": "DOCUMENT_ONLY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": false,
+              "displayOrder": 2
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
