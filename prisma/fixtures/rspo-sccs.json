@@ -1,0 +1,60 @@
+{
+  "regulation": "RSPO_SCCS",
+  "version": "2020-v1",
+  "name": "RSPO SCCS 2020 v1",
+  "description": "RSPO Supply Chain Certification Standard for tracking volume & mass balance.",
+  "pillars": [
+    {
+      "code": "SCI",
+      "name": "Supply Chain Integrity",
+      "displayOrder": 1,
+      "categories": [
+        {
+          "code": "SCI-01",
+          "name": "Mass Balance",
+          "displayOrder": 1,
+          "requirements": [
+            {
+              "code": "SCI-01-001",
+              "name": "Certified Volume Tracking",
+              "description": "Ensure quantity of certified product dispatched does not exceed quantity of certified product received.",
+              "guidanceText": "Check inventory balances and PalmTrace.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": "tonnes",
+              "requiresForm": true,
+              "displayOrder": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "GOV",
+      "name": "Governance",
+      "displayOrder": 2,
+      "categories": [
+        {
+          "code": "GOV-01",
+          "name": "Claims and Documents",
+          "displayOrder": 1,
+          "requirements": [
+            {
+              "code": "GOV-01-001",
+              "name": "Appropriate Claims",
+              "description": "All claims made on invoices and supply chain documents are accurate.",
+              "guidanceText": "Review sample invoices for RSPO markings.",
+              "dataType": "DOCUMENT_ONLY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": false,
+              "displayOrder": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
