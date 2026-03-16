@@ -13,7 +13,7 @@ export async function callGemini(
 Your output MUST be valid JSON matching the structure described below. Do not include any text outside the JSON.
 
 Generate a formal certification audit report for:
-Mill: ${payload.millName} (${payload.millCode})
+Company: ${payload.companyName} (${payload.companyCode})
 Regulation: ${payload.regulation.replace(/_/g, ' ')}
 Period: ${payload.periodStart} to ${payload.periodEnd}
 Audit Type: ${payload.auditType}

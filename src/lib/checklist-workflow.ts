@@ -19,7 +19,7 @@ export async function validateChecklistSubmission(id: string) {
                 }
             },
             massBalanceEntries: true,
-            mill: {
+            company: {
                 include: {
                     shipments: {
                         // Scope to shipments in this period
@@ -54,7 +54,7 @@ export async function validateChecklistSubmission(id: string) {
 
     // DA-2 rule
     // Filter to shipments strictly within this period
-    const unallocatedShipments = checklist.mill.shipments.filter(shipment =>
+    const unallocatedShipments = checklist.company.shipments.filter(shipment =>
         shipment.shipmentDate >= checklist.periodStart && shipment.shipmentDate <= checklist.periodEnd
     )
     if (unallocatedShipments.length > 0) {
@@ -84,7 +84,7 @@ export async function submitChecklist(id: string, userId: string) {
     const checklist = await prisma.checklist.update({
         where: { id, status: 'DRAFT' },
         data: { status: 'UNDER_REVIEW' },
-        include: { mill: true }
+        include: { company: true }
     })
 
     await logActivity({
@@ -96,48 +96,48 @@ export async function submitChecklist(id: string, userId: string) {
         metadata: { from: 'DRAFT', to: 'UNDER_REVIEW' }
     })
 
-    // Find Aggregator Managers for this mill's org to notify
+    // Find Aggregator Managers for this company's org to notify
     const managers = await prisma.user.findMany({
-        where: { role: 'AGGREGATOR_MANAGER', organisationId: checklist.mill.organisationId }
+        where: { role: 'AGGREGATOR_MANAGER', organisationId: checklist.company.organisationId }
     })
 
     for (const mgr of managers) {
         await createNotification({
             userId: mgr.id,
-            message: `Mill ${checklist.mill.name} has submitted a checklist for review.`
+            message: `Company ${checklist.company.name} has submitted a checklist for review.`
         })
     }
 
     return checklist
 }
 
-export async function returnChecklistToMill(id: string, userId: string, reason: string) {
-    if (!reason || reason.trim() === '') throw new Error('A reason is required to return to mill.')
+export async function returnChecklistToCompany(id: string, userId: string, reason: string) {
+    if (!reason || reason.trim() === '') throw new Error('A reason is required to return to company.')
 
     const checklist = await prisma.checklist.update({
         where: { id, status: 'UNDER_REVIEW' },
         data: { status: 'DRAFT' },
-        include: { mill: true }
+        include: { company: true }
     })
 
     await logActivity({
         actorId: userId,
         entityId: id,
         entityType: 'CHECKLIST',
-        action: 'RETURNED_TO_MILL',
+        action: 'RETURNED_TO_COMPANY',
         reason: reason,
         metadata: { reason }
     })
 
-    // Notify Mill Managers
+    // Notify Company Managers
     const managers = await prisma.user.findMany({
-        where: { role: 'MILL_MANAGER', millId: checklist.millId }
+        where: { role: 'COMPANY_MANAGER', companyId: checklist.companyId }
     })
 
     for (const mgr of managers) {
         await createNotification({
             userId: mgr.id,
-            message: `A checklist for your mill was returned by the aggregator. Reason: ${reason}`
+            message: `A checklist for your company was returned by the aggregator. Reason: ${reason}`
         })
     }
 
@@ -152,13 +152,13 @@ export async function sendToAudit(id: string, userId: string, auditorId: string)
         const updated = await tx.checklist.update({
             where: { id, status: 'UNDER_REVIEW' },
             data: { status: 'UNDER_AUDIT' },
-            include: { mill: true }
+            include: { company: true }
         })
 
         await tx.audit.create({
             data: {
                 checklistId: updated.id,
-                millId: updated.millId,
+                companyId: updated.companyId,
                 auditorId: auditorId,
                 auditType: 'INITIAL',
                 status: 'SCHEDULED',
@@ -185,12 +185,12 @@ export async function sendToAudit(id: string, userId: string, auditorId: string)
     // Notify the auditor
     await createNotification({
         userId: auditorId,
-        message: `You have been assigned an audit for ${checklist.mill.name}.`
+        message: `You have been assigned an audit for ${checklist.company.name}.`
     })
 
-    // Notify the Mill Managers
+    // Notify the Company Managers
     const managers = await prisma.user.findMany({
-        where: { role: 'MILL_MANAGER', millId: checklist.millId }
+        where: { role: 'COMPANY_MANAGER', companyId: checklist.companyId }
     })
     for (const mgr of managers) {
         await createNotification({

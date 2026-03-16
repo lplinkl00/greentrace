@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { supabase } from '@/lib/supabase'
 
 type Profile = {
     id: string
@@ -21,6 +22,14 @@ const REGULATION_LABELS: Record<string, string> = {
 export default function RegulationProfilesPage() {
     const [profiles, setProfiles] = useState<Profile[]>([])
     const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+    const [userRole, setUserRole] = useState<string | null>(null)
+
+    useEffect(() => {
+        supabase.auth.getUser().then(({ data }) => {
+            setUserRole(data.user?.user_metadata?.role ?? null)
+        })
+    }, [])
 
     useEffect(() => {
         fetch('/api/regulation-profiles')
@@ -29,14 +38,28 @@ export default function RegulationProfilesPage() {
                 setProfiles(data.data ?? [])
                 setLoading(false)
             })
+            .catch(() => { setError('Failed to load regulation profiles'); setLoading(false) })
     }, [])
 
-    if (loading) return <div className="text-gray-500 p-8">Loading profiles...</div>
+    if (loading) return (
+        <div className="flex items-center justify-center h-64">
+            <div className="w-6 h-6 rounded-full border-2 border-orange-400 border-t-transparent animate-spin" />
+        </div>
+    )
+    if (error) return <div className="text-red-500 text-sm p-4">{error}</div>
 
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold text-gray-900">Regulation Profiles</h1>
+                {userRole === 'SUPER_ADMIN' && (
+                    <a
+                        href="/aggregator/regulation-profiles/new"
+                        className="inline-flex items-center gap-2 rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 transition"
+                    >
+                        + New Profile
+                    </a>
+                )}
             </div>
             <div className="bg-white shadow rounded-lg overflow-hidden">
                 <p className="px-6 py-4 text-sm text-gray-500 border-b">

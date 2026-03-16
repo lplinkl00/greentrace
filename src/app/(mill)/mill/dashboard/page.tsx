@@ -42,7 +42,7 @@ export default function MillDashboardPage() {
     const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
-        fetch('/api/dashboard/mill/current')
+        fetch('/api/dashboard/company/current')
             .then(r => r.json())
             .then(d => {
                 if (d.error) throw new Error(d.error)
@@ -85,7 +85,7 @@ export default function MillDashboardPage() {
                         {stats.status}
                     </span>
                     <Link
-                        href={`/mill/checklists/${stats.checklistId}`}
+                        href={`/company/checklists/${stats.checklistId}`}
                         className="flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90 transition"
                         style={{ background: 'linear-gradient(135deg, #f97316 0%, #ef4444 100%)' }}
                     >
@@ -160,7 +160,7 @@ export default function MillDashboardPage() {
                 <div className="lg:col-span-2 bg-white rounded-xl border border-zinc-100 shadow-card p-6">
                     <div className="flex items-center justify-between mb-5">
                         <h2 className="font-semibold text-zinc-800 text-sm">Checklist Completion by Pillar</h2>
-                        <Link href={`/mill/checklists/${stats.checklistId}`} className="text-xs text-orange-500 hover:text-orange-600 flex items-center gap-1 transition">
+                        <Link href={`/company/checklists/${stats.checklistId}`} className="text-xs text-orange-500 hover:text-orange-600 flex items-center gap-1 transition">
                             View All <ArrowRight size={12} />
                         </Link>
                     </div>
@@ -194,10 +194,10 @@ export default function MillDashboardPage() {
                     <h2 className="font-semibold text-zinc-800 text-sm mb-4">Quick Tools</h2>
                     <div className="grid grid-cols-2 gap-2">
                         {([
-                            { label: 'Scan/Edit', icon: CheckCircle2, href: `/mill/checklists/${stats.checklistId}` },
-                            { label: 'Report', icon: FileText, href: '/mill/checklists' },
+                            { label: 'Scan/Edit', icon: CheckCircle2, href: `/company/checklists/${stats.checklistId}` },
+                            { label: 'Report', icon: FileText, href: '/company/checklists' },
                             { label: 'Help Desk', icon: AlertTriangle, href: '#' },
-                            { label: 'Setup', icon: Clock, href: '/mill/settings' },
+                            { label: 'Setup', icon: Clock, href: '/company/settings' },
                         ] as const).map(t => {
                             const Icon = t.icon
                             return (

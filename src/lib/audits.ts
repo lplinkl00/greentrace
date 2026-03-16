@@ -13,7 +13,7 @@ export async function getAuditsForUser(userId: string, role: UserRole) {
     return prisma.audit.findMany({
         where,
         include: {
-            mill: { select: { id: true, name: true, code: true } },
+            company: { select: { id: true, name: true, code: true } },
             checklist: { select: { id: true, status: true } },
             findings: { select: { id: true, findingStatus: true } },
         },
@@ -29,7 +29,7 @@ export async function getAuditById(id: string, userId: string, role: UserRole) {
     const audit = await prisma.audit.findUnique({
         where: { id },
         include: {
-            mill: true,
+            company: true,
             checklist: {
                 include: {
                     items: {
@@ -104,7 +104,7 @@ export async function publishAudit(id: string, userId: string) {
     const result = await prisma.$transaction(async (tx) => {
         const audit = await tx.audit.findUnique({
             where: { id },
-            include: { checklist: true, mill: true },
+            include: { checklist: true, company: true },
         })
 
         if (!audit) throw new Error('Audit not found')
@@ -127,11 +127,11 @@ export async function publishAudit(id: string, userId: string) {
             data: { status: ChecklistStatus.CERTIFIED },
         })
 
-        // 3. Update Mill cert status for this regulation
+        // 3. Update Company cert status for this regulation
         const certStatusField = regulationCertField(audit.regulation)
         if (certStatusField) {
-            await tx.mill.update({
-                where: { id: audit.millId },
+            await tx.company.update({
+                where: { id: audit.companyId },
                 data: {
                     [certStatusField]: 'Certified',
                 },

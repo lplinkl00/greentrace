@@ -4,7 +4,7 @@ import { UserRole } from '@prisma/client'
 import { getShipmentById, updateShipment, deleteShipment } from '@/lib/shipments'
 
 export const GET = withAuth(
-    [UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, UserRole.MILL_MANAGER, UserRole.MILL_STAFF, UserRole.AUDITOR],
+    [UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, UserRole.COMPANY_MANAGER, UserRole.COMPANY_STAFF, UserRole.AUDITOR],
     async (request: Request, context: any) => {
         const { id } = context.params
         const shipment = await getShipmentById(id)
@@ -18,7 +18,7 @@ export const GET = withAuth(
 )
 
 export const PATCH = withAuth(
-    [UserRole.MILL_MANAGER, UserRole.MILL_STAFF, UserRole.SUPER_ADMIN],
+    [UserRole.COMPANY_MANAGER, UserRole.COMPANY_STAFF, UserRole.SUPER_ADMIN],
     async (request: Request, context: any) => {
         const { id } = context.params
         const body = await request.json()
@@ -37,7 +37,7 @@ export const PATCH = withAuth(
 )
 
 export const DELETE = withAuth(
-    [UserRole.MILL_MANAGER, UserRole.SUPER_ADMIN],
+    [UserRole.COMPANY_MANAGER, UserRole.SUPER_ADMIN],
     async (request: Request, context: any) => {
         const { id } = context.params
 

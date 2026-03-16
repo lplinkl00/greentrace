@@ -1,9 +1,9 @@
 import { prisma } from './prisma'
 import { Prisma, ProductionSource } from '@prisma/client'
 
-export async function getProductionRecords(millId: string) {
+export async function getProductionRecords(companyId: string) {
     return prisma.productionRecord.findMany({
-        where: { millId },
+        where: { companyId },
         orderBy: { productionDate: 'desc' },
     })
 }
@@ -13,7 +13,7 @@ export async function getProductionRecord(id: string) {
 }
 
 export async function createProductionRecord(data: {
-    millId: string
+    companyId: string
     recordedById: string
     productionDate: Date
     ffbReceivedMt: Prisma.Decimal | number

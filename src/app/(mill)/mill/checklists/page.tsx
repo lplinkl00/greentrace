@@ -24,11 +24,13 @@ const STATUS: Record<string, { bg: string; color: string }> = {
 export default function MillChecklistsPage() {
     const [checklists, setChecklists] = useState<Checklist[]>([])
     const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
         fetch('/api/checklists')
             .then(r => r.json())
             .then(d => { setChecklists(d.data ?? []); setLoading(false) })
+            .catch(() => { setError('Failed to load checklists'); setLoading(false) })
     }, [])
 
     if (loading) return (
@@ -36,6 +38,7 @@ export default function MillChecklistsPage() {
             <div className="w-6 h-6 rounded-full border-2 border-orange-400 border-t-transparent animate-spin" />
         </div>
     )
+    if (error) return <div className="text-red-500 text-sm p-4">{error}</div>
 
     return (
         <div className="space-y-6">
@@ -81,7 +84,7 @@ export default function MillChecklistsPage() {
                                             </span>
                                         </td>
                                         <td className="px-6 py-3.5 text-right">
-                                            <Link href={`/mill/checklists/${cl.id}`}
+                                            <Link href={`/company/checklists/${cl.id}`}
                                                 className="inline-flex items-center gap-1 text-xs font-medium text-orange-500 hover:text-orange-600 transition">
                                                 Open <ArrowRight size={12} />
                                             </Link>

@@ -1,88 +1,186 @@
 // src/components/checklist-item-data-entry.tsx
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { CarbonCalculator } from '@/components/carbon-calculator'
 
-export function ChecklistItemDataEntry() {
-  const [appliedCo2e, setAppliedCo2e] = useState<{ value: number; unit: string } | null>(null)
+type ChecklistItem = {
+    id: string
+    status: string
+    requirement: {
+        id: string
+        code: string
+        name: string
+        dataType: string
+        unit: string | null
+        criticality: string
+    } | null
+    dataEntries: Array<{
+        id: string
+        value: string | null
+        unit: string | null
+        notes: string | null
+        reportingMonth: string | null
+    }>
+}
 
-  function handleCo2eSet(co2e: number, unit: string) {
-    setAppliedCo2e({ value: co2e, unit })
-  }
+export function ChecklistItemDataEntry({
+    checklistId,
+    itemId,
+}: {
+    checklistId: string
+    itemId: string
+}) {
+    const [item, setItem] = useState<ChecklistItem | null>(null)
+    const [loading, setLoading] = useState(true)
+    const [saving, setSaving] = useState(false)
+    const [saveError, setSaveError] = useState<string | null>(null)
+    const [saveSuccess, setSaveSuccess] = useState(false)
+    const [value, setValue] = useState('')
+    const [unit, setUnit] = useState('')
+    const [notes, setNotes] = useState('')
+    const [reportingMonth, setReportingMonth] = useState('')
+    const [appliedCo2e, setAppliedCo2e] = useState<{ value: number; unit: string } | null>(null)
 
-  return (
-    <div className="bg-white shadow rounded-lg p-6">
-      <h2 className="font-semibold text-gray-800 mb-4">Data Entry</h2>
-      <div className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Entry Type</label>
-          <select className="mt-1 block w-full border rounded-md p-2 text-sm">
-            <option>FORM01 — Absolute Quantity</option>
-            <option>FORM02 — Rate</option>
-            <option>Document Only</option>
-            <option>Text Response</option>
-          </select>
+    useEffect(() => {
+        fetch(`/api/checklist-items/${itemId}`)
+            .then(r => r.json())
+            .then(d => {
+                setItem(d.data)
+                // Pre-fill from most recent entry if exists
+                const latest = d.data?.dataEntries?.[0]
+                if (latest) {
+                    setValue(latest.value ?? '')
+                    setUnit(latest.unit ?? d.data?.requirement?.unit ?? '')
+                    setNotes(latest.notes ?? '')
+                    setReportingMonth(latest.reportingMonth?.substring(0, 7) ?? '')
+                } else if (d.data?.requirement?.unit) {
+                    setUnit(d.data.requirement.unit)
+                }
+                setLoading(false)
+            })
+            .catch(() => setLoading(false))
+    }, [itemId])
+
+    function handleCo2eSet(co2e: number, u: string) {
+        setAppliedCo2e({ value: co2e, unit: u })
+    }
+
+    const handleSave = async () => {
+        setSaving(true)
+        setSaveError(null)
+        setSaveSuccess(false)
+
+        const res = await fetch(`/api/checklist-items/${itemId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'IN_PROGRESS' }),
+        })
+        setSaving(false)
+        if (res.ok) {
+            setSaveSuccess(true)
+        } else {
+            setSaveError('Failed to save. Please try again.')
+        }
+    }
+
+    if (loading) return (
+        <div className="bg-white shadow rounded-lg p-6 flex items-center justify-center h-32">
+            <div className="w-5 h-5 rounded-full border-2 border-orange-400 border-t-transparent animate-spin" />
         </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Value</label>
-            <input
-              type="number"
-              step="0.01"
-              className="mt-1 block w-full border rounded-md p-2 text-sm"
-              placeholder="Enter value"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Unit</label>
-            <input
-              type="text"
-              className="mt-1 block w-full border rounded-md p-2 text-sm"
-              placeholder="e.g. tCO2e, MWh"
-            />
-          </div>
+    )
+
+    return (
+        <div className="bg-white shadow rounded-lg p-6">
+            <h2 className="font-semibold text-gray-800 mb-1">Data Entry</h2>
+            {item?.requirement && (
+                <p className="text-sm text-gray-500 mb-4">
+                    <span className="font-mono text-xs bg-gray-100 px-1.5 py-0.5 rounded mr-1">
+                        {item.requirement.code}
+                    </span>
+                    {item.requirement.name}
+                    {item.requirement.criticality === 'CRITICAL' && (
+                        <span className="ml-2 text-xs font-semibold px-1.5 py-0.5 rounded bg-red-100 text-red-700">Critical</span>
+                    )}
+                </p>
+            )}
+
+            <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Value</label>
+                        <input
+                            type="number"
+                            step="0.01"
+                            value={value}
+                            onChange={e => setValue(e.target.value)}
+                            className="mt-1 block w-full border rounded-md p-2 text-sm"
+                            placeholder="Enter value"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Unit</label>
+                        <input
+                            type="text"
+                            value={unit}
+                            onChange={e => setUnit(e.target.value)}
+                            className="mt-1 block w-full border rounded-md p-2 text-sm"
+                            placeholder={item?.requirement?.unit ?? 'e.g. tCO2e, MWh'}
+                        />
+                    </div>
+                </div>
+
+                {/* CO₂e (from calculator) */}
+                {appliedCo2e && (
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">CO₂e (from Calculator)</label>
+                        <input
+                            type="text"
+                            readOnly
+                            value={`${appliedCo2e.value} ${appliedCo2e.unit}`}
+                            className="mt-1 block w-full border border-green-300 bg-green-50 rounded-md p-2 text-sm text-green-800 font-medium"
+                        />
+                    </div>
+                )}
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Reporting Month</label>
+                    <input
+                        type="month"
+                        value={reportingMonth}
+                        onChange={e => setReportingMonth(e.target.value)}
+                        className="mt-1 block w-full border rounded-md p-2 text-sm"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">Notes</label>
+                    <textarea
+                        value={notes}
+                        onChange={e => setNotes(e.target.value)}
+                        className="mt-1 block w-full border rounded-md p-2 text-sm"
+                        rows={3}
+                    />
+                </div>
+
+                {/* Carbon Calculator */}
+                <CarbonCalculator onValueSet={handleCo2eSet} />
+
+                {saveSuccess && (
+                    <p className="text-green-600 text-sm font-medium">Status updated successfully!</p>
+                )}
+                {saveError && (
+                    <p className="text-red-500 text-sm">{saveError}</p>
+                )}
+
+                <button
+                    onClick={handleSave}
+                    disabled={saving}
+                    className="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                    {saving ? 'Saving…' : 'Save Entry'}
+                </button>
+            </div>
         </div>
-
-        {/* CO₂e (Climatiq) — shown when calculator has set a value */}
-        {appliedCo2e && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700">CO₂e (from Climatiq)</label>
-            <input
-              type="text"
-              readOnly
-              value={`${appliedCo2e.value} ${appliedCo2e.unit}`}
-              className="mt-1 block w-full border border-green-300 bg-green-50 rounded-md p-2 text-sm text-green-800 font-medium"
-            />
-          </div>
-        )}
-
-        {/* Emission factor field — hidden when Climatiq value applied */}
-        {!appliedCo2e && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Emission Factor</label>
-            <select className="mt-1 block w-full border rounded-md p-2 text-sm">
-              <option value="">Select emission factor (optional)</option>
-            </select>
-          </div>
-        )}
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Reporting Month</label>
-          <input type="month" className="mt-1 block w-full border rounded-md p-2 text-sm" />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Notes</label>
-          <textarea className="mt-1 block w-full border rounded-md p-2 text-sm" rows={3} />
-        </div>
-
-        {/* Carbon Calculator */}
-        <CarbonCalculator onValueSet={handleCo2eSet} />
-
-        <button className="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700">
-          Save Entry
-        </button>
-      </div>
-    </div>
-  )
+    )
 }

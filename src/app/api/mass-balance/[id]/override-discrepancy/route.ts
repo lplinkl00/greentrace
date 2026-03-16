@@ -3,7 +3,7 @@ import { getSessionUser, withAuth } from '@/lib/auth'
 import { UserRole } from '@prisma/client'
 import { overrideDiscrepancy } from '@/lib/mass-balance'
 
-export const PATCH = withAuth([UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, UserRole.MILL_MANAGER, UserRole.MILL_STAFF, UserRole.AUDITOR], async (
+export const PATCH = withAuth([UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, UserRole.COMPANY_MANAGER, UserRole.COMPANY_STAFF, UserRole.AUDITOR], async (
     request: Request,
     { params }: { params: { id: string } }
 , user) => {

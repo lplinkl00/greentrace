@@ -4,13 +4,13 @@ import { useState, useEffect } from 'react'
 
 type Checklist = {
     id: string
-    millId: string
+    companyId: string
     regulation: string
     status: string
     periodStart: string
     periodEnd: string
     _count: { items: number }
-    mill: { id: string; name: string; code: string } | null
+    company: { id: string; name: string; code: string } | null
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -24,6 +24,7 @@ const STATUS_COLORS: Record<string, string> = {
 export default function ChecklistsPage() {
     const [checklists, setChecklists] = useState<Checklist[]>([])
     const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
         fetch('/api/checklists')
@@ -32,9 +33,15 @@ export default function ChecklistsPage() {
                 setChecklists(data.data ?? [])
                 setLoading(false)
             })
+            .catch(() => { setError('Failed to load checklists'); setLoading(false) })
     }, [])
 
-    if (loading) return <div className="text-gray-500 p-8">Loading checklists...</div>
+    if (loading) return (
+        <div className="flex items-center justify-center h-64">
+            <div className="w-6 h-6 rounded-full border-2 border-orange-400 border-t-transparent animate-spin" />
+        </div>
+    )
+    if (error) return <div className="text-red-500 text-sm p-4">{error}</div>
 
     return (
         <div className="space-y-6">
@@ -68,8 +75,8 @@ export default function ChecklistsPage() {
                             {checklists.map(cl => (
                                 <tr key={cl.id} className="hover:bg-gray-50">
                                     <td className="px-6 py-4 font-medium text-gray-900">
-                                        {cl.mill?.name ?? cl.millId}
-                                        <span className="ml-1 text-xs text-gray-400">{cl.mill?.code}</span>
+                                        {cl.company?.name ?? cl.companyId}
+                                        <span className="ml-1 text-xs text-gray-400">{cl.company?.code}</span>
                                     </td>
                                     <td className="px-6 py-4 text-gray-600">
                                         {cl.regulation.replace(/_/g, ' ')}
@@ -87,7 +94,7 @@ export default function ChecklistsPage() {
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <a
-                                            href={`/aggregator/mills/${cl.millId}/checklists/${cl.id}/review`}
+                                            href={`/aggregator/companies/${cl.companyId}/checklists/${cl.id}/review`}
                                             className="text-green-600 hover:underline font-medium text-sm"
                                         >
                                             Review →

@@ -76,7 +76,7 @@ export const POST = withAuth(
         const report = await prisma.auditReport.findUnique({
             where: { id },
             include: {
-                audit: { include: { mill: true } },
+                audit: { include: { company: true } },
             },
         })
         if (!report) return NextResponse.json({ error: 'Not found' }, { status: 404 })

@@ -1,13 +1,13 @@
 export default function AggregatorMassBalancePage({
     params,
 }: {
-    params: { millId: string; checklistId: string }
+    params: { companyId: string; checklistId: string }
 }) {
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <p className="text-sm text-gray-500">Mill: {params.millId} / Checklist: {params.checklistId}</p>
+                    <p className="text-sm text-gray-500">Mill: {params.companyId} / Checklist: {params.checklistId}</p>
                     <h1 className="text-2xl font-bold text-gray-900">Mass Balance Review</h1>
                 </div>
             </div>

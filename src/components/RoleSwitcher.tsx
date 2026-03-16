@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { X } from 'lucide-react'
 
-type Mill = { id: string; name: string; code: string }
-type View = 'aggregator' | 'mill' | 'auditor'
+type Company = { id: string; name: string; code: string }
+type View = 'aggregator' | 'company' | 'auditor'
 
 function getCookie(name: string): string {
     if (typeof document === 'undefined') return ''
@@ -19,17 +19,17 @@ function setCookie(name: string, value: string) {
 
 const VIEW_LABELS: Record<View, string> = {
     aggregator: 'Aggregator',
-    mill: 'Mill',
+    company: 'Company',
     auditor: 'Auditor',
 }
 
 export default function RoleSwitcher() {
     const router = useRouter()
     const [activeView, setActiveView] = useState<View>('aggregator')
-    const [showMillPicker, setShowMillPicker] = useState(false)
-    const [mills, setMills] = useState<Mill[]>([])
-    const [selectedMill, setSelectedMill] = useState<Mill | null>(null)
-    const [loadingMills, setLoadingMills] = useState(false)
+    const [showCompanyPicker, setShowCompanyPicker] = useState(false)
+    const [companies, setCompanies] = useState<Company[]>([])
+    const [selectedCompany, setSelectedCompany] = useState<Company | null>(null)
+    const [loadingCompanies, setLoadingCompanies] = useState(false)
 
     useEffect(() => {
         const view = getCookie('activeView') as View
@@ -37,14 +37,14 @@ export default function RoleSwitcher() {
     }, [])
 
     async function handleViewSelect(view: View) {
-        if (view === 'mill') {
-            setShowMillPicker(true)
-            if (mills.length === 0) {
-                setLoadingMills(true)
-                const res = await fetch('/api/mills')
+        if (view === 'company') {
+            setShowCompanyPicker(true)
+            if (companies.length === 0) {
+                setLoadingCompanies(true)
+                const res = await fetch('/api/companies')
                 const data = await res.json()
-                setMills(data.data ?? [])
-                setLoadingMills(false)
+                setCompanies(data.data ?? [])
+                setLoadingCompanies(false)
             }
             return
         }
@@ -53,16 +53,16 @@ export default function RoleSwitcher() {
         router.push(view === 'auditor' ? '/auditor/dashboard' : '/aggregator/dashboard')
     }
 
-    function confirmMillSelection() {
-        if (!selectedMill) return
-        setCookie('activeView', 'mill')
-        setCookie('activeMillId', selectedMill.id)
-        setActiveView('mill')
-        setShowMillPicker(false)
-        router.push('/mill/dashboard')
+    function confirmCompanySelection() {
+        if (!selectedCompany) return
+        setCookie('activeView', 'company')
+        setCookie('activeCompanyId', selectedCompany.id)
+        setActiveView('company')
+        setShowCompanyPicker(false)
+        router.push('/company/dashboard')
     }
 
-    const views: View[] = ['aggregator', 'mill', 'auditor']
+    const views: View[] = ['aggregator', 'company', 'auditor']
 
     return (
         <>
@@ -83,46 +83,46 @@ export default function RoleSwitcher() {
                 ))}
             </div>
 
-            {showMillPicker && (
+            {showCompanyPicker && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
                     <div className="bg-[#1c1c1e] border border-white/10 rounded-xl shadow-2xl w-80 p-5">
                         <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-sm font-semibold text-white">Select Mill</h3>
-                            <button onClick={() => setShowMillPicker(false)} className="text-zinc-500 hover:text-zinc-300 transition">
+                            <h3 className="text-sm font-semibold text-white">Select Company</h3>
+                            <button onClick={() => setShowCompanyPicker(false)} className="text-zinc-500 hover:text-zinc-300 transition">
                                 <X size={16} />
                             </button>
                         </div>
 
-                        {loadingMills ? (
+                        {loadingCompanies ? (
                             <div className="flex justify-center py-6">
                                 <div className="w-5 h-5 rounded-full border-2 border-orange-400 border-t-transparent animate-spin" />
                             </div>
                         ) : (
                             <div className="space-y-1.5 max-h-60 overflow-y-auto">
-                                {mills.map(mill => (
+                                {companies.map(company => (
                                     <button
-                                        key={mill.id}
-                                        onClick={() => setSelectedMill(mill)}
+                                        key={company.id}
+                                        onClick={() => setSelectedCompany(company)}
                                         className={[
                                             'w-full text-left px-3 py-2.5 rounded-lg text-sm transition-colors',
-                                            selectedMill?.id === mill.id
+                                            selectedCompany?.id === company.id
                                                 ? 'bg-orange-500/20 text-orange-400'
                                                 : 'text-zinc-300 hover:bg-white/5',
                                         ].join(' ')}
                                     >
-                                        <span className="font-medium">{mill.name}</span>
-                                        <span className="text-xs text-zinc-500 ml-2">{mill.code}</span>
+                                        <span className="font-medium">{company.name}</span>
+                                        <span className="text-xs text-zinc-500 ml-2">{company.code}</span>
                                     </button>
                                 ))}
                             </div>
                         )}
 
                         <button
-                            onClick={confirmMillSelection}
-                            disabled={!selectedMill}
+                            onClick={confirmCompanySelection}
+                            disabled={!selectedCompany}
                             className="mt-4 w-full py-2 rounded-lg text-white text-sm font-semibold bg-sunset-gradient hover:opacity-90 transition disabled:opacity-40"
                         >
-                            View as Mill
+                            View as Company
                         </button>
                     </div>
                 </div>

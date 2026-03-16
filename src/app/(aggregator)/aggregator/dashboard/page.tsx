@@ -5,14 +5,14 @@ import Link from 'next/link'
 import { Building2, BarChart3, ClipboardList, AlertTriangle, TrendingUp, ArrowRight } from 'lucide-react'
 
 type PortfolioStats = {
-    totalMills: number
-    certifiedMills: number
+    totalCompanies: number
+    certifiedCompanies: number
     activeAuditsCount: number
     openFindingsCount: number
     totalGhgKgCo2e: number
     expiryTimeline: Array<{
-        millId: string
-        millName: string
+        companyId: string
+        companyName: string
         latestCertEnd: string
         regulation: string
     }>
@@ -53,6 +53,7 @@ export default function AggregatorDashboard() {
         fetch('/api/dashboard/portfolio')
             .then(r => r.json())
             .then(d => { setStats(d.data); setLoading(false) })
+            .catch(() => setLoading(false))
     }, [])
 
     if (loading) return (
@@ -62,8 +63,8 @@ export default function AggregatorDashboard() {
     )
     if (!stats) return <div className="text-red-500 p-4 text-sm">Error loading dashboard</div>
 
-    const complianceRate = stats.totalMills > 0
-        ? Math.round((stats.certifiedMills / stats.totalMills) * 100)
+    const complianceRate = stats.totalCompanies > 0
+        ? Math.round((stats.certifiedCompanies / stats.totalCompanies) * 100)
         : 0
 
     return (
@@ -75,7 +76,7 @@ export default function AggregatorDashboard() {
                     <p className="text-sm text-zinc-400 mt-0.5">Global overview across all mills and certifications.</p>
                 </div>
                 <Link
-                    href="/aggregator/mills"
+                    href="/aggregator/companies"
                     className="flex items-center gap-1.5 text-xs font-medium text-orange-500 hover:text-orange-600 transition"
                 >
                     Full Report <ArrowRight size={13} />
@@ -88,7 +89,7 @@ export default function AggregatorDashboard() {
                     icon={Building2}
                     label="Total Compliance"
                     value={<>{complianceRate}%</>}
-                    sub={`${stats.certifiedMills} of ${stats.totalMills} mills certified`}
+                    sub={`${stats.certifiedCompanies} of ${stats.totalCompanies} mills certified`}
                     accent="#f97316"
                 />
                 <StatCard
@@ -118,7 +119,7 @@ export default function AggregatorDashboard() {
             <div className="bg-white rounded-xl border border-zinc-100 shadow-card overflow-hidden">
                 <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-100">
                     <h2 className="font-semibold text-zinc-800 text-sm">Certification Expiry Timeline</h2>
-                    <Link href="/aggregator/mills" className="text-xs text-orange-500 hover:text-orange-600 flex items-center gap-1 transition">
+                    <Link href="/aggregator/companies" className="text-xs text-orange-500 hover:text-orange-600 flex items-center gap-1 transition">
                         View All <ArrowRight size={12} />
                     </Link>
                 </div>
@@ -148,12 +149,12 @@ export default function AggregatorDashboard() {
                                             : { text: 'Valid', bg: '#f0fdf4', color: '#15803d' }
 
                                     return (
-                                        <tr key={item.millId} className="hover:bg-zinc-50/50 transition-colors">
+                                        <tr key={item.companyId} className="hover:bg-zinc-50/50 transition-colors">
                                             <td className="px-6 py-3.5 whitespace-nowrap">
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-0.5 h-8 rounded-full" style={{ backgroundColor: accentColor }} />
-                                                    <Link href={`/aggregator/mills/${item.millId}`} className="font-medium text-zinc-800 hover:text-orange-600 transition">
-                                                        {item.millName}
+                                                    <Link href={`/aggregator/companies/${item.companyId}`} className="font-medium text-zinc-800 hover:text-orange-600 transition">
+                                                        {item.companyName}
                                                     </Link>
                                                 </div>
                                             </td>

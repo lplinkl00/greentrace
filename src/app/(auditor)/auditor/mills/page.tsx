@@ -13,7 +13,7 @@ export default function AuditorMillsPage() {
                     <Building2 size={18} className="text-white" />
                 </div>
                 <div>
-                    <h1 className="text-xl font-bold text-zinc-900">Mill Directory</h1>
+                    <h1 className="text-xl font-bold text-zinc-900">Company Directory</h1>
                     <p className="text-sm text-zinc-400">Browse and inspect mills under audit scope</p>
                 </div>
             </div>

@@ -3,17 +3,17 @@ import { getSessionUser, withAuth } from '@/lib/auth'
 import { UserRole } from '@prisma/client'
 import { saveColumnMapping, processImportJob } from '@/lib/imports'
 
-export const POST = withAuth([UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, UserRole.MILL_MANAGER, UserRole.MILL_STAFF, UserRole.AUDITOR], async (
+export const POST = withAuth([UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, UserRole.COMPANY_MANAGER, UserRole.COMPANY_STAFF, UserRole.AUDITOR], async (
     request: Request,
     { params }: { params: { id: string } }
 , user) => {
 
     const body = await request.json()
-    const { millId, mappingJson, templateName, mockRows } = body
+    const { companyId, mappingJson, templateName, mockRows } = body
 
     // If the user checked "save as template"
     if (templateName) {
-        await saveColumnMapping(millId, templateName, mappingJson)
+        await saveColumnMapping(companyId, templateName, mappingJson)
     }
 
     // Trigger processing asynchronously in a real app, but we await for the prototype

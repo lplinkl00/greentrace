@@ -4,10 +4,10 @@ import { UserRole } from '@prisma/client'
 import { createImportJob } from '@/lib/imports'
 import { ImportFileType } from '@prisma/client'
 
-export const POST = withAuth([UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, UserRole.MILL_MANAGER, UserRole.MILL_STAFF, UserRole.AUDITOR], async (request: Request, _context: any, user) => {
+export const POST = withAuth([UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, UserRole.COMPANY_MANAGER, UserRole.COMPANY_STAFF, UserRole.AUDITOR], async (request: Request, _context: any, user) => {
 
     const body = await request.json()
-    const { millId, fileName, fileType, filePath } = body
+    const { companyId, fileName, fileType, filePath } = body
 
     // Validation
     if (!['CSV', 'EXCEL'].includes(fileType)) {
@@ -18,7 +18,7 @@ export const POST = withAuth([UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER,
     }
 
     const job = await createImportJob({
-        millId,
+        companyId,
         uploadedById: user.id,
         fileName,
         fileType: fileType as ImportFileType,

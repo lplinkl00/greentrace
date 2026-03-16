@@ -3,6 +3,7 @@ import { getImportJobs } from '@/lib/imports'
 import { redirect } from 'next/navigation'
 import { ImportStatus } from '@prisma/client'
 import { Upload, Package } from 'lucide-react'
+import Link from 'next/link'
 
 const STATUS_STYLES: Record<ImportStatus, { bg: string; color: string }> = {
     PENDING:         { bg: '#fef9c3', color: '#92400e' },
@@ -15,9 +16,9 @@ const STATUS_STYLES: Record<ImportStatus, { bg: string; color: string }> = {
 
 export default async function MillImportsPage() {
     const user = await getSessionUser()
-    if (!user?.millId) redirect('/login')
+    if (!user?.companyId) redirect('/login')
 
-    const jobs = await getImportJobs(user.millId)
+    const jobs = await getImportJobs(user.companyId)
 
     return (
         <div className="space-y-6">
@@ -26,12 +27,13 @@ export default async function MillImportsPage() {
                     <h1 className="text-xl font-bold text-zinc-900">Shipment Imports</h1>
                     <p className="text-sm text-zinc-400 mt-0.5">Upload and manage CSV imports for shipment records.</p>
                 </div>
-                <button
+                <Link
+                    href="/company/imports/new"
                     className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-lg text-white hover:opacity-90 transition"
                     style={{ background: 'linear-gradient(135deg, #f97316 0%, #ef4444 100%)' }}
                 >
                     <Upload size={14} /> New Import
-                </button>
+                </Link>
             </div>
 
             <div className="bg-white rounded-xl border border-zinc-100 shadow-card overflow-hidden">

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Factory, MapPin, Plus, CheckCircle2, XCircle } from 'lucide-react'
 
 type Mill = {
@@ -16,11 +17,14 @@ type Mill = {
 export default function MillListPage() {
     const [mills, setMills] = useState<Mill[]>([])
     const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+    const router = useRouter()
 
     useEffect(() => {
-        fetch('/api/mills')
+        fetch('/api/companies')
             .then(r => r.json())
             .then(d => { setMills(d.data ?? []); setLoading(false) })
+            .catch(() => { setError('Failed to load mills'); setLoading(false) })
     }, [])
 
     if (loading) return (
@@ -28,6 +32,7 @@ export default function MillListPage() {
             <div className="w-6 h-6 rounded-full border-2 border-orange-400 border-t-transparent animate-spin" />
         </div>
     )
+    if (error) return <div className="text-red-500 text-sm p-4">{error}</div>
 
     return (
         <div className="space-y-6">
@@ -37,7 +42,9 @@ export default function MillListPage() {
                     <p className="text-sm text-zinc-400 mt-0.5">Manage all registered palm oil mills in the network.</p>
                 </div>
                 <button
-                    className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-lg text-white hover:opacity-90 transition"
+                    disabled
+                    title="Coming soon"
+                    className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-lg text-white opacity-50 cursor-not-allowed transition"
                     style={{ background: 'linear-gradient(135deg, #f97316 0%, #ef4444 100%)' }}
                 >
                     <Plus size={14} /> Add Mill
@@ -63,7 +70,11 @@ export default function MillListPage() {
                         </thead>
                         <tbody className="divide-y divide-zinc-50">
                             {mills.map(mill => (
-                                <tr key={mill.id} className="hover:bg-zinc-50/50 transition-colors">
+                                <tr
+                                    key={mill.id}
+                                    onClick={() => router.push(`/aggregator/companies/${mill.id}`)}
+                                    className="hover:bg-zinc-50/50 transition-colors cursor-pointer"
+                                >
                                     <td className="px-6 py-3.5">
                                         <div className="flex items-center gap-3">
                                             <div className="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center flex-shrink-0">

@@ -8,34 +8,36 @@ type User = {
     name: string | null
     email: string
     role: string
-    millId: string | null
+    companyId: string | null
     createdAt: string
 }
 
 const ROLE_STYLES: Record<string, { bg: string; color: string }> = {
     SUPER_ADMIN:        { bg: '#fef2f2', color: '#dc2626' },
     AGGREGATOR_MANAGER: { bg: '#fff7ed', color: '#c2410c' },
-    MILL_MANAGER:       { bg: '#eff6ff', color: '#2563eb' },
-    MILL_STAFF:         { bg: '#f4f4f5', color: '#52525b' },
+    COMPANY_MANAGER:       { bg: '#eff6ff', color: '#2563eb' },
+    COMPANY_STAFF:         { bg: '#f4f4f5', color: '#52525b' },
     AUDITOR:            { bg: '#f0fdf4', color: '#15803d' },
 }
 
 const ROLE_LABEL: Record<string, string> = {
     SUPER_ADMIN:        'Super Admin',
     AGGREGATOR_MANAGER: 'Aggregator Manager',
-    MILL_MANAGER:       'Mill Manager',
-    MILL_STAFF:         'Mill Staff',
+    COMPANY_MANAGER:       'Company Manager',
+    COMPANY_STAFF:         'Company Staff',
     AUDITOR:            'Auditor',
 }
 
 export default function UsersPage() {
     const [users, setUsers] = useState<User[]>([])
     const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
         fetch('/api/users')
             .then(r => r.json())
             .then(d => { setUsers(d.data ?? []); setLoading(false) })
+            .catch(() => { setError('Failed to load users'); setLoading(false) })
     }, [])
 
     if (loading) return (
@@ -43,6 +45,7 @@ export default function UsersPage() {
             <div className="w-6 h-6 rounded-full border-2 border-orange-400 border-t-transparent animate-spin" />
         </div>
     )
+    if (error) return <div className="text-red-500 text-sm p-4">{error}</div>
 
     return (
         <div className="space-y-6">
@@ -52,7 +55,9 @@ export default function UsersPage() {
                     <p className="text-sm text-zinc-400 mt-0.5">Manage platform users and their access roles.</p>
                 </div>
                 <button
-                    className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-lg text-white hover:opacity-90 transition"
+                    disabled
+                    title="Coming soon"
+                    className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-lg text-white opacity-50 cursor-not-allowed transition"
                     style={{ background: 'linear-gradient(135deg, #f97316 0%, #ef4444 100%)' }}
                 >
                     <UserPlus size={14} /> Invite User
@@ -105,9 +110,9 @@ export default function UsersPage() {
                                             </span>
                                         </td>
                                         <td className="px-6 py-3.5 text-zinc-400 text-xs">
-                                            {user.millId ? (
+                                            {user.companyId ? (
                                                 <span className="font-mono bg-zinc-100 text-zinc-500 px-2 py-0.5 rounded text-xs">
-                                                    {user.millId.slice(0, 8)}…
+                                                    {user.companyId.slice(0, 8)}…
                                                 </span>
                                             ) : '—'}
                                         </td>

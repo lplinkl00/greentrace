@@ -22,7 +22,7 @@ export default function NewChecklistPage() {
     const [submitting, setSubmitting] = useState(false)
     const [error, setError] = useState<string | null>(null)
 
-    const [millId, setMillId] = useState('')
+    const [companyId, setMillId] = useState('')
     const [profileId, setProfileId] = useState('')
     const [periodStart, setPeriodStart] = useState('')
     const [periodEnd, setPeriodEnd] = useState('')
@@ -30,7 +30,7 @@ export default function NewChecklistPage() {
     useEffect(() => {
         Promise.all([
             fetch('/api/regulation-profiles').then(r => r.json()),
-            fetch('/api/mills').then(r => r.json()),
+            fetch('/api/companies').then(r => r.json()),
         ]).then(([profilesData, millsData]) => {
             setProfiles((profilesData.data ?? []).filter((p: Profile) => p.isActive))
             setMills(millsData.data ?? [])
@@ -46,7 +46,7 @@ export default function NewChecklistPage() {
         const res = await fetch('/api/checklists', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ millId, profileId, periodStart, periodEnd }),
+            body: JSON.stringify({ companyId, profileId, periodStart, periodEnd }),
         })
 
         const data = await res.json()
@@ -58,7 +58,7 @@ export default function NewChecklistPage() {
         }
 
         // Redirect to the new checklist
-        window.location.href = `/aggregator/mills/${millId}/checklists/${data.data.id}/review`
+        window.location.href = `/aggregator/companies/${companyId}/checklists/${data.data.id}/review`
     }
 
     if (loading) return <div className="text-gray-500 p-8">Loading...</div>
@@ -76,7 +76,7 @@ export default function NewChecklistPage() {
                     <label className="block text-sm font-medium text-gray-700">Mill</label>
                     <select
                         required
-                        value={millId}
+                        value={companyId}
                         onChange={e => setMillId(e.target.value)}
                         className="mt-1 block w-full border rounded-md p-2 text-sm"
                     >

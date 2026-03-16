@@ -5,7 +5,7 @@ export default async function MillLayout({ children }: { children: React.ReactNo
     const user = await getSessionUser()
     return (
         <div className="flex min-h-screen" style={{ backgroundColor: '#f5f5f5' }}>
-            <AppSidebar role="mill" user={user} />
+            <AppSidebar role="company" user={user} />
             <main className="flex-1 p-8 overflow-auto min-w-0">{children}</main>
         </div>
     )

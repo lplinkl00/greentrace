@@ -3,7 +3,7 @@ import { withAuth } from '@/lib/auth'
 import { UserRole } from '@prisma/client'
 import { submitChecklist } from '@/lib/checklist-workflow'
 
-export const POST = withAuth([UserRole.MILL_MANAGER], async (request: Request, context: any, user: any) => {
+export const POST = withAuth([UserRole.COMPANY_MANAGER], async (request: Request, context: any, user: any) => {
     const { id } = context.params
 
     try {

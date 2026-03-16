@@ -4,15 +4,15 @@ import { MaterialType, RegulationCode } from '@prisma/client'
 // ─── Checklist CRUD ────────────────────────────────────────────────────
 
 export async function getChecklists(filters: {
-    millId?: string
+    companyId?: string
     regulation?: RegulationCode
     status?: string
     year?: string
 }) {
-    const { millId, regulation, status, year } = filters
+    const { companyId, regulation, status, year } = filters
     return prisma.checklist.findMany({
         where: {
-            millId: millId || undefined,
+            companyId: companyId || undefined,
             regulation: regulation || undefined,
             status: (status as any) || undefined,
             ...(year
@@ -24,7 +24,7 @@ export async function getChecklists(filters: {
         },
         include: {
             _count: { select: { items: true } },
-            mill: { select: { id: true, name: true, code: true } },
+            company: { select: { id: true, name: true, code: true } },
         },
         orderBy: { createdAt: 'desc' },
     })
@@ -46,7 +46,7 @@ export async function getChecklistById(id: string) {
                 },
             },
             profile: true,
-            mill: true,
+            company: true,
         },
     })
 }
@@ -56,12 +56,12 @@ export async function getChecklistById(id: string) {
  * Pre-populates MassBalanceEntry rows for each MaterialType.
  */
 export async function createChecklist(data: {
-    millId: string
+    companyId: string
     profileId: string
     periodStart: Date
     periodEnd: Date
 }) {
-    const { millId, profileId, periodStart, periodEnd } = data
+    const { companyId, profileId, periodStart, periodEnd } = data
 
     // Fetch the profile to get the regulation code
     const profile = await prisma.regulationProfile.findUniqueOrThrow({
@@ -97,7 +97,7 @@ export async function createChecklist(data: {
     // MB-3: Find prior period's closing stock
     const priorEntries = await prisma.massBalanceEntry.findMany({
         where: {
-            millId,
+            companyId,
             regulation: profile.regulation,
             periodEnd: periodStart, // Ends right when this one begins
         },
@@ -112,7 +112,7 @@ export async function createChecklist(data: {
     const checklist = await prisma.$transaction(async (tx) => {
         const created = await tx.checklist.create({
             data: {
-                millId,
+                companyId,
                 profileId,
                 regulation: profile.regulation,
                 periodStart,
@@ -134,7 +134,7 @@ export async function createChecklist(data: {
                 data: materialTypes.map((mt) => {
                     const os = openingStockMap.get(mt) || 0
                     return {
-                        millId,
+                        companyId,
                         checklistId: created.id,
                         regulation: profile.regulation,
                         periodStart,

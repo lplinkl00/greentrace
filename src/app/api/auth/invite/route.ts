@@ -10,7 +10,7 @@ const supabaseAdmin = createClient(
 )
 
 export const POST = withAuth([UserRole.SUPER_ADMIN], async (request: Request, context: any, sessionUser) => {
-    const { email, name, role, millId, organisationId } = await request.json()
+    const { email, name, role, companyId, organisationId } = await request.json()
 
     if (!email || !name || !role) {
         return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
@@ -31,7 +31,7 @@ export const POST = withAuth([UserRole.SUPER_ADMIN], async (request: Request, co
                 email,
                 name,
                 role: role as UserRole,
-                millId,
+                companyId,
                 organisationId,
             }
         })

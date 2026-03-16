@@ -38,7 +38,7 @@ export default function NewProductionRecordPage() {
         })
 
         if (res.ok) {
-            router.push('/mill/production')
+            router.push('/company/production')
         } else {
             const json = await res.json()
             setError(json?.error?.message ?? 'Something went wrong')
@@ -135,7 +135,7 @@ export default function NewProductionRecordPage() {
                 <div className="flex items-center justify-end gap-3 pt-1">
                     <button
                         type="button"
-                        onClick={() => router.push('/mill/production')}
+                        onClick={() => router.push('/company/production')}
                         className="text-sm text-zinc-500 hover:text-zinc-800 px-4 py-2 rounded-lg transition"
                     >
                         Cancel

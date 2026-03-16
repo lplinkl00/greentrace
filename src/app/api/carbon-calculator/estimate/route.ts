@@ -5,8 +5,8 @@ import { UserRole } from '@prisma/client'
 import { CLIMATIQ_ACTIVITIES } from '@/lib/climatiq-activities'
 
 const ALLOWED_ROLES = [
-  UserRole.MILL_MANAGER,
-  UserRole.MILL_STAFF,
+  UserRole.COMPANY_MANAGER,
+  UserRole.COMPANY_STAFF,
   UserRole.SUPER_ADMIN,
   UserRole.AGGREGATOR_MANAGER,
 ]
@@ -72,10 +72,18 @@ export const POST = withAuth(
     })
 
     if (!climatiqRes.ok) {
-      const errorText = await climatiqRes.text()
-      console.error('Climatiq API error:', climatiqRes.status, errorText)
+      const errorBody = await climatiqRes.text()
+      console.error('Climatiq API error:', climatiqRes.status, errorBody)
+      let climatiqMessage = 'Climatiq API request failed'
+      try {
+        const parsed = JSON.parse(errorBody)
+        if (parsed.error) climatiqMessage = parsed.error
+        else if (parsed.message) climatiqMessage = parsed.message
+      } catch {
+        if (errorBody && errorBody.length < 200) climatiqMessage = errorBody
+      }
       return NextResponse.json(
-        { data: null, error: { code: 'CLIMATIQ_ERROR', message: 'Climatiq API request failed' }, meta: null },
+        { data: null, error: { code: 'CLIMATIQ_ERROR', message: climatiqMessage }, meta: null },
         { status: 502 },
       )
     }
