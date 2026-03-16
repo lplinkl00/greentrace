@@ -11,8 +11,8 @@ datasource db {
 enum UserRole {
   SUPER_ADMIN
   AGGREGATOR_MANAGER
-  MILL_MANAGER
-  MILL_STAFF
+  COMPANY_MANAGER
+  COMPANY_STAFF
   AUDITOR
 }
 
@@ -185,11 +185,11 @@ model Organisation {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  mills       Mill[]
+  companies   Company[]
   users       User[]
 }
 
-model Mill {
+model Company {
   id                    String   @id @default(cuid())
   organisationId        String
   organisation          Organisation @relation(fields: [organisationId], references: [id])
@@ -236,12 +236,12 @@ model User {
   role             UserRole
   isActive         Boolean  @default(true)
 
-  // Exactly one of organisationId or millId must be set, enforced at app level.
-  // Super Admin and Aggregator Manager belong to the Organisation; mill roles belong to a Mill.
+  // Exactly one of organisationId or companyId must be set, enforced at app level.
+  // Super Admin and Aggregator Manager belong to the Organisation; company roles belong to a Company.
   organisationId   String?
   organisation     Organisation? @relation(fields: [organisationId], references: [id])
-  millId           String?
-  mill             Mill?    @relation(fields: [millId], references: [id])
+  companyId        String?
+  company          Company? @relation(fields: [companyId], references: [id])
 
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
@@ -259,7 +259,7 @@ model User {
   productionRecords         ProductionRecord[]
 
   @@index([supabaseUserId])
-  @@index([millId])
+  @@index([companyId])
   @@index([organisationId])
 }
 
@@ -321,7 +321,7 @@ model Requirement {
   code            String                 // e.g. "ENV-01-GHG-001" — unique within a profile
   name            String
   description     String                 // What this requirement measures or proves
-  guidanceText    String?                // Guidance for mill staff on how to complete it
+  guidanceText    String?                // Guidance for company staff on how to complete it
   dataType        RequirementDataType
   requiresForm    Boolean                @default(true)  // false for DOCUMENT_ONLY items
   isActive        Boolean                @default(true)  // Inactive requirements excluded from new checklists
@@ -338,12 +338,12 @@ model Requirement {
   @@index([categoryId, isActive])
 }
 
-// ─── 6.3 MILL CHECKLISTS ────────────────────────────────────────────────────────
+// ─── 6.3 COMPANY CHECKLISTS ────────────────────────────────────────────────────────
 
 model Checklist {
   id                String            @id @default(cuid())
-  millId            String
-  mill              Mill              @relation(fields: [millId], references: [id])
+  companyId         String
+  company           Company           @relation(fields: [companyId], references: [id])
   profileId         String
   profile           RegulationProfile @relation(fields: [profileId], references: [id])
   regulation        RegulationCode    // Denormalised for fast filtering without join
@@ -354,7 +354,7 @@ model Checklist {
 
   status            ChecklistStatus   @default(DRAFT)
   submittedAt       DateTime?
-  submittedById     String?           // User who submitted (Mill Manager)
+  submittedById     String?           // User who submitted (Company Manager)
   reviewStartedAt   DateTime?
   reviewedById      String?           // Aggregator Manager who took ownership of review
   lockedAt          DateTime?
@@ -367,8 +367,8 @@ model Checklist {
   massBalanceEntries MassBalanceEntry[]
   audits            Audit[]
 
-  @@unique([millId, profileId, periodStart, periodEnd])
-  @@index([millId, regulation, status])
+  @@unique([companyId, profileId, periodStart, periodEnd])
+  @@index([companyId, regulation, status])
 }
 
 model ChecklistItem {
@@ -380,7 +380,7 @@ model ChecklistItem {
 
   status                  ChecklistItemStatus @default(NOT_STARTED)
 
-  // Mill staff assignee — optional; if null, the item is unassigned
+  // Company staff assignee — optional; if null, the item is unassigned
   assigneeId              String?
   assignee                User?               @relation("AssignedStaff", fields: [assigneeId], references: [id])
   dueDate                 DateTime?
@@ -450,7 +450,7 @@ model DataEntry {
   // For monthly granularity within a checklist period
   reportingMonth      DateTime?     // First day of the month, e.g. 2024-01-01
 
-  // Sub-mill location granularity (e.g. a specific processing unit within the mill)
+  // Sub-company location granularity (e.g. a specific processing unit within the company)
   location            String?
 
   notes               String?       @db.Text
@@ -490,8 +490,8 @@ model EmissionFactor {
 
 model MassBalanceEntry {
   id                  String         @id @default(cuid())
-  millId              String
-  mill                Mill           @relation(fields: [millId], references: [id])
+  companyId           String
+  company             Company        @relation(fields: [companyId], references: [id])
   checklistId         String
   checklist           Checklist      @relation(fields: [checklistId], references: [id])
   regulation          RegulationCode
@@ -524,8 +524,8 @@ model MassBalanceEntry {
 
   documents           Document[]     @relation("MassBalanceDocuments")
 
-  @@unique([millId, checklistId, regulation, materialType])
-  @@index([millId, regulation, periodStart])
+  @@unique([companyId, checklistId, regulation, materialType])
+  @@index([companyId, regulation, periodStart])
 }
 
 // ─── 6.5 DOCUMENT MANAGEMENT ────────────────────────────────────────────────────────
@@ -565,8 +565,8 @@ model Document {
 
 model ShipmentRecord {
   id                            String              @id @default(cuid())
-  millId                        String
-  mill                          Mill                @relation(fields: [millId], references: [id])
+  companyId                     String
+  company                       Company             @relation(fields: [companyId], references: [id])
 
   direction                     ShipmentDirection
   materialType                  MaterialType
@@ -588,7 +588,7 @@ model ShipmentRecord {
   importJobId                   String?
   importJob                     ImportJob?          @relation(fields: [importJobId], references: [id])
 
-  // Double-accounting split — populated when Mill Manager confirms allocation
+  // Double-accounting split — populated when Company Manager confirms allocation
   isccAllocationPct             Decimal?            @db.Decimal(5, 2) // 0.00–100.00
   rspoAllocationPct             Decimal?            @db.Decimal(5, 2)
   allocationConfirmedAt         DateTime?
@@ -599,8 +599,8 @@ model ShipmentRecord {
 
   documents                     Document[]          @relation("ShipmentDocuments")
 
-  @@unique([millId, referenceNumber, shipmentDate]) // Deduplication key
-  @@index([millId, shipmentDate])
+  @@unique([companyId, referenceNumber, shipmentDate]) // Deduplication key
+  @@index([companyId, shipmentDate])
   @@index([importJobId])
 }
 
@@ -608,8 +608,8 @@ model ShipmentRecord {
 
 model Audit {
   id              String      @id @default(cuid())
-  millId          String
-  mill            Mill        @relation(fields: [millId], references: [id])
+  companyId       String
+  company         Company     @relation(fields: [companyId], references: [id])
   checklistId     String
   checklist       Checklist   @relation(fields: [checklistId], references: [id])
   regulation      RegulationCode
@@ -634,7 +634,7 @@ model Audit {
   // Latest report version for quick access — updated transactionally
   latestReportId  String?     @unique
 
-  @@index([millId, status])
+  @@index([companyId, status])
   @@index([auditorId])
   @@index([checklistId])
 }
@@ -687,8 +687,8 @@ model AuditReport {
 
 model ImportJob {
   id               String         @id @default(cuid())
-  millId           String
-  mill             Mill           @relation(fields: [millId], references: [id])
+  companyId        String
+  company          Company        @relation(fields: [companyId], references: [id])
   uploadedById     String
   uploadedBy       User           @relation(fields: [uploadedById], references: [id])
 
@@ -711,12 +711,12 @@ model ImportJob {
   columnMappings   ImportColumnMapping[]
   shipments        ShipmentRecord[]
 
-  @@index([millId, status])
+  @@index([companyId, status])
 }
 
 model ImportColumnMapping {
   id            String    @id @default(cuid())
-  millId        String
+  companyId     String
   // importJobId is nullable — mappings can be saved as reusable templates without being tied to a job
   importJobId   String?
   importJob     ImportJob? @relation(fields: [importJobId], references: [id])
@@ -727,16 +727,16 @@ model ImportColumnMapping {
   lastUsedAt    DateTime  @default(now())
   createdAt     DateTime  @default(now())
 
-  @@unique([millId, templateName])
-  @@index([millId])
+  @@unique([companyId, templateName])
+  @@index([companyId])
 }
 
 // ─── 6.8 INTEGRATION PLACEHOLDERS ────────────────────────────────────────────────────────
 
 model IntegrationConfig {
   id           String                @id @default(cuid())
-  millId       String
-  mill         Mill                  @relation(fields: [millId], references: [id])
+  companyId    String
+  company      Company               @relation(fields: [companyId], references: [id])
   systemType   IntegrationSystemType
   displayName  String
   // isActive is always false in v1 — no live connections
@@ -746,8 +746,8 @@ model IntegrationConfig {
   createdAt    DateTime              @default(now())
   updatedAt    DateTime              @updatedAt
 
-  @@unique([millId, systemType])
-  @@index([millId])
+  @@unique([companyId, systemType])
+  @@index([companyId])
 }
 
 // ─── AUDIT / ACTIVITY LOG ────────────────────────────────────────────────────────
@@ -788,8 +788,8 @@ model InviteToken {
 
 model ProductionRecord {
   id              String           @id @default(cuid())
-  millId          String
-  mill            Mill             @relation(fields: [millId], references: [id])
+  companyId       String
+  company         Company          @relation(fields: [companyId], references: [id])
   recordedById    String
   recordedBy      User             @relation(fields: [recordedById], references: [id])
 
@@ -804,6 +804,6 @@ model ProductionRecord {
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
 
-  @@unique([millId, productionDate])
-  @@index([millId, productionDate])
+  @@unique([companyId, productionDate])
+  @@index([companyId, productionDate])
 }
