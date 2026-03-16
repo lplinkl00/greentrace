@@ -2,7 +2,7 @@
   "regulation": "RSPO_PC",
   "version": "2018-v1",
   "name": "RSPO PC 2018 v1",
-  "description": "RSPO Principles & Criteria 2018 with 8 principles.",
+  "description": "RSPO Principles & Criteria 2018 — 8 principles covering legal compliance, environmental responsibility, social good practice, and commitment to continuous improvement for palm oil producers.",
   "pillars": [
     {
       "code": "ENV",
@@ -11,38 +11,81 @@
       "categories": [
         {
           "code": "ENV-01",
-          "name": "Biodiversity and HCV",
+          "name": "Biodiversity & HCV",
           "displayOrder": 1,
           "requirements": [
             {
               "code": "ENV-01-001",
-              "name": "High Conservation Value Assessment",
-              "description": "Ensure no primary forests or areas with High Conservation Values are cleared.",
-              "guidanceText": "Provide HCV assessment reports.",
+              "name": "High Conservation Value Assessment (Criterion 5.2)",
+              "description": "Ensure no primary forests or areas with High Conservation Values (HCV) are cleared or damaged. An HCV assessment has been completed and reviewed.",
+              "guidanceText": "Provide the HCV assessment report and evidence of management plans for any identified HCV areas. Apply the RSPO-endorsed HCV methodology.",
               "dataType": "DOCUMENT_ONLY",
               "criticality": "CRITICAL",
               "ghgScope": null,
               "unit": null,
               "requiresForm": false,
               "displayOrder": 1
+            },
+            {
+              "code": "ENV-01-002",
+              "name": "No Burning Policy (Criterion 5.5)",
+              "description": "There is no use of fire for land preparation or replanting.",
+              "guidanceText": "Provide the zero-burning policy document and evidence of its implementation (e.g., field inspection records, worker training records).",
+              "dataType": "DOCUMENT_ONLY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": false,
+              "displayOrder": 2
             }
           ]
         },
         {
           "code": "ENV-02",
-          "name": "GHG and Water",
+          "name": "GHG & Peatland",
           "displayOrder": 2,
           "requirements": [
             {
               "code": "ENV-02-001",
-              "name": "GHG Emissions Reporting",
-              "description": "Monitor and report GHG emissions from palm oil production.",
-              "guidanceText": "Report using PalmGHG calculator.",
+              "name": "GHG Emissions Reporting (Criterion 5.6)",
+              "description": "Monitor and report GHG emissions from palm oil production using the RSPO PalmGHG calculator.",
+              "guidanceText": "Use the RSPO PalmGHG v4 calculator. Submit the completed PalmGHG output file as evidence. Report total net emissions in tCO2e per year.",
               "dataType": "ABSOLUTE_QUANTITY",
               "criticality": "NON_CRITICAL",
               "ghgScope": "SCOPE1",
               "unit": "tCO2e",
               "requiresForm": true,
+              "displayOrder": 1
+            },
+            {
+              "code": "ENV-02-002",
+              "name": "No New Development on Peatland (Criterion 5.7)",
+              "description": "No new plantings have occurred on peatland of any depth since November 2018.",
+              "guidanceText": "Provide a peatland map of the supply base and a declaration confirming no new development on peatland since the RSPO 2018 P&C cutoff date.",
+              "dataType": "DOCUMENT_ONLY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": false,
+              "displayOrder": 2
+            }
+          ]
+        },
+        {
+          "code": "ENV-03",
+          "name": "Effluent & Waste",
+          "displayOrder": 3,
+          "requirements": [
+            {
+              "code": "ENV-03-001",
+              "name": "POME Management Plan (Criterion 4.4)",
+              "description": "An effluent treatment plan for POME is in place and complies with applicable discharge standards.",
+              "guidanceText": "Provide the POME treatment system description, monthly effluent monitoring records, and evidence of compliance with national effluent discharge limits (e.g., DOE Malaysia EQA limits).",
+              "dataType": "DOCUMENT_ONLY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": false,
               "displayOrder": 1
             }
           ]
@@ -61,9 +104,52 @@
           "requirements": [
             {
               "code": "SOC-01-001",
-              "name": "No Forced Labor",
-              "description": "There is no use of forced or trafficked labor.",
-              "guidanceText": "Check employment contracts.",
+              "name": "No Forced or Trafficked Labour (Criterion 6.13)",
+              "description": "There is no use of forced, bonded, or trafficked labour.",
+              "guidanceText": "Review employment contracts to confirm no recruitment fees, no retention of identity documents, and freedom to terminate employment. Audit foreign worker programmes if applicable.",
+              "dataType": "DOCUMENT_ONLY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": false,
+              "displayOrder": 1
+            },
+            {
+              "code": "SOC-01-002",
+              "name": "No Child Labour (Criterion 6.7)",
+              "description": "No child labour is used. Workers under 18 are not employed in hazardous conditions.",
+              "guidanceText": "Confirm minimum working age (15 or higher per national law). Check age documentation for all workers. Maintain a register of young workers.",
+              "dataType": "DOCUMENT_ONLY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": false,
+              "displayOrder": 2
+            },
+            {
+              "code": "SOC-01-003",
+              "name": "Grievance Mechanism (Criterion 6.3)",
+              "description": "A documented grievance mechanism is in place and accessible to all workers and affected communities.",
+              "guidanceText": "Provide evidence of the grievance procedure and records of grievances received and resolved during the reporting period.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "NON_CRITICAL",
+              "ghgScope": null,
+              "unit": "cases",
+              "requiresForm": true,
+              "displayOrder": 3
+            }
+          ]
+        },
+        {
+          "code": "SOC-02",
+          "name": "Health & Safety",
+          "displayOrder": 2,
+          "requirements": [
+            {
+              "code": "SOC-02-001",
+              "name": "Occupational Health & Safety Plan (Criterion 4.7)",
+              "description": "An occupational health and safety (OHS) plan is in place and covers all workers on site.",
+              "guidanceText": "Provide the current OHS policy, training records, accident log, and evidence of annual OHS review. Report the Lost-Time Injury Rate (LTIR).",
               "dataType": "DOCUMENT_ONLY",
               "criticality": "CRITICAL",
               "ghgScope": null,
@@ -87,9 +173,9 @@
           "requirements": [
             {
               "code": "GOV-01-001",
-              "name": "Compliance with Laws",
-              "description": "Compliance with all applicable local, national and ratified international laws.",
-              "guidanceText": "Provide legal register and compliance checks.",
+              "name": "Compliance with Laws (Criterion 2.1)",
+              "description": "Compliance with all applicable local, national, and ratified international laws and regulations.",
+              "guidanceText": "Maintain a legal register and provide compliance checks. Include evidence of current operating licences, environmental approvals, and resolution of any regulatory notices.",
               "dataType": "DOCUMENT_ONLY",
               "criticality": "CRITICAL",
               "ghgScope": null,

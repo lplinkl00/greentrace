@@ -66,7 +66,7 @@ export const POST = withAuth(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        emission_factor: { activity_id: activityId, data_version: '^21' },
+        emission_factor: { activity_id: activityId, data_version: '^32' },
         parameters,
       }),
     })
