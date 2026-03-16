@@ -7,12 +7,12 @@ export const GET = withAuth(
     [UserRole.COMPANY_MANAGER, UserRole.COMPANY_STAFF, UserRole.AGGREGATOR_MANAGER, UserRole.SUPER_ADMIN, UserRole.AUDITOR],
     async (_req: Request, context: any, user: any) => {
         try {
-            let { companyId } = context.params
-            if (companyId === 'current') {
+            let { millId } = context.params
+            if (millId === 'current') {
                 if (!user.companyId) return NextResponse.json({ error: 'User is not associated with a mill' }, { status: 400 })
-                companyId = user.companyId
+                millId = user.companyId
             }
-            const stats = await getCompanyStats(companyId)
+            const stats = await getCompanyStats(millId)
             if (!stats) return NextResponse.json({ error: 'No checklist found for this mill' }, { status: 404 })
             return NextResponse.json({ data: stats })
         } catch (e: any) {
