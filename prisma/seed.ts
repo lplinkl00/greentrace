@@ -598,6 +598,61 @@ async function main() {
     console.log('  ✓ Data entries for GHG, grievances, safety')
 
     // ═══════════════════════════════════════════════════════════════════════════
+    // STEP 10b — Data Entries (GHG items for PS 2023 CERTIFIED)
+    // ═══════════════════════════════════════════════════════════════════════════
+    console.log('\n─── Step 10b: Data Entries PS 2023 (CERTIFIED) ────────────────────')
+
+    const existingDE23 = await prisma.dataEntry.count({ where: { checklistItemId: ps23Items['ENV-01-002'] } })
+    if (existingDE23 === 0) {
+        // Monthly electricity 2023 (Scope 2) — ENV-01-002
+        const monthlyMWh23 = [388, 372, 405, 381, 395, 420, 398, 390, 380, 374, 362, 378]
+        const elecEntries23 = monthlyMWh23.map((mwh, i) => ({
+            checklistItemId: ps23Items['ENV-01-002'],
+            enteredById: psStaffUser.id,
+            entryType: DataEntryType.FORM01_ABSOLUTE,
+            valueRaw: new Prisma.Decimal(mwh),
+            unitInput: 'MWh',
+            valueConverted: new Prisma.Decimal(mwh * 620),
+            unitReference: 'kgCO2e',
+            emissionFactorId: 'seed-ef-grid_electricity',
+            reportingMonth: new Date(`2023-${String(i + 1).padStart(2, '0')}-01`),
+        }))
+        await prisma.dataEntry.createMany({ data: elecEntries23 })
+
+        // Annual diesel (Scope 1) — ENV-01-001
+        await prisma.dataEntry.create({
+            data: {
+                checklistItemId: ps23Items['ENV-01-001'],
+                enteredById: psStaffUser.id,
+                entryType: DataEntryType.FORM01_ABSOLUTE,
+                valueRaw: new Prisma.Decimal('81200'),
+                unitInput: 'litres',
+                valueConverted: new Prisma.Decimal('217616'),
+                unitReference: 'kgCO2e',
+                emissionFactorId: 'seed-ef-diesel',
+                notes: 'Annual diesel consumption 2023.',
+            },
+        })
+
+        // POME methane (Scope 1) — ENV-01-001
+        await prisma.dataEntry.create({
+            data: {
+                checklistItemId: ps23Items['ENV-01-001'],
+                enteredById: psStaffUser.id,
+                entryType: DataEntryType.FORM01_ABSOLUTE,
+                valueRaw: new Prisma.Decimal('11800'),
+                unitInput: 'm3',
+                valueConverted: new Prisma.Decimal('295000'),
+                unitReference: 'kgCO2e',
+                emissionFactorId: 'seed-ef-pome_methane',
+                notes: 'POME methane 2023 from open lagoon system.',
+            },
+        })
+
+        console.log('  ✓ GHG data entries seeded for PS 2023 CERTIFIED checklist')
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
     // STEP 11 — Mass Balance Entries
     // ═══════════════════════════════════════════════════════════════════════════
     console.log('\n─── Step 11: Mass Balance Entries ─────────────────────────────────')
