@@ -29,10 +29,16 @@ export default function NewRegulationProfilePage() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ regulation, version, name, description }),
         })
-        const json = await res.json()
+
+        let json: Record<string, any> = {}
+        try {
+            json = await res.json()
+        } catch {
+            // response body was not JSON (e.g. plain-text 403)
+        }
 
         if (!res.ok || json.error) {
-            setError(json.error?.message ?? 'Failed to create profile')
+            setError(json.error?.message ?? `Request failed (${res.status})`)
             setSubmitting(false)
             return
         }
