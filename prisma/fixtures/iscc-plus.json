@@ -1,0 +1,53 @@
+{
+  "regulation": "ISCC_PLUS",
+  "version": "2024-v1",
+  "name": "ISCC PLUS 2024 v1",
+  "description": "ISCC PLUS covers non-food/feed biomass and circular materials.",
+  "pillars": [
+    {
+      "code": "ENV",
+      "name": "Environmental",
+      "displayOrder": 1,
+      "categories": [
+        {
+          "code": "ENV-01",
+          "name": "GHG Emissions",
+          "displayOrder": 1,
+          "requirements": [
+            {
+              "code": "ENV-01-001",
+              "name": "GHG Emission Calculation (Broader Scope)",
+              "description": "Calculate and report total GHG emissions for the reporting period using the ISCC methodology.",
+              "guidanceText": "Use the ISCC GHG calculation tool. Report in tCO2e. Include Scope 1 direct emissions from processing. GHG methodology applies to a wider scope of biomass.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "CRITICAL",
+              "ghgScope": "SCOPE1",
+              "unit": "tCO2e",
+              "requiresForm": true,
+              "displayOrder": 1
+            }
+          ]
+        },
+        {
+          "code": "ENV-02",
+          "name": "Land Use",
+          "displayOrder": 2,
+          "requirements": [
+            {
+              "code": "ENV-02-001",
+              "name": "Protection of Land with High Biodiversity Value",
+              "description": "Land criteria include additional biomass types.",
+              "guidanceText": "Check for primary forests, highly biodiverse forests, etc.",
+              "dataType": "DOCUMENT_ONLY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": false,
+              "displayOrder": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
