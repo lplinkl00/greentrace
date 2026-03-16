@@ -1,0 +1,105 @@
+{
+  "regulation": "RSPO_PC",
+  "version": "2018-v1",
+  "name": "RSPO PC 2018 v1",
+  "description": "RSPO Principles & Criteria 2018 with 8 principles.",
+  "pillars": [
+    {
+      "code": "ENV",
+      "name": "Environmental",
+      "displayOrder": 1,
+      "categories": [
+        {
+          "code": "ENV-01",
+          "name": "Biodiversity and HCV",
+          "displayOrder": 1,
+          "requirements": [
+            {
+              "code": "ENV-01-001",
+              "name": "High Conservation Value Assessment",
+              "description": "Ensure no primary forests or areas with High Conservation Values are cleared.",
+              "guidanceText": "Provide HCV assessment reports.",
+              "dataType": "DOCUMENT_ONLY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": false,
+              "displayOrder": 1
+            }
+          ]
+        },
+        {
+          "code": "ENV-02",
+          "name": "GHG and Water",
+          "displayOrder": 2,
+          "requirements": [
+            {
+              "code": "ENV-02-001",
+              "name": "GHG Emissions Reporting",
+              "description": "Monitor and report GHG emissions from palm oil production.",
+              "guidanceText": "Report using PalmGHG calculator.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "NON_CRITICAL",
+              "ghgScope": "SCOPE1",
+              "unit": "tCO2e",
+              "requiresForm": true,
+              "displayOrder": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "SOC",
+      "name": "Social",
+      "displayOrder": 2,
+      "categories": [
+        {
+          "code": "SOC-01",
+          "name": "Workers Rights",
+          "displayOrder": 1,
+          "requirements": [
+            {
+              "code": "SOC-01-001",
+              "name": "No Forced Labor",
+              "description": "There is no use of forced or trafficked labor.",
+              "guidanceText": "Check employment contracts.",
+              "dataType": "DOCUMENT_ONLY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": false,
+              "displayOrder": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "GOV",
+      "name": "Governance",
+      "displayOrder": 3,
+      "categories": [
+        {
+          "code": "GOV-01",
+          "name": "Legal Compliance",
+          "displayOrder": 1,
+          "requirements": [
+            {
+              "code": "GOV-01-001",
+              "name": "Compliance with Laws",
+              "description": "Compliance with all applicable local, national and ratified international laws.",
+              "guidanceText": "Provide legal register and compliance checks.",
+              "dataType": "DOCUMENT_ONLY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": false,
+              "displayOrder": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

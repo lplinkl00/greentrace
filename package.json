@@ -12,7 +12,8 @@
     "db:deploy": "prisma migrate deploy",
     "db:seed": "bunx tsx prisma/seed.ts",
     "supabase:start": "supabase start",
-    "setup:storage": "bunx tsx scripts/setup-storage.ts"
+    "setup:storage": "bunx tsx scripts/setup-storage.ts",
+    "generate-invite": "bun run scripts/generate-invite.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
@@ -22,6 +23,7 @@
     "@react-pdf/renderer": "^4.3.2",
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.99.0",
+    "lucide-react": "^0.577.0",
     "next": "14.2.35",
     "pg": "^8.20.0",
     "react": "^18",

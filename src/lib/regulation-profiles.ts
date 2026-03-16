@@ -7,6 +7,9 @@ export async function getProfiles(regulation?: RegulationCode) {
     return prisma.regulationProfile.findMany({
         where: { regulation: regulation || undefined },
         orderBy: { createdAt: 'desc' },
+        include: {
+            _count: { select: { pillars: true } },
+        },
     })
 }
 

@@ -1,21 +1,12 @@
-export default function AggregatorLayout({
-    children,
-}: {
-    children: React.ReactNode
-}) {
+import { getSessionUser } from '@/lib/auth'
+import AppSidebar from '@/components/AppSidebar'
+
+export default async function AggregatorLayout({ children }: { children: React.ReactNode }) {
+    const user = await getSessionUser()
     return (
-        <div className="flex bg-gray-50 min-h-screen">
-            <aside className="w-64 bg-white border-r p-4">
-                <h2 className="font-bold mb-4">Aggregator Panel</h2>
-                <nav className="space-y-2 text-sm text-gray-700">
-                    <a href="/aggregator/dashboard" className="block p-2 hover:bg-gray-100 rounded">Dashboard</a>
-                    <a href="/aggregator/mills" className="block p-2 hover:bg-gray-100 rounded">Mills</a>
-                    <a href="/aggregator/users" className="block p-2 hover:bg-gray-100 rounded">Users</a>
-                </nav>
-            </aside>
-            <main className="flex-1 p-8">
-                {children}
-            </main>
+        <div className="flex min-h-screen" style={{ backgroundColor: '#f5f5f5' }}>
+            <AppSidebar role="aggregator" user={user} />
+            <main className="flex-1 p-8 overflow-auto min-w-0">{children}</main>
         </div>
     )
 }

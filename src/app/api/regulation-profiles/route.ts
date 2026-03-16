@@ -3,7 +3,7 @@ import { getSessionUser, withAuth } from '@/lib/auth'
 import { UserRole, RegulationCode } from '@prisma/client'
 import { getProfiles, createProfile } from '@/lib/regulation-profiles'
 
-export const GET = withAuth([UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, UserRole.MILL_MANAGER, UserRole.MILL_STAFF, UserRole.AUDITOR], async (request: Request, user) => {
+export const GET = withAuth([UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, UserRole.MILL_MANAGER, UserRole.MILL_STAFF, UserRole.AUDITOR], async (request: Request, _context: any, user) => {
 
     const { searchParams } = new URL(request.url)
     const regulation = searchParams.get('regulation') as RegulationCode | null
