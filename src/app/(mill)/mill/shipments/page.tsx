@@ -57,7 +57,9 @@ export default async function MillShipmentsPage({
                     <p className="text-sm text-zinc-400 mt-0.5">Manage real-time palm oil compliance records and trade volumes.</p>
                 </div>
                 <button
-                    className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-lg text-white hover:opacity-90 transition"
+                    disabled
+                    title="Coming soon"
+                    className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-lg text-white opacity-50 cursor-not-allowed transition"
                     style={{ background: 'linear-gradient(135deg, #f97316 0%, #ef4444 100%)' }}
                 >
                     <Plus size={14} /> Add New Record

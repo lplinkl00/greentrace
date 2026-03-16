@@ -39,6 +39,7 @@ export default function AuditorDashboardPage() {
         fetch('/api/dashboard/auditor')
             .then(r => r.json())
             .then(d => { setStats(d.data); setLoading(false) })
+            .catch(() => setLoading(false))
     }, [])
 
     if (loading) return (

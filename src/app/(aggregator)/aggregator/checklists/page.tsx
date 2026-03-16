@@ -24,6 +24,7 @@ const STATUS_COLORS: Record<string, string> = {
 export default function ChecklistsPage() {
     const [checklists, setChecklists] = useState<Checklist[]>([])
     const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
         fetch('/api/checklists')
@@ -32,9 +33,15 @@ export default function ChecklistsPage() {
                 setChecklists(data.data ?? [])
                 setLoading(false)
             })
+            .catch(() => { setError('Failed to load checklists'); setLoading(false) })
     }, [])
 
-    if (loading) return <div className="text-gray-500 p-8">Loading checklists...</div>
+    if (loading) return (
+        <div className="flex items-center justify-center h-64">
+            <div className="w-6 h-6 rounded-full border-2 border-orange-400 border-t-transparent animate-spin" />
+        </div>
+    )
+    if (error) return <div className="text-red-500 text-sm p-4">{error}</div>
 
     return (
         <div className="space-y-6">

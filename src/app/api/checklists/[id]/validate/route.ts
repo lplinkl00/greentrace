@@ -3,7 +3,7 @@ import { withAuth } from '@/lib/auth'
 import { UserRole } from '@prisma/client'
 import { validateChecklistSubmission } from '@/lib/checklist-workflow'
 
-export const GET = withAuth([UserRole.MILL_MANAGER, UserRole.MILL_STAFF], async (request: Request, context: any) => {
+export const GET = withAuth([UserRole.MILL_MANAGER, UserRole.MILL_STAFF, UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER], async (request: Request, context: any) => {
     const { id } = context.params
 
     try {

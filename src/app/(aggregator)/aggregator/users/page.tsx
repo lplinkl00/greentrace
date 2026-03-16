@@ -31,11 +31,13 @@ const ROLE_LABEL: Record<string, string> = {
 export default function UsersPage() {
     const [users, setUsers] = useState<User[]>([])
     const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
         fetch('/api/users')
             .then(r => r.json())
             .then(d => { setUsers(d.data ?? []); setLoading(false) })
+            .catch(() => { setError('Failed to load users'); setLoading(false) })
     }, [])
 
     if (loading) return (
@@ -43,6 +45,7 @@ export default function UsersPage() {
             <div className="w-6 h-6 rounded-full border-2 border-orange-400 border-t-transparent animate-spin" />
         </div>
     )
+    if (error) return <div className="text-red-500 text-sm p-4">{error}</div>
 
     return (
         <div className="space-y-6">
@@ -52,7 +55,9 @@ export default function UsersPage() {
                     <p className="text-sm text-zinc-400 mt-0.5">Manage platform users and their access roles.</p>
                 </div>
                 <button
-                    className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-lg text-white hover:opacity-90 transition"
+                    disabled
+                    title="Coming soon"
+                    className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-lg text-white opacity-50 cursor-not-allowed transition"
                     style={{ background: 'linear-gradient(135deg, #f97316 0%, #ef4444 100%)' }}
                 >
                     <UserPlus size={14} /> Invite User

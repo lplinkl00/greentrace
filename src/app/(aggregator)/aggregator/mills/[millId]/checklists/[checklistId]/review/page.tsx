@@ -14,6 +14,8 @@ export default function AggregatorChecklistReviewPage({
     const [auditorId, setAuditorId] = useState('')
     const [returnReason, setReturnReason] = useState('')
     const [actionLoading, setActionLoading] = useState(false)
+    const [actionError, setActionError] = useState<string | null>(null)
+    const [actionSuccess, setActionSuccess] = useState<string | null>(null)
 
     useEffect(() => {
         fetch(`/api/checklists/${params.checklistId}`)
@@ -22,10 +24,15 @@ export default function AggregatorChecklistReviewPage({
                 setChecklist(data.data)
                 setLoading(false)
             })
+            .catch(() => setLoading(false))
     }, [params.checklistId])
 
     const handleReturnToMill = async () => {
-        if (!returnReason) return alert('Please enter a reason.')
+        if (!returnReason) {
+            setActionError('Please enter a reason.')
+            return
+        }
+        setActionError(null)
         setActionLoading(true)
         const res = await fetch(`/api/checklists/${params.checklistId}/return-to-mill`, {
             method: 'POST',
@@ -33,16 +40,20 @@ export default function AggregatorChecklistReviewPage({
         })
         const data = await res.json()
         setActionLoading(false)
-        if (data.error) alert(data.error)
-        else {
-            alert('Returned to Mill successfully.')
-            router.refresh()
+        if (data.error) {
+            setActionError(data.error)
+        } else {
+            setActionSuccess('Returned to Mill successfully.')
             window.location.reload()
         }
     }
 
     const handleSendToAudit = async () => {
-        if (!auditorId) return alert('Please assign an auditor.')
+        if (!auditorId) {
+            setActionError('Please assign an auditor.')
+            return
+        }
+        setActionError(null)
         setActionLoading(true)
         const res = await fetch(`/api/checklists/${params.checklistId}/send-to-audit`, {
             method: 'POST',
@@ -50,75 +61,97 @@ export default function AggregatorChecklistReviewPage({
         })
         const data = await res.json()
         setActionLoading(false)
-        if (data.error) alert(data.error)
-        else {
-            alert('Sent to External Audit successfully.')
-            router.refresh()
+        if (data.error) {
+            setActionError(data.error)
+        } else {
+            setActionSuccess('Sent to External Audit successfully.')
             window.location.reload()
         }
     }
 
-    if (loading) return <div>Loading...</div>
-    if (!checklist) return <div>Not found.</div>
+    if (loading) return (
+        <div className="flex items-center justify-center h-64">
+            <div className="w-6 h-6 rounded-full border-2 border-orange-400 border-t-transparent animate-spin" />
+        </div>
+    )
+    if (!checklist) return (
+        <div className="flex flex-col items-center justify-center h-64 text-zinc-400">
+            <p className="text-sm">Checklist not found.</p>
+        </div>
+    )
 
     return (
         <div className="space-y-6 max-w-5xl mx-auto py-8">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Checklist Review</h1>
-                    <p className="text-gray-500">{checklist.mill?.name} • {checklist.regulation} • {checklist.periodStart.substring(0, 10)} to {checklist.periodEnd.substring(0, 10)}</p>
+                    <h1 className="text-xl font-bold text-zinc-900">Checklist Review</h1>
+                    <p className="text-sm text-zinc-400">{checklist.mill?.name} · {checklist.regulation} · {checklist.periodStart.substring(0, 10)} to {checklist.periodEnd.substring(0, 10)}</p>
                 </div>
-                <div className="flex space-x-4 items-center">
-                    <span className="px-3 py-1 bg-amber-100 text-amber-800 text-sm font-medium rounded-full uppercase">
-                        {checklist.status}
-                    </span>
-                </div>
+                <span
+                    className="text-xs font-semibold px-2.5 py-1 rounded-full"
+                    style={{ backgroundColor: '#fef9c3', color: '#92400e' }}
+                >
+                    {checklist.status}
+                </span>
             </div>
 
-            <div className="bg-white shadow rounded-lg p-6">
-                <h2 className="text-lg font-semibold text-gray-800 mb-4">Review Progress</h2>
+            {actionError && (
+                <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg">
+                    {actionError}
+                </div>
+            )}
+            {actionSuccess && (
+                <div className="bg-green-50 border border-green-200 text-green-800 text-sm px-4 py-3 rounded-lg">
+                    {actionSuccess}
+                </div>
+            )}
+
+            <div className="bg-white rounded-xl border border-zinc-100 shadow-card p-6">
+                <h2 className="text-sm font-semibold text-zinc-700 mb-4">Review Progress</h2>
                 <div className="grid grid-cols-3 gap-4 mb-6">
-                    <div className="bg-gray-50 p-4 rounded-lg border">
-                        <p className="text-sm text-gray-500">Items Reviewed</p>
-                        <p className="text-2xl font-bold">
+                    <div className="bg-zinc-50 p-4 rounded-lg border border-zinc-100">
+                        <p className="text-xs text-zinc-400">Items Reviewed</p>
+                        <p className="text-2xl font-bold text-zinc-900">
                             {checklist.items?.filter((i: any) => i.aggregatorReviewed).length} / {checklist.items?.length}
                         </p>
                     </div>
                 </div>
 
-                <div className="border rounded mb-8">
-                    <div className="bg-gray-50 px-4 py-3 border-b">
-                        <h2 className="font-semibold text-gray-800">Requirements</h2>
+                <div className="border border-zinc-100 rounded-xl mb-8 overflow-hidden">
+                    <div className="bg-zinc-50/60 px-4 py-3 border-b border-zinc-100">
+                        <h2 className="text-sm font-semibold text-zinc-700">Requirements</h2>
                     </div>
-                    <div className="divide-y max-h-96 overflow-y-auto">
+                    <div className="divide-y divide-zinc-50 max-h-96 overflow-y-auto">
                         {checklist.items?.map((item: any) => (
-                            <div key={item.id} className="flex items-center justify-between px-4 py-3 hover:bg-gray-50">
-                                <div>
-                                    <span className="text-sm font-medium text-gray-900">
-                                        {item.requirement?.code} - {item.requirement?.name}
-                                    </span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <span className={`text-xs px-2 py-1 rounded ${item.aggregatorReviewed ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-600'}`}>
-                                        {item.aggregatorReviewed ? 'Reviewed' : 'Pending Review'}
-                                    </span>
-                                </div>
+                            <div key={item.id} className="flex items-center justify-between px-4 py-3 hover:bg-zinc-50/50">
+                                <span className="text-sm font-medium text-zinc-800">
+                                    {item.requirement?.code} — {item.requirement?.name}
+                                </span>
+                                <span
+                                    className="text-xs font-semibold px-2.5 py-0.5 rounded-full"
+                                    style={item.aggregatorReviewed
+                                        ? { backgroundColor: '#f0fdf4', color: '#15803d' }
+                                        : { backgroundColor: '#f4f4f5', color: '#71717a' }
+                                    }
+                                >
+                                    {item.aggregatorReviewed ? 'Reviewed' : 'Pending'}
+                                </span>
                             </div>
                         ))}
                     </div>
                 </div>
 
                 {checklist.status === 'UNDER_REVIEW' && (
-                    <div className="border-t pt-6">
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">Aggregator Actions</h3>
+                    <div className="border-t border-zinc-100 pt-6">
+                        <h3 className="text-sm font-semibold text-zinc-700 mb-4">Aggregator Actions</h3>
 
                         <div className="grid grid-cols-2 gap-8">
                             {/* Return to Mill */}
-                            <div className="bg-red-50 p-4 rounded-lg border border-red-100">
-                                <h4 className="font-medium text-red-800 mb-2">Return to Mill</h4>
-                                <p className="text-sm text-red-600 mb-4">If data is incomplete or incorrect, send it back for revision.</p>
+                            <div className="bg-red-50 p-4 rounded-xl border border-red-100">
+                                <h4 className="font-semibold text-red-800 text-sm mb-1">Return to Mill</h4>
+                                <p className="text-xs text-red-600 mb-3">If data is incomplete or incorrect, send it back for revision.</p>
                                 <textarea
-                                    className="w-full text-sm border-gray-300 rounded mb-3"
+                                    className="w-full text-sm border border-red-200 rounded-lg p-2 mb-3 bg-white focus:outline-none focus:ring-2 focus:ring-red-300"
                                     rows={3}
                                     placeholder="Reason for return..."
                                     value={returnReason}
@@ -127,18 +160,19 @@ export default function AggregatorChecklistReviewPage({
                                 <button
                                     onClick={handleReturnToMill}
                                     disabled={actionLoading || !returnReason}
-                                    className="w-full bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 disabled:bg-red-300"
+                                    className="w-full text-sm font-semibold text-white px-4 py-2 rounded-lg transition disabled:opacity-50"
+                                    style={{ background: '#dc2626' }}
                                 >
                                     Return to Mill
                                 </button>
                             </div>
 
                             {/* Send to Audit */}
-                            <div className="bg-green-50 p-4 rounded-lg border border-green-100">
-                                <h4 className="font-medium text-green-800 mb-2">Approve and Send to Audit</h4>
-                                <p className="text-sm text-green-700 mb-4">Assign an external auditor to begin the final certification audit.</p>
+                            <div className="bg-green-50 p-4 rounded-xl border border-green-100">
+                                <h4 className="font-semibold text-green-800 text-sm mb-1">Approve and Send to Audit</h4>
+                                <p className="text-xs text-green-700 mb-3">Assign an external auditor to begin the final certification audit.</p>
                                 <select
-                                    className="w-full text-sm border-gray-300 rounded mb-3 p-2"
+                                    className="w-full text-sm border border-green-200 rounded-lg p-2 mb-3 bg-white focus:outline-none focus:ring-2 focus:ring-green-300"
                                     value={auditorId}
                                     onChange={e => setAuditorId(e.target.value)}
                                 >
@@ -148,7 +182,8 @@ export default function AggregatorChecklistReviewPage({
                                 <button
                                     onClick={handleSendToAudit}
                                     disabled={actionLoading || !auditorId}
-                                    className="w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:bg-green-300"
+                                    className="w-full text-sm font-semibold text-white px-4 py-2 rounded-lg transition disabled:opacity-50"
+                                    style={{ background: '#16a34a' }}
                                 >
                                     Send to Audit
                                 </button>

@@ -21,6 +21,7 @@ const REGULATION_LABELS: Record<string, string> = {
 export default function RegulationProfilesPage() {
     const [profiles, setProfiles] = useState<Profile[]>([])
     const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
         fetch('/api/regulation-profiles')
@@ -29,9 +30,15 @@ export default function RegulationProfilesPage() {
                 setProfiles(data.data ?? [])
                 setLoading(false)
             })
+            .catch(() => { setError('Failed to load regulation profiles'); setLoading(false) })
     }, [])
 
-    if (loading) return <div className="text-gray-500 p-8">Loading profiles...</div>
+    if (loading) return (
+        <div className="flex items-center justify-center h-64">
+            <div className="w-6 h-6 rounded-full border-2 border-orange-400 border-t-transparent animate-spin" />
+        </div>
+    )
+    if (error) return <div className="text-red-500 text-sm p-4">{error}</div>
 
     return (
         <div className="space-y-6">

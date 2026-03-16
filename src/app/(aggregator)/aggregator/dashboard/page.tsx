@@ -53,6 +53,7 @@ export default function AggregatorDashboard() {
         fetch('/api/dashboard/portfolio')
             .then(r => r.json())
             .then(d => { setStats(d.data); setLoading(false) })
+            .catch(() => setLoading(false))
     }, [])
 
     if (loading) return (
