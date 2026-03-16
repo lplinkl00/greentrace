@@ -4,7 +4,7 @@ import { UserRole } from '@prisma/client'
 import { createImportJob } from '@/lib/imports'
 import { ImportFileType } from '@prisma/client'
 
-export const POST = withAuth([UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, UserRole.MILL_MANAGER, UserRole.MILL_STAFF, UserRole.AUDITOR], async (request: Request, user) => {
+export const POST = withAuth([UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, UserRole.MILL_MANAGER, UserRole.MILL_STAFF, UserRole.AUDITOR], async (request: Request, _context: any, user) => {
 
     const body = await request.json()
     const { millId, fileName, fileType, filePath } = body

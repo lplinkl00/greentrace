@@ -25,12 +25,20 @@ export async function getSessionUser(): Promise<SessionUser | null> {
 
     if (!user || !user.isActive) return null
 
+    let resolvedMillId = user.millId
+
+    if (user.role === 'SUPER_ADMIN') {
+        const cookieStore = cookies()
+        const activeMillId = cookieStore.get('activeMillId')?.value
+        if (activeMillId) resolvedMillId = activeMillId
+    }
+
     return {
         id: user.id,
         email: user.email,
         name: user.name,
         role: user.role,
-        millId: user.millId,
+        millId: resolvedMillId,
         organisationId: user.organisationId,
     }
 }
