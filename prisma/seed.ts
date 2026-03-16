@@ -203,6 +203,25 @@ async function main() {
         create: { pillarId: socPillar.id, code: 'SOC-02', name: 'Health & Safety', displayOrder: 2 },
     })
 
+    // ISCC EU Principle 1 & 2: Protection of biodiversity and carbon stocks
+    const landCat = await prisma.requirementCategory.upsert({
+        where: { pillarId_code: { pillarId: envPillar.id, code: 'ENV-03' } },
+        update: {},
+        create: { pillarId: envPillar.id, code: 'ENV-03', name: 'Land & Carbon Stocks', displayOrder: 3 },
+    })
+
+    // ISCC EU Principle 5: Compliance with laws
+    const govPillar = await prisma.requirementPillar.upsert({
+        where: { profileId_code: { profileId: profile.id, code: 'GOV' } },
+        update: {},
+        create: { profileId: profile.id, code: 'GOV', name: 'Governance & Legal', displayOrder: 3 },
+    })
+    const legalCat = await prisma.requirementCategory.upsert({
+        where: { pillarId_code: { pillarId: govPillar.id, code: 'GOV-01' } },
+        update: {},
+        create: { pillarId: govPillar.id, code: 'GOV-01', name: 'Legal Compliance', displayOrder: 1 },
+    })
+
     const reqDefs = [
         { categoryId: ghgCat.id, code: 'ENV-01-001', name: 'Scope 1 Direct GHG Emissions', description: 'Total direct GHG emissions from owned or controlled sources.', guidanceText: 'Include diesel combustion, natural gas, and POME methane. Report in tCO2e.', dataType: RequirementDataType.ABSOLUTE_QUANTITY, ghgScope: GHGScope.SCOPE1, criticality: RequirementCriticality.CRITICAL, unit: 'tCO2e', displayOrder: 1 },
         { categoryId: ghgCat.id, code: 'ENV-01-002', name: 'Scope 2 Grid Electricity Consumption', description: 'Indirect GHG from purchased electricity.', guidanceText: 'Obtain monthly electricity bills and apply the applicable grid emission factor.', dataType: RequirementDataType.ABSOLUTE_QUANTITY, ghgScope: GHGScope.SCOPE2, criticality: RequirementCriticality.CRITICAL, unit: 'MWh', displayOrder: 2 },
@@ -214,6 +233,10 @@ async function main() {
         { categoryId: labourCat.id, code: 'SOC-01-002', name: 'Grievance Cases Recorded', description: 'Number of worker grievance cases recorded and resolved.', guidanceText: 'Enter the count of grievances opened and separately resolved.', dataType: RequirementDataType.ABSOLUTE_QUANTITY, criticality: RequirementCriticality.NON_CRITICAL, unit: 'cases', displayOrder: 2 },
         { categoryId: healthCat.id, code: 'SOC-02-001', name: 'Lost-Time Injury Rate (LTIR)', description: 'Number of lost-time injuries per million hours worked.', guidanceText: 'LTIR = (LTIs × 1,000,000) / Total hours worked.', dataType: RequirementDataType.RATE, criticality: RequirementCriticality.CRITICAL, unit: 'LTIs per million hours', displayOrder: 1 },
         { categoryId: healthCat.id, code: 'SOC-02-002', name: 'Safety Training Hours', description: 'Total safety training hours delivered to mill workers.', guidanceText: 'Include induction, toolbox talks, and formal safety courses.', dataType: RequirementDataType.ABSOLUTE_QUANTITY, criticality: RequirementCriticality.NON_CRITICAL, unit: 'hours', displayOrder: 2 },
+        // ISCC EU Principle 1 & 2 — No conversion of land with high biodiversity value or high carbon stocks
+        { categoryId: landCat.id, code: 'ENV-03-001', name: 'No High Carbon Stock Land Conversion', description: 'Confirmation that all FFB supplied to the mill originates from land not converted from areas of high biodiversity value (primary forest, protected areas, peatland) after January 2008, per ISCC EU Principles 1 and 2.', guidanceText: 'Obtain and retain current RSPO, MSPO, or equivalent certification evidence for each FFB supplier, or complete the ISCC-compliant supplier due-diligence declaration. Flag any supplier without valid certification for corrective action.', dataType: RequirementDataType.DOCUMENT_ONLY, requiresForm: false, criticality: RequirementCriticality.CRITICAL, displayOrder: 1 },
+        // ISCC EU Principle 5 — Compliance with applicable laws
+        { categoryId: legalCat.id, code: 'GOV-01-001', name: 'Legal Compliance Declaration', description: 'Annual declaration that the mill operates in full compliance with all applicable national and local laws, including environmental permits, labour regulations, land-use rights, and tax obligations.', guidanceText: 'Complete and sign the annual legal compliance self-declaration form. Attach copies of current operating licenses, environmental permits (DOE approval), and evidence that any regulatory notices or corrective-action requests have been resolved.', dataType: RequirementDataType.DOCUMENT_ONLY, requiresForm: false, criticality: RequirementCriticality.CRITICAL, displayOrder: 1 },
     ]
 
     const requirements: Record<string, string> = {}
@@ -234,8 +257,8 @@ async function main() {
 
     const efDefs = [
         { id: 'seed-ef-diesel', name: 'Diesel Combustion (Stationary)', materialType: MaterialType.DIESEL, scope: GHGScope.SCOPE1, unitInput: 'litres', unitReference: 'kgCO2e', factorValue: new Prisma.Decimal('2.68'), source: 'IPCC 2006 Guidelines Vol.2 Table 1.4', validFrom: new Date('2024-01-01'), validTo: null, isDefault: true },
-        { id: 'seed-ef-grid_electricity', name: 'Grid Electricity — Malaysia Peninsula', materialType: MaterialType.GRID_ELECTRICITY, scope: GHGScope.SCOPE2, unitInput: 'MWh', unitReference: 'kgCO2e', factorValue: new Prisma.Decimal('690.0'), source: 'Malaysian Green Technology & Climate Change Centre 2023', validFrom: new Date('2024-01-01'), validTo: null, isDefault: true },
-        { id: 'seed-ef-pome_methane', name: 'POME Methane (Uncaptured)', materialType: MaterialType.POME_METHANE, scope: GHGScope.SCOPE1, unitInput: 'm3', unitReference: 'kgCO2e', factorValue: new Prisma.Decimal('21.0'), source: 'ISCC EU 202-5 v4.1 Table 9', validFrom: new Date('2024-01-01'), validTo: null, isDefault: true },
+        { id: 'seed-ef-grid_electricity', name: 'Grid Electricity — Malaysia Peninsula', materialType: MaterialType.GRID_ELECTRICITY, scope: GHGScope.SCOPE2, unitInput: 'MWh', unitReference: 'kgCO2e', factorValue: new Prisma.Decimal('620.0'), source: 'Malaysia Energy Commission (Suruhanjaya Tenaga) Grid Emission Factor 2022, Peninsular Malaysia', validFrom: new Date('2024-01-01'), validTo: null, isDefault: true },
+        { id: 'seed-ef-pome_methane', name: 'POME Methane (Uncaptured)', materialType: MaterialType.POME_METHANE, scope: GHGScope.SCOPE1, unitInput: 'm3', unitReference: 'kgCO2e', factorValue: new Prisma.Decimal('25.0'), source: 'ISCC EU System Document 202 v4.1; IPCC AR4 CH4 GWP100 = 25', validFrom: new Date('2024-01-01'), validTo: null, isDefault: true },
         { id: 'seed-ef-natural_gas', name: 'Natural Gas Combustion', materialType: MaterialType.NATURAL_GAS, scope: GHGScope.SCOPE1, unitInput: 'm3', unitReference: 'kgCO2e', factorValue: new Prisma.Decimal('2.02'), source: 'IPCC 2006 Guidelines Vol.2 Table 2.2', validFrom: new Date('2024-01-01'), validTo: null, isDefault: true },
     ]
     for (const ef of efDefs) {
@@ -312,6 +335,8 @@ async function main() {
         { code: 'SOC-01-002', status: ChecklistItemStatus.COMPLETE,      assigneeId: psStaffUser.id,   completedAt: new Date('2025-01-09'), aggregatorReviewed: false, dueDate: new Date('2025-01-15'), dueDateStatus: DueDateStatus.ON_TRACK },
         { code: 'SOC-02-001', status: ChecklistItemStatus.COMPLETE,      assigneeId: psManagerUser.id, completedAt: new Date('2025-01-10'), aggregatorReviewed: false, dueDate: new Date('2025-01-15'), dueDateStatus: DueDateStatus.ON_TRACK },
         { code: 'SOC-02-002', status: ChecklistItemStatus.COMPLETE,      assigneeId: psStaffUser.id,   completedAt: new Date('2025-01-07'), aggregatorReviewed: false, dueDate: new Date('2025-01-15'), dueDateStatus: DueDateStatus.ON_TRACK },
+        { code: 'ENV-03-001', status: ChecklistItemStatus.NOT_STARTED,   assigneeId: psManagerUser.id, dueDate: new Date('2025-02-15'), dueDateStatus: DueDateStatus.ON_TRACK },
+        { code: 'GOV-01-001', status: ChecklistItemStatus.NOT_STARTED,   assigneeId: psManagerUser.id, dueDate: new Date('2025-02-15'), dueDateStatus: DueDateStatus.ON_TRACK },
     ]
 
     const ps24Items: Record<string, string> = {}
@@ -413,7 +438,7 @@ async function main() {
             entryType: DataEntryType.FORM01_ABSOLUTE,
             valueRaw: new Prisma.Decimal(mwh),
             unitInput: 'MWh',
-            valueConverted: new Prisma.Decimal(mwh * 690),
+            valueConverted: new Prisma.Decimal(mwh * 620),
             unitReference: 'kgCO2e',
             emissionFactorId: 'seed-ef-grid_electricity',
             reportingMonth: new Date(`2024-${String(i + 1).padStart(2, '0')}-01`),
@@ -443,7 +468,7 @@ async function main() {
                 entryType: DataEntryType.FORM01_ABSOLUTE,
                 valueRaw: new Prisma.Decimal('12400'),
                 unitInput: 'm3',
-                valueConverted: new Prisma.Decimal('260400'),
+                valueConverted: new Prisma.Decimal('310000'),
                 unitReference: 'kgCO2e',
                 emissionFactorId: 'seed-ef-pome_methane',
                 notes: 'POME methane from open lagoon system before retrofit.',
@@ -456,9 +481,9 @@ async function main() {
                 checklistItemId: ps24Items['ENV-01-003'],
                 enteredById: psManagerUser.id,
                 entryType: DataEntryType.FORM02_RATE,
-                valueRaw: new Prisma.Decimal('0.487'),
+                valueRaw: new Prisma.Decimal('0.238'),
                 unitInput: 'tCO2e/tonne CPO',
-                notes: 'Calculated from total Scope 1+2 emissions divided by 14,800 tonnes CPO produced.',
+                notes: 'Calculated from total Scope 1+2 emissions (3,524.86 tCO2e) divided by 14,800 tonnes CPO produced. Scope 1: diesel 226,460 kgCO2e + POME methane 310,000 kgCO2e. Scope 2: grid electricity 2,988,400 kgCO2e.',
             },
         })
 
