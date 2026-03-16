@@ -16,9 +16,9 @@ const STATUS_STYLES: Record<ImportStatus, { bg: string; color: string }> = {
 
 export default async function MillImportsPage() {
     const user = await getSessionUser()
-    if (!user?.millId) redirect('/login')
+    if (!user?.companyId) redirect('/login')
 
-    const jobs = await getImportJobs(user.millId)
+    const jobs = await getImportJobs(user.companyId)
 
     return (
         <div className="space-y-6">
@@ -28,7 +28,7 @@ export default async function MillImportsPage() {
                     <p className="text-sm text-zinc-400 mt-0.5">Upload and manage CSV imports for shipment records.</p>
                 </div>
                 <Link
-                    href="/mill/imports/new"
+                    href="/company/imports/new"
                     className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-lg text-white hover:opacity-90 transition"
                     style={{ background: 'linear-gradient(135deg, #f97316 0%, #ef4444 100%)' }}
                 >

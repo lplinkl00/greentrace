@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 export default function AggregatorChecklistReviewPage({
     params,
 }: {
-    params: { millId: string, checklistId: string }
+    params: { companyId: string, checklistId: string }
 }) {
     const router = useRouter()
     const [checklist, setChecklist] = useState<any>(null)
@@ -34,7 +34,7 @@ export default function AggregatorChecklistReviewPage({
         }
         setActionError(null)
         setActionLoading(true)
-        const res = await fetch(`/api/checklists/${params.checklistId}/return-to-mill`, {
+        const res = await fetch(`/api/checklists/${params.checklistId}/return-to-company`, {
             method: 'POST',
             body: JSON.stringify({ reason: returnReason })
         })

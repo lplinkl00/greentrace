@@ -3,10 +3,10 @@ import { AuditStatus, ChecklistItemStatus, ChecklistStatus } from '@prisma/clien
 
 // --- Aggregator / Portfolio Stats ---
 export async function getPortfolioStats() {
-    const totalMills = await prisma.mill.count()
+    const totalCompanies = await prisma.company.count()
 
-    // Certified mills (have at least one CERTIFIED checklist)
-    const certifiedMills = await prisma.mill.count({
+    // Certified companies (have at least one CERTIFIED checklist)
+    const certifiedCompanies = await prisma.company.count({
         where: {
             checklists: { some: { status: ChecklistStatus.CERTIFIED } }
         }
@@ -54,8 +54,8 @@ export async function getPortfolioStats() {
         }
     }
 
-    // Timeline data (mills with their cert expiry dates based on their latest CERTIFIED checklist)
-    const timelineData = await prisma.mill.findMany({
+    // Timeline data (companies with their cert expiry dates based on their latest CERTIFIED checklist)
+    const timelineData = await prisma.company.findMany({
         include: {
             checklists: {
                 where: { status: ChecklistStatus.CERTIFIED },
@@ -65,11 +65,11 @@ export async function getPortfolioStats() {
         }
     })
 
-    const expiryTimeline = timelineData.map(mill => {
-        const latestCert = mill.checklists[0]
+    const expiryTimeline = timelineData.map(company => {
+        const latestCert = company.checklists[0]
         return {
-            millId: mill.id,
-            millName: mill.name,
+            companyId: company.id,
+            companyName: company.name,
             latestCertEnd: latestCert ? latestCert.periodEnd : null,
             regulation: latestCert ? latestCert.regulation : null
         }
@@ -77,8 +77,8 @@ export async function getPortfolioStats() {
         .sort((a, b) => a.latestCertEnd!.getTime() - b.latestCertEnd!.getTime())
 
     return {
-        totalMills,
-        certifiedMills,
+        totalCompanies,
+        certifiedCompanies,
         activeAuditsCount,
         openFindingsCount,
         totalGhgKgCo2e: totalGhg,
@@ -86,11 +86,11 @@ export async function getPortfolioStats() {
     }
 }
 
-// --- Mill Stats ---
-export async function getMillStats(millId: string) {
+// --- Company Stats ---
+export async function getCompanyStats(companyId: string) {
     // Get the most recent active/submitted checklist (or certified if none active)
     const latestChecklist = await prisma.checklist.findFirst({
-        where: { millId },
+        where: { companyId },
         orderBy: { createdAt: 'desc' },
         include: {
             items: {
@@ -142,7 +142,7 @@ export async function getMillStats(millId: string) {
         where: {
             checklistItem: { checklistId: latestChecklist.id },
             reconciliationFlag: true,
-            reconciliationAcknowledgedAt: null
+            reconciliationAcknowledgedAt: null,
         }
     })
 
@@ -177,7 +177,7 @@ export async function getAuditorStats(auditorId: string) {
             auditorId,
             status: { in: [AuditStatus.SCHEDULED, AuditStatus.IN_PROGRESS, AuditStatus.FINDINGS_REVIEW] }
         },
-        include: { mill: { select: { name: true } } },
+        include: { company: { select: { name: true } } },
         orderBy: { conductedDate: 'asc' }
     })
 
@@ -197,7 +197,7 @@ export async function getAuditorStats(auditorId: string) {
         orderBy: { version: 'desc' },
         distinct: ['auditId'],
         include: {
-            audit: { include: { mill: true } }
+            audit: { include: { company: true } }
         }
     })
 
@@ -215,7 +215,7 @@ export async function getAuditorStats(auditorId: string) {
         activeAuditsCount: activeAudits.length,
         auditsDueSoon: auditsDueSoon.map(a => ({
             id: a.id,
-            millName: a.mill.name,
+            companyName: a.company.name,
             regulation: a.regulation,
             conductedDate: a.conductedDate,
             status: a.status
@@ -223,7 +223,7 @@ export async function getAuditorStats(auditorId: string) {
         reportsToFinalise: reportsToFinalise.map(r => ({
             id: r.id,
             auditId: r.auditId,
-            millName: r.audit.mill.name,
+            companyName: r.audit.company.name,
             version: r.version,
             generatedAt: r.generatedAt
         })),

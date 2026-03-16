@@ -3,13 +3,13 @@ import { Prisma, ShipmentDirection, MaterialType, CertificationStatus, ShipmentS
 
 
 export async function getShipments(filters: {
-    millId: string
+    companyId: string
     year?: string
     month?: string
     materialType?: MaterialType
     direction?: ShipmentDirection
 }) {
-    const where: any = { millId: filters.millId }
+    const where: any = { companyId: filters.companyId }
 
     if (filters.materialType) where.materialType = filters.materialType
     if (filters.direction) where.direction = filters.direction
@@ -36,7 +36,7 @@ export async function getShipmentById(id: string) {
 }
 
 export async function createShipment(data: {
-    millId: string
+    companyId: string
     direction: ShipmentDirection
     materialType: MaterialType
     volumeMt: number

@@ -159,7 +159,7 @@ export default function MillChecklistPage({
                         return (
                             <a
                                 key={item.id}
-                                href={`/mill/checklists/${params.checklistId}/items/${item.id}`}
+                                href={`/company/checklists/${params.checklistId}/items/${item.id}`}
                                 className="flex items-center justify-between px-6 py-3.5 hover:bg-zinc-50/50 transition-colors"
                             >
                                 <div>

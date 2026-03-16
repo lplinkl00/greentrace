@@ -18,21 +18,21 @@ type Mill = {
     createdAt: string
 }
 
-export default function MillDetailPage({ params }: { params: { millId: string } }) {
+export default function MillDetailPage({ params }: { params: { companyId: string } }) {
     const [mill, setMill] = useState<Mill | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
-        fetch('/api/mills')
+        fetch('/api/companies')
             .then(r => r.json())
             .then(d => {
-                const found = (d.data ?? []).find((m: Mill) => m.id === params.millId)
+                const found = (d.data ?? []).find((m: Mill) => m.id === params.companyId)
                 setMill(found ?? null)
                 setLoading(false)
             })
             .catch(() => { setError('Failed to load mill details'); setLoading(false) })
-    }, [params.millId])
+    }, [params.companyId])
 
     if (loading) return (
         <div className="flex items-center justify-center h-64">
@@ -50,7 +50,7 @@ export default function MillDetailPage({ params }: { params: { millId: string } 
         <div className="space-y-6">
             {/* Header */}
             <div className="flex items-center gap-3">
-                <Link href="/aggregator/mills" className="text-zinc-400 hover:text-zinc-600 transition p-1 rounded-lg hover:bg-zinc-100">
+                <Link href="/aggregator/companies" className="text-zinc-400 hover:text-zinc-600 transition p-1 rounded-lg hover:bg-zinc-100">
                     <ArrowLeft size={16} />
                 </Link>
                 <div>
@@ -119,7 +119,7 @@ export default function MillDetailPage({ params }: { params: { millId: string } 
                 <h2 className="text-sm font-semibold text-zinc-700 mb-4">Quick Actions</h2>
                 <div className="flex gap-3 flex-wrap">
                     <Link
-                        href={`/aggregator/mills/${params.millId}/integrations`}
+                        href={`/aggregator/companies/${params.companyId}/integrations`}
                         className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-zinc-200 text-zinc-600 hover:bg-zinc-50 transition"
                     >
                         Manage Integrations

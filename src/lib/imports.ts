@@ -4,30 +4,30 @@ import { Prisma, ImportFileType, ImportStatus, MaterialType } from '@prisma/clie
 
 // ─── Column Mappings ────────────────────────────────────────────────────────
 
-export async function getColumnMappings(millId: string) {
+export async function getColumnMappings(companyId: string) {
     return prisma.importColumnMapping.findMany({
-        where: { millId },
+        where: { companyId },
         orderBy: { lastUsedAt: 'desc' },
     })
 }
 
 export async function saveColumnMapping(
-    millId: string,
+    companyId: string,
     templateName: string,
     mappingJson: Record<string, string>
 ) {
     return prisma.importColumnMapping.upsert({
-        where: { millId_templateName: { millId, templateName } },
+        where: { companyId_templateName: { companyId, templateName } },
         update: { mappingJson, lastUsedAt: new Date() },
-        create: { millId, templateName, mappingJson },
+        create: { companyId, templateName, mappingJson },
     })
 }
 
 // ─── Jobs CRUD ────────────────────────────────────────────────────────
 
-export async function getImportJobs(millId: string) {
+export async function getImportJobs(companyId: string) {
     return prisma.importJob.findMany({
-        where: { millId },
+        where: { companyId },
         orderBy: { createdAt: 'desc' },
     })
 }
@@ -39,7 +39,7 @@ export async function getImportJobById(id: string) {
 }
 
 export async function createImportJob(data: {
-    millId: string
+    companyId: string
     uploadedById: string
     fileName: string
     fileType: ImportFileType
@@ -69,7 +69,7 @@ export async function processImportJob(
     let countFailed = 0
     const errors: any[] = []
 
-    const mill = await prisma.importJob.findUnique({ where: { id: jobId } }).mill()
+    const company = await prisma.importJob.findUnique({ where: { id: jobId } }).company()
 
     for (let i = 0; i < testDataRows.length; i++) {
         const rawRow = testDataRows[i]
@@ -83,15 +83,15 @@ export async function processImportJob(
             // Upsert shipment to handle deduplication logic
             await prisma.shipmentRecord.upsert({
                 where: {
-                    millId_referenceNumber_shipmentDate: {
-                        millId: mill!.id,
+                    companyId_referenceNumber_shipmentDate: {
+                        companyId: company!.id,
                         referenceNumber: mapped.referenceNumber,
                         shipmentDate: new Date(mapped.shipmentDate),
                     },
                 },
                 update: {}, // Don't overwrite if it exists
                 create: {
-                    millId: mill!.id,
+                    companyId: company!.id,
                     direction: mapped.direction,
                     materialType: mapped.materialType,
                     volumeMt: new Prisma.Decimal(mapped.volumeMt),
@@ -123,7 +123,7 @@ export async function processImportJob(
     })
 
     // REC-1: Trigger reconciliation check
-    await runReconciliationCheck(mill!.id)
+    await runReconciliationCheck(company!.id)
 
     return finalized
 }
@@ -131,7 +131,7 @@ export async function processImportJob(
 // ─── REC-1 ────────────────────────────────────────────────────────
 // Compares newly imported shipments against DataEntry totals.
 
-export async function runReconciliationCheck(millId: string) {
+export async function runReconciliationCheck(companyId: string) {
     // 1. Group ShipmentRecord volumes by (materialType, month).
     // 2. Fetch DataEntries matching that scope.
     // 3. For any where ABS((ShipmentSum - DataEntrySum) / MAX(ShipmentsSum, DataEntrySum)) > 0.02
@@ -142,7 +142,7 @@ export async function runReconciliationCheck(millId: string) {
 
     const entries = await prisma.dataEntry.findMany({
         where: {
-            checklistItem: { checklist: { millId } },
+            checklistItem: { checklist: { companyId } },
             reconciliationFlag: false,
         },
         take: 1, // Just flag one for the prototype demo

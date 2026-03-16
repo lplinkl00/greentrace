@@ -4,7 +4,7 @@ import { UserRole } from '@prisma/client'
 import { deleteConfig } from '@/lib/integration-configs'
 
 export const DELETE = withAuth(
-    [UserRole.MILL_MANAGER, UserRole.AGGREGATOR_MANAGER, UserRole.SUPER_ADMIN],
+    [UserRole.COMPANY_MANAGER, UserRole.AGGREGATOR_MANAGER, UserRole.SUPER_ADMIN],
     async (_req: Request, context: any) => {
         try {
             const { id } = context.params

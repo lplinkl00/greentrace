@@ -8,23 +8,23 @@ type User = {
     name: string | null
     email: string
     role: string
-    millId: string | null
+    companyId: string | null
     createdAt: string
 }
 
 const ROLE_STYLES: Record<string, { bg: string; color: string }> = {
     SUPER_ADMIN:        { bg: '#fef2f2', color: '#dc2626' },
     AGGREGATOR_MANAGER: { bg: '#fff7ed', color: '#c2410c' },
-    MILL_MANAGER:       { bg: '#eff6ff', color: '#2563eb' },
-    MILL_STAFF:         { bg: '#f4f4f5', color: '#52525b' },
+    COMPANY_MANAGER:       { bg: '#eff6ff', color: '#2563eb' },
+    COMPANY_STAFF:         { bg: '#f4f4f5', color: '#52525b' },
     AUDITOR:            { bg: '#f0fdf4', color: '#15803d' },
 }
 
 const ROLE_LABEL: Record<string, string> = {
     SUPER_ADMIN:        'Super Admin',
     AGGREGATOR_MANAGER: 'Aggregator Manager',
-    MILL_MANAGER:       'Mill Manager',
-    MILL_STAFF:         'Mill Staff',
+    COMPANY_MANAGER:       'Company Manager',
+    COMPANY_STAFF:         'Company Staff',
     AUDITOR:            'Auditor',
 }
 
@@ -110,9 +110,9 @@ export default function UsersPage() {
                                             </span>
                                         </td>
                                         <td className="px-6 py-3.5 text-zinc-400 text-xs">
-                                            {user.millId ? (
+                                            {user.companyId ? (
                                                 <span className="font-mono bg-zinc-100 text-zinc-500 px-2 py-0.5 rounded text-xs">
-                                                    {user.millId.slice(0, 8)}…
+                                                    {user.companyId.slice(0, 8)}…
                                                 </span>
                                             ) : '—'}
                                         </td>

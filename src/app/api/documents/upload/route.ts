@@ -4,7 +4,7 @@ import { UserRole } from '@prisma/client'
 import { createDocument } from '@/lib/documents'
 import { LinkedEntityType } from '@prisma/client'
 
-export const POST = withAuth([UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, UserRole.MILL_MANAGER, UserRole.MILL_STAFF, UserRole.AUDITOR], async (request: Request, _context: any, user) => {
+export const POST = withAuth([UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, UserRole.COMPANY_MANAGER, UserRole.COMPANY_STAFF, UserRole.AUDITOR], async (request: Request, _context: any, user) => {
 
     const body = await request.json()
     const { displayName, filePath, fileType, fileSize, linkedEntityType, checklistItemId, massBalanceEntryId, auditFindingId, shipmentId } = body

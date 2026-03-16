@@ -40,10 +40,10 @@ export default async function MillShipmentsPage({
     searchParams: { materialType?: string; year?: string; month?: string }
 }) {
     const user = await getSessionUser()
-    if (!user?.millId) redirect('/login')
+    if (!user?.companyId) redirect('/login')
 
     const shipments = await getShipments({
-        millId: user.millId,
+        companyId: user.companyId,
         materialType: searchParams.materialType as MaterialType | undefined,
         year: searchParams.year,
         month: searchParams.month,
@@ -89,7 +89,7 @@ export default async function MillShipmentsPage({
                     <button type="submit" className="text-xs font-medium px-3 py-1.5 rounded-lg border border-zinc-200 text-zinc-600 hover:bg-zinc-100 transition">
                         Filter
                     </button>
-                    <a href="/mill/shipments" className="text-xs text-zinc-400 hover:text-zinc-600 transition">Clear</a>
+                    <a href="/company/shipments" className="text-xs text-zinc-400 hover:text-zinc-600 transition">Clear</a>
                 </form>
 
                 <table className="min-w-full text-sm">

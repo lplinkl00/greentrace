@@ -13,8 +13,8 @@ export interface FindingSummary {
 
 export interface ReportPayload {
     auditId: string
-    millName: string
-    millCode: string
+    companyName: string
+    companyCode: string
     regulation: string
     periodStart: string
     periodEnd: string

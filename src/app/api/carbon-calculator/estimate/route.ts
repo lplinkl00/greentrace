@@ -5,8 +5,8 @@ import { UserRole } from '@prisma/client'
 import { CLIMATIQ_ACTIVITIES } from '@/lib/climatiq-activities'
 
 const ALLOWED_ROLES = [
-  UserRole.MILL_MANAGER,
-  UserRole.MILL_STAFF,
+  UserRole.COMPANY_MANAGER,
+  UserRole.COMPANY_STAFF,
   UserRole.SUPER_ADMIN,
   UserRole.AGGREGATOR_MANAGER,
 ]

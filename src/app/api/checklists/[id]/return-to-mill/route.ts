@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { withAuth } from '@/lib/auth'
 import { UserRole } from '@prisma/client'
-import { returnChecklistToMill } from '@/lib/checklist-workflow'
+import { returnChecklistToCompany } from '@/lib/checklist-workflow'
 
 export const POST = withAuth([UserRole.AGGREGATOR_MANAGER], async (request: Request, context: any, user: any) => {
     const { id } = context.params
@@ -12,7 +12,7 @@ export const POST = withAuth([UserRole.AGGREGATOR_MANAGER], async (request: Requ
     }
 
     try {
-        const checklist = await returnChecklistToMill(id, user.id, body.reason)
+        const checklist = await returnChecklistToCompany(id, user.id, body.reason)
         return NextResponse.json({ data: checklist })
     } catch (e: any) {
         return NextResponse.json({ error: e.message }, { status: 400 })

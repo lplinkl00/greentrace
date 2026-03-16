@@ -1,12 +1,12 @@
 export default function AggregatorChecklistItemDetailPage({
     params,
 }: {
-    params: { millId: string; checklistId: string; itemId: string }
+    params: { companyId: string; checklistId: string; itemId: string }
 }) {
     return (
         <div className="space-y-6">
             <div>
-                <p className="text-sm text-gray-500">Mill: {params.millId} / Checklist: {params.checklistId}</p>
+                <p className="text-sm text-gray-500">Mill: {params.companyId} / Checklist: {params.checklistId}</p>
                 <h1 className="text-2xl font-bold text-gray-900">Item Review</h1>
                 <p className="text-sm text-gray-400 mt-1">Item: {params.itemId}</p>
             </div>

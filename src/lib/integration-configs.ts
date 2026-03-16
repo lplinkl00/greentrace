@@ -10,9 +10,9 @@ export type ConfigPayload = {
     syncFrequency?: string
 }
 
-export async function getConfigsForMill(millId: string) {
+export async function getConfigsForCompany(companyId: string) {
     const records = await prisma.integrationConfig.findMany({
-        where: { millId },
+        where: { companyId },
         orderBy: { systemType: 'asc' }
     })
 
@@ -32,7 +32,7 @@ export async function getConfigsForMill(millId: string) {
     })
 }
 
-export async function upsertConfig(millId: string, payload: ConfigPayload) {
+export async function upsertConfig(companyId: string, payload: ConfigPayload) {
     const configData = {
         endpointUrl: payload.endpointUrl,
         authType: payload.authType,
@@ -42,7 +42,7 @@ export async function upsertConfig(millId: string, payload: ConfigPayload) {
 
     const existing = await prisma.integrationConfig.findFirst({
         where: {
-            millId,
+            companyId,
             systemType: payload.systemType
         }
     })
@@ -60,7 +60,7 @@ export async function upsertConfig(millId: string, payload: ConfigPayload) {
 
     return prisma.integrationConfig.create({
         data: {
-            millId,
+            companyId,
             systemType: payload.systemType,
             displayName: payload.displayName,
             configJson: configData,

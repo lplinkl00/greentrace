@@ -4,13 +4,13 @@ import { useState, useEffect } from 'react'
 
 type Checklist = {
     id: string
-    millId: string
+    companyId: string
     regulation: string
     status: string
     periodStart: string
     periodEnd: string
     _count: { items: number }
-    mill: { id: string; name: string; code: string } | null
+    company: { id: string; name: string; code: string } | null
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -75,8 +75,8 @@ export default function ChecklistsPage() {
                             {checklists.map(cl => (
                                 <tr key={cl.id} className="hover:bg-gray-50">
                                     <td className="px-6 py-4 font-medium text-gray-900">
-                                        {cl.mill?.name ?? cl.millId}
-                                        <span className="ml-1 text-xs text-gray-400">{cl.mill?.code}</span>
+                                        {cl.company?.name ?? cl.companyId}
+                                        <span className="ml-1 text-xs text-gray-400">{cl.company?.code}</span>
                                     </td>
                                     <td className="px-6 py-4 text-gray-600">
                                         {cl.regulation.replace(/_/g, ' ')}
@@ -94,7 +94,7 @@ export default function ChecklistsPage() {
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <a
-                                            href={`/aggregator/mills/${cl.millId}/checklists/${cl.id}/review`}
+                                            href={`/aggregator/companies/${cl.companyId}/checklists/${cl.id}/review`}
                                             className="text-green-600 hover:underline font-medium text-sm"
                                         >
                                             Review →

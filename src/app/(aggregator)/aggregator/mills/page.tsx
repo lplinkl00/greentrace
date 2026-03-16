@@ -21,7 +21,7 @@ export default function MillListPage() {
     const router = useRouter()
 
     useEffect(() => {
-        fetch('/api/mills')
+        fetch('/api/companies')
             .then(r => r.json())
             .then(d => { setMills(d.data ?? []); setLoading(false) })
             .catch(() => { setError('Failed to load mills'); setLoading(false) })
@@ -72,7 +72,7 @@ export default function MillListPage() {
                             {mills.map(mill => (
                                 <tr
                                     key={mill.id}
-                                    onClick={() => router.push(`/aggregator/mills/${mill.id}`)}
+                                    onClick={() => router.push(`/aggregator/companies/${mill.id}`)}
                                     className="hover:bg-zinc-50/50 transition-colors cursor-pointer"
                                 >
                                     <td className="px-6 py-3.5">

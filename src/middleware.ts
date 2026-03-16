@@ -52,8 +52,8 @@ export async function middleware(request: NextRequest) {
         const activeView = request.cookies.get('activeView')?.value
 
         if (role === 'SUPER_ADMIN' || role === 'AGGREGATOR_MANAGER') {
-            if (role === 'SUPER_ADMIN' && activeView === 'mill') {
-                return NextResponse.redirect(new URL('/mill/dashboard', request.url))
+            if (role === 'SUPER_ADMIN' && activeView === 'company') {
+                return NextResponse.redirect(new URL('/company/dashboard', request.url))
             }
             if (role === 'SUPER_ADMIN' && activeView === 'auditor') {
                 return NextResponse.redirect(new URL('/auditor/dashboard', request.url))
@@ -62,7 +62,7 @@ export async function middleware(request: NextRequest) {
         } else if (role === 'AUDITOR') {
             return NextResponse.redirect(new URL('/auditor/dashboard', request.url))
         } else {
-            return NextResponse.redirect(new URL('/mill/dashboard', request.url))
+            return NextResponse.redirect(new URL('/company/dashboard', request.url))
         }
     }
 

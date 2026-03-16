@@ -9,7 +9,7 @@ export type SessionUser = {
     email: string
     name: string
     role: UserRole
-    millId: string | null
+    companyId: string | null
     organisationId: string | null
 }
 
@@ -25,12 +25,12 @@ export async function getSessionUser(): Promise<SessionUser | null> {
 
     if (!user || !user.isActive) return null
 
-    let resolvedMillId = user.millId
+    let resolvedCompanyId = user.companyId
 
     if (user.role === 'SUPER_ADMIN') {
         const cookieStore = cookies()
-        const activeMillId = cookieStore.get('activeMillId')?.value
-        if (activeMillId) resolvedMillId = activeMillId
+        const activeCompanyId = cookieStore.get('activeCompanyId')?.value
+        if (activeCompanyId) resolvedCompanyId = activeCompanyId
     }
 
     return {
@@ -38,7 +38,7 @@ export async function getSessionUser(): Promise<SessionUser | null> {
         email: user.email,
         name: user.name,
         role: user.role,
-        millId: resolvedMillId,
+        companyId: resolvedCompanyId,
         organisationId: user.organisationId,
     }
 }

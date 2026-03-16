@@ -25,23 +25,23 @@ const NAV_CONFIG: Record<string, { items: NavItem[]; cta: RoleCta; roleLabel: st
         cta: null,
         items: [
             { href: '/aggregator/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-            { href: '/aggregator/mills', label: 'Mill Portfolio', icon: Building2 },
+            { href: '/aggregator/companies', label: 'Company Portfolio', icon: Building2 },
             { href: '/aggregator/checklists', label: 'Checklists', icon: ClipboardList },
             { href: '/aggregator/regulation-profiles', label: 'Regulations', icon: FileText },
             { href: '/aggregator/users', label: 'Users', icon: Users },
             { href: '/aggregator/settings', label: 'Settings', icon: Settings },
         ],
     },
-    mill: {
-        roleLabel: 'Mill Staff',
-        cta: { href: '/mill/checklists', label: 'New Entry' },
+    company: {
+        roleLabel: 'Company Staff',
+        cta: { href: '/company/checklists', label: 'New Entry' },
         items: [
-            { href: '/mill/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-            { href: '/mill/checklists', label: 'Compliance', icon: ClipboardCheck },
-            { href: '/mill/production', label: 'Production', icon: Factory },
-            { href: '/mill/shipments', label: 'Trade Ledger', icon: Ship },
-            { href: '/mill/imports', label: 'Imports', icon: Package },
-            { href: '/mill/settings', label: 'Settings', icon: Settings },
+            { href: '/company/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+            { href: '/company/checklists', label: 'Compliance', icon: ClipboardCheck },
+            { href: '/company/production', label: 'Production', icon: Factory },
+            { href: '/company/shipments', label: 'Trade Ledger', icon: Ship },
+            { href: '/company/imports', label: 'Imports', icon: Package },
+            { href: '/company/settings', label: 'Settings', icon: Settings },
         ],
     },
     auditor: {
@@ -50,7 +50,7 @@ const NAV_CONFIG: Record<string, { items: NavItem[]; cta: RoleCta; roleLabel: st
         items: [
             { href: '/auditor/dashboard', label: 'Dashboard', icon: LayoutDashboard },
             { href: '/auditor/audits', label: 'Audit Queue', icon: ClipboardList },
-            { href: '/auditor/mills', label: 'Mill Directory', icon: Building2 },
+            { href: '/auditor/companies', label: 'Company Directory', icon: Building2 },
             { href: '/auditor/reports', label: 'Reports', icon: BarChart3 },
             { href: '/auditor/settings', label: 'Settings', icon: Settings },
         ],
@@ -58,7 +58,7 @@ const NAV_CONFIG: Record<string, { items: NavItem[]; cta: RoleCta; roleLabel: st
 }
 
 type Props = {
-    role: 'aggregator' | 'mill' | 'auditor'
+    role: 'aggregator' | 'company' | 'auditor'
     user: { name: string; email: string; role: string } | null
 }
 

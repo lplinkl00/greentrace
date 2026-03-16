@@ -3,21 +3,21 @@ import { getSessionUser, withAuth } from '@/lib/auth'
 import { UserRole, RegulationCode } from '@prisma/client'
 import { getChecklists, createChecklist } from '@/lib/checklists'
 
-export const GET = withAuth([UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, UserRole.MILL_MANAGER, UserRole.MILL_STAFF, UserRole.AUDITOR], async (request: Request, _context: any, user) => {
+export const GET = withAuth([UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, UserRole.COMPANY_MANAGER, UserRole.COMPANY_STAFF, UserRole.AUDITOR], async (request: Request, _context: any, user) => {
 
     const { searchParams } = new URL(request.url)
-    const millId = searchParams.get('millId') || undefined
+    const companyId = searchParams.get('companyId') || undefined
     const regulation = (searchParams.get('regulation') as RegulationCode) || undefined
     const status = searchParams.get('status') || undefined
     const year = searchParams.get('year') || undefined
 
     // Mill users can only see their own mill's checklists
     const effectiveMillId =
-        user.role === UserRole.MILL_MANAGER || user.role === UserRole.MILL_STAFF
-            ? user.millId!
-            : millId
+        user.role === UserRole.COMPANY_MANAGER || user.role === UserRole.COMPANY_STAFF
+            ? user.companyId!
+            : companyId
 
-    const checklists = await getChecklists({ millId: effectiveMillId, regulation, status, year })
+    const checklists = await getChecklists({ companyId: effectiveMillId, regulation, status, year })
     return NextResponse.json({ data: checklists, error: null, meta: null })
 })
 
@@ -28,17 +28,17 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const { millId, profileId, periodStart, periodEnd } = body
+    const { companyId, profileId, periodStart, periodEnd } = body
 
-    if (!millId || !profileId || !periodStart || !periodEnd) {
+    if (!companyId || !profileId || !periodStart || !periodEnd) {
         return NextResponse.json(
-            { data: null, error: { code: 'VALIDATION_ERROR', message: 'millId, profileId, periodStart, and periodEnd are required' }, meta: null },
+            { data: null, error: { code: 'VALIDATION_ERROR', message: 'companyId, profileId, periodStart, and periodEnd are required' }, meta: null },
             { status: 422 }
         )
     }
 
     const result = await createChecklist({
-        millId,
+        companyId,
         profileId,
         periodStart: new Date(periodStart),
         periodEnd: new Date(periodEnd),

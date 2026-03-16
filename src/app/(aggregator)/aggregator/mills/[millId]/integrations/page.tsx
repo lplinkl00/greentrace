@@ -19,18 +19,18 @@ const INTEGRATION_TYPES = [
     { type: 'CUSTOM_API', name: 'Custom Developer API' }
 ]
 
-export default function AggregatorMillIntegrationsPage({ params }: { params: { millId: string } }) {
+export default function AggregatorMillIntegrationsPage({ params }: { params: { companyId: string } }) {
     const [configs, setConfigs] = useState<IntegrationConfig[]>([])
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState<string | null>(null)
 
     useEffect(() => {
         fetchConfigs()
-    }, [params.millId])
+    }, [params.companyId])
 
     const fetchConfigs = async () => {
         try {
-            const res = await fetch(`/api/integration-configs?millId=${params.millId}`)
+            const res = await fetch(`/api/integration-configs?millId=${params.companyId}`)
             const data = await res.json()
             if (data.data) {
                 setConfigs(data.data)
@@ -48,7 +48,7 @@ export default function AggregatorMillIntegrationsPage({ params }: { params: { m
 
         const formData = new FormData(e.currentTarget)
         const payload = {
-            millId: params.millId,
+            companyId: params.companyId,
             systemType,
             endpointUrl: formData.get('endpointUrl')?.toString(),
             authType: formData.get('authType')?.toString(),
@@ -74,7 +74,7 @@ export default function AggregatorMillIntegrationsPage({ params }: { params: { m
         <div className="space-y-6 max-w-4xl">
             <div>
                 <h1 className="text-2xl font-bold text-gray-900">Mill Integrations</h1>
-                <p className="text-sm text-gray-500 mt-1">Manage system connections for Mill ID: {params.millId}</p>
+                <p className="text-sm text-gray-500 mt-1">Manage system connections for Mill ID: {params.companyId}</p>
             </div>
 
             <div className="space-y-6">

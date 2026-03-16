@@ -84,7 +84,7 @@ export default function MillChecklistsPage() {
                                             </span>
                                         </td>
                                         <td className="px-6 py-3.5 text-right">
-                                            <Link href={`/mill/checklists/${cl.id}`}
+                                            <Link href={`/company/checklists/${cl.id}`}
                                                 className="inline-flex items-center gap-1 text-xs font-medium text-orange-500 hover:text-orange-600 transition">
                                                 Open <ArrowRight size={12} />
                                             </Link>

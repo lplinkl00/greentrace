@@ -7,9 +7,9 @@ import { Prisma } from '@prisma/client'
 
 export default async function MillProductionPage() {
     const user = await getSessionUser()
-    if (!user?.millId) redirect('/login')
+    if (!user?.companyId) redirect('/login')
 
-    const records = await getProductionRecords(user.millId)
+    const records = await getProductionRecords(user.companyId)
 
     // Summary stats
     const totalFfb = records.reduce(
@@ -31,7 +31,7 @@ export default async function MillProductionPage() {
                     <p className="text-sm text-zinc-400 mt-0.5">Daily FFB intake and CPO/PKO output logs.</p>
                 </div>
                 <Link
-                    href="/mill/production/new"
+                    href="/company/production/new"
                     className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-lg text-white hover:opacity-90 transition"
                     style={{ background: 'linear-gradient(135deg, #f97316 0%, #ef4444 100%)' }}
                 >
