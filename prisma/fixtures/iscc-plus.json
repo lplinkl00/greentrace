@@ -2,7 +2,7 @@
   "regulation": "ISCC_PLUS",
   "version": "2024-v1",
   "name": "ISCC PLUS 2024 v1",
-  "description": "ISCC PLUS covers non-food/feed biomass and circular materials.",
+  "description": "ISCC PLUS covers non-energy biomass, circular materials, and renewable feedstocks. Applies the same ISCC 205 sustainability principles as ISCC EU across a broader range of biomass types and value chains.",
   "pillars": [
     {
       "code": "ENV",
@@ -16,28 +16,135 @@
           "requirements": [
             {
               "code": "ENV-01-001",
-              "name": "GHG Emission Calculation (Broader Scope)",
-              "description": "Calculate and report total GHG emissions for the reporting period using the ISCC methodology.",
-              "guidanceText": "Use the ISCC GHG calculation tool. Report in tCO2e. Include Scope 1 direct emissions from processing. GHG methodology applies to a wider scope of biomass.",
+              "name": "GHG Emission Calculation",
+              "description": "Calculate and report total GHG emissions for the reporting period using the ISCC methodology. ISCC PLUS applies to a broader range of biomass and circular feedstocks.",
+              "guidanceText": "Use the ISCC GHG calculation tool. Report in tCO2e. Include Scope 1 direct emissions from processing. The GHG methodology covers all biomass types eligible under ISCC PLUS.",
               "dataType": "ABSOLUTE_QUANTITY",
               "criticality": "CRITICAL",
               "ghgScope": "SCOPE1",
               "unit": "tCO2e",
               "requiresForm": true,
               "displayOrder": 1
+            },
+            {
+              "code": "ENV-01-002",
+              "name": "GHG Intensity per Tonne Output",
+              "description": "Total net GHG emissions per tonne of certified output produced.",
+              "guidanceText": "Divide total Scope 1+2 tCO2e by tonnes of certified output. For palm oil mills, use CPO as the output unit.",
+              "dataType": "RATE",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": "tCO2e/tonne",
+              "requiresForm": true,
+              "displayOrder": 2
             }
           ]
         },
         {
           "code": "ENV-02",
-          "name": "Land Use",
+          "name": "Land Use & Carbon Stocks",
           "displayOrder": 2,
           "requirements": [
             {
               "code": "ENV-02-001",
-              "name": "Protection of Land with High Biodiversity Value",
-              "description": "Land criteria include additional biomass types.",
-              "guidanceText": "Check for primary forests, highly biodiverse forests, etc.",
+              "name": "Protection of Land with High Biodiversity Value (Criteria 1.1)",
+              "description": "Biomass is not produced on land with high biodiversity value, including primary forests, highly biodiverse forests, protected areas, and highly biodiverse grasslands.",
+              "guidanceText": "Check that all feedstock supply originates from land that was not converted from areas with high biodiversity value. Retain documentation from suppliers.",
+              "dataType": "DOCUMENT_ONLY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": false,
+              "displayOrder": 1
+            },
+            {
+              "code": "ENV-02-002",
+              "name": "Protection of Land with High Carbon Stock (Criteria 1.2)",
+              "description": "Biomass is not produced on land that had high carbon stock in January 2008, including wetlands, continuously forested areas, and peatlands.",
+              "guidanceText": "Check for conversion from wetlands, peatlands, or forested areas. Obtain relevant supplier declarations and land-use certificates.",
+              "dataType": "DOCUMENT_ONLY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": false,
+              "displayOrder": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "SOC",
+      "name": "Social",
+      "displayOrder": 2,
+      "categories": [
+        {
+          "code": "SOC-01",
+          "name": "Labour Rights",
+          "displayOrder": 1,
+          "requirements": [
+            {
+              "code": "SOC-01-001",
+              "name": "No Forced or Child Labour",
+              "description": "There is no use of forced, compulsory, or child labour at any stage of production.",
+              "guidanceText": "Review employment contracts, age verification records, and worker declarations. Compliance with ILO Conventions 29, 105, 138, and 182 is required.",
+              "dataType": "DOCUMENT_ONLY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": false,
+              "displayOrder": 1
+            },
+            {
+              "code": "SOC-01-002",
+              "name": "Minimum Wage Compliance",
+              "description": "All workers receive at least the statutory minimum wage and legally mandated benefits.",
+              "guidanceText": "Attach payroll summary showing wage rates and confirm compliance with national minimum wage legislation.",
+              "dataType": "DOCUMENT_ONLY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": false,
+              "displayOrder": 2
+            }
+          ]
+        },
+        {
+          "code": "SOC-02",
+          "name": "Health & Safety",
+          "displayOrder": 2,
+          "requirements": [
+            {
+              "code": "SOC-02-001",
+              "name": "Occupational Health & Safety Management",
+              "description": "An occupational health and safety management system is in place and workers are trained on safety procedures.",
+              "guidanceText": "Provide evidence of safety training records, accident logs, and corrective actions taken for any incidents.",
+              "dataType": "DOCUMENT_ONLY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": false,
+              "displayOrder": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "GOV",
+      "name": "Governance & Legal",
+      "displayOrder": 3,
+      "categories": [
+        {
+          "code": "GOV-01",
+          "name": "Legal Compliance",
+          "displayOrder": 1,
+          "requirements": [
+            {
+              "code": "GOV-01-001",
+              "name": "Legal Compliance Declaration",
+              "description": "Annual declaration of compliance with all applicable national and local laws, regulations, and ratified international conventions.",
+              "guidanceText": "Complete the annual legal compliance self-declaration. Attach copies of relevant permits, licences, and evidence that any regulatory notices have been resolved.",
               "dataType": "DOCUMENT_ONLY",
               "criticality": "CRITICAL",
               "ghgScope": null,

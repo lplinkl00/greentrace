@@ -2,7 +2,7 @@
   "regulation": "RSPO_SCCS",
   "version": "2020-v1",
   "name": "RSPO SCCS 2020 v1",
-  "description": "RSPO Supply Chain Certification Standard for tracking volume & mass balance.",
+  "description": "RSPO Supply Chain Certification Standard 2020 — covers identity preservation, segregation, mass balance, and book-and-claim models for tracking certified sustainable palm oil through the supply chain.",
   "pillars": [
     {
       "code": "SCI",
@@ -16,14 +16,45 @@
           "requirements": [
             {
               "code": "SCI-01-001",
-              "name": "Certified Volume Tracking",
-              "description": "Ensure quantity of certified product dispatched does not exceed quantity of certified product received.",
-              "guidanceText": "Check inventory balances and PalmTrace.",
+              "name": "Certified Volume Tracking (Clause 5.3)",
+              "description": "The quantity of certified product dispatched does not exceed the quantity of certified product received during the same period.",
+              "guidanceText": "Maintain a mass balance register reconciling certified inputs and outputs per period. Volumes must be traceable in PalmTrace. Negative balances are not permitted.",
               "dataType": "ABSOLUTE_QUANTITY",
               "criticality": "CRITICAL",
               "ghgScope": null,
               "unit": "tonnes",
               "requiresForm": true,
+              "displayOrder": 1
+            },
+            {
+              "code": "SCI-01-002",
+              "name": "Certified Supplier Verification (Clause 4.2)",
+              "description": "All certified palm oil is purchased only from RSPO-certified suppliers whose certificates are current and cover the relevant supply chain model.",
+              "guidanceText": "Check supplier RSPO certificate validity on the RSPO website or PalmTrace before each transaction. Retain certificate copies for audit.",
+              "dataType": "DOCUMENT_ONLY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": false,
+              "displayOrder": 2
+            }
+          ]
+        },
+        {
+          "code": "SCI-02",
+          "name": "Physical Segregation",
+          "displayOrder": 2,
+          "requirements": [
+            {
+              "code": "SCI-02-001",
+              "name": "Segregation Procedures (Clause 5.2 — IP/SG models)",
+              "description": "Certified and non-certified material are physically segregated during storage and processing to prevent mixing.",
+              "guidanceText": "Provide written segregation procedures and storage diagrams. Applicable only to Identity Preserved (IP) and Segregated (SG) supply chain models. Not required for Mass Balance (MB) or Book-and-Claim (BC).",
+              "dataType": "DOCUMENT_ONLY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": false,
               "displayOrder": 1
             }
           ]
@@ -37,20 +68,32 @@
       "categories": [
         {
           "code": "GOV-01",
-          "name": "Claims and Documents",
+          "name": "Claims & Documents",
           "displayOrder": 1,
           "requirements": [
             {
               "code": "GOV-01-001",
-              "name": "Appropriate Claims",
-              "description": "All claims made on invoices and supply chain documents are accurate.",
-              "guidanceText": "Review sample invoices for RSPO markings.",
+              "name": "Accurate RSPO Claims on Documents (Clause 6.1)",
+              "description": "All RSPO claims made on invoices, delivery orders, and supply chain documents are accurate and match the certified supply chain model.",
+              "guidanceText": "Review sample invoices and delivery notes for correct RSPO claim language (e.g., 'RSPO MB', 'RSPO SG', 'RSPO IP'). Claims must not exceed certified volumes.",
               "dataType": "DOCUMENT_ONLY",
               "criticality": "CRITICAL",
               "ghgScope": null,
               "unit": null,
               "requiresForm": false,
               "displayOrder": 1
+            },
+            {
+              "code": "GOV-01-002",
+              "name": "Annual Self-Assessment (Clause 7.1)",
+              "description": "An annual internal self-assessment against RSPO SCCS requirements is conducted and documented.",
+              "guidanceText": "Complete the RSPO SCCS self-assessment checklist and retain records for at least 3 years. Address any non-conformances identified.",
+              "dataType": "DOCUMENT_ONLY",
+              "criticality": "NON_CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": false,
+              "displayOrder": 2
             }
           ]
         }

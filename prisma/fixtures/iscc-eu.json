@@ -2,7 +2,7 @@
   "regulation": "ISCC_EU",
   "version": "2024-v1",
   "name": "ISCC EU 2024 v1",
-  "description": "International Sustainability and Carbon Certification for EU renewable energy and materials.",
+  "description": "International Sustainability and Carbon Certification – EU 2024 edition. Covers GHG methodology, land-use criteria, social principles, and legal compliance under RED II/III.",
   "pillars": [
     {
       "code": "ENV",
@@ -16,28 +16,121 @@
           "requirements": [
             {
               "code": "ENV-01-001",
-              "name": "GHG Emission Calculation",
-              "description": "Calculate and report total GHG emissions for the reporting period using the ISCC methodology.",
-              "guidanceText": "Use the ISCC GHG calculation tool. Report in tCO2e. Include Scope 1 direct emissions from processing.",
+              "name": "Scope 1 Direct GHG Emissions",
+              "description": "Total direct GHG emissions from owned or controlled sources.",
+              "guidanceText": "Include diesel combustion, natural gas, and POME methane. Report in tCO2e.",
               "dataType": "ABSOLUTE_QUANTITY",
               "criticality": "CRITICAL",
               "ghgScope": "SCOPE1",
               "unit": "tCO2e",
               "requiresForm": true,
               "displayOrder": 1
+            },
+            {
+              "code": "ENV-01-002",
+              "name": "Scope 2 Grid Electricity Consumption",
+              "description": "Indirect GHG from purchased electricity.",
+              "guidanceText": "Obtain monthly electricity bills and apply the applicable grid emission factor.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "CRITICAL",
+              "ghgScope": "SCOPE2",
+              "unit": "MWh",
+              "requiresForm": true,
+              "displayOrder": 2
+            },
+            {
+              "code": "ENV-01-003",
+              "name": "GHG Intensity per Tonne CPO",
+              "description": "Total net GHG emissions per tonne of CPO produced.",
+              "guidanceText": "Divide total Scope 1+2 tCO2e by tonnes of CPO produced.",
+              "dataType": "RATE",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": "tCO2e/tonne CPO",
+              "requiresForm": true,
+              "displayOrder": 3
+            },
+            {
+              "code": "ENV-01-004",
+              "name": "POME Methane Capture Evidence",
+              "description": "Documentary evidence that POME methane is captured and flared or utilised.",
+              "guidanceText": "Upload the POME capture system inspection report.",
+              "dataType": "DOCUMENT_ONLY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": false,
+              "displayOrder": 4
             }
           ]
         },
         {
           "code": "ENV-02",
-          "name": "Land Use",
+          "name": "Waste Management",
           "displayOrder": 2,
           "requirements": [
             {
               "code": "ENV-02-001",
-              "name": "Protection of Land with High Biodiversity Value (Criteria 1.1)",
-              "description": "Biomass is not produced on land with high biodiversity value.",
-              "guidanceText": "Check for primary forests, highly biodiverse forests, etc.",
+              "name": "Scheduled Waste Disposal Records",
+              "description": "Documented records of all scheduled/hazardous waste lawfully disposed.",
+              "guidanceText": "Attach waste disposal manifests from licensed contractors.",
+              "dataType": "DOCUMENT_ONLY",
+              "criticality": "NON_CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": false,
+              "displayOrder": 1
+            },
+            {
+              "code": "ENV-02-002",
+              "name": "EFB Application Rate",
+              "description": "Rate of empty fruit bunch applied as field mulch per hectare.",
+              "guidanceText": "Include records from the land application logbook.",
+              "dataType": "RATE",
+              "criticality": "NON_CRITICAL",
+              "ghgScope": null,
+              "unit": "tonnes EFB/ha",
+              "requiresForm": true,
+              "displayOrder": 2
+            }
+          ]
+        },
+        {
+          "code": "ENV-03",
+          "name": "Land & Carbon Stocks",
+          "displayOrder": 3,
+          "requirements": [
+            {
+              "code": "ENV-03-001",
+              "name": "No High Carbon Stock Land Conversion",
+              "description": "Confirmation that all FFB supplied to the mill originates from land not converted from areas of high biodiversity value (primary forest, protected areas, peatland) after January 2008, per ISCC EU Principles 1 and 2.",
+              "guidanceText": "Obtain and retain current RSPO, MSPO, or equivalent certification evidence for each FFB supplier, or complete the ISCC-compliant supplier due-diligence declaration. Flag any supplier without valid certification for corrective action.",
+              "dataType": "DOCUMENT_ONLY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": false,
+              "displayOrder": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "SOC",
+      "name": "Social",
+      "displayOrder": 2,
+      "categories": [
+        {
+          "code": "SOC-01",
+          "name": "Labour Rights",
+          "displayOrder": 1,
+          "requirements": [
+            {
+              "code": "SOC-01-001",
+              "name": "Minimum Wage Compliance Declaration",
+              "description": "Declaration that all workers are paid at or above statutory minimum wage.",
+              "guidanceText": "Attach payroll summary and sign the compliance declaration form.",
               "dataType": "DOCUMENT_ONLY",
               "criticality": "CRITICAL",
               "ghgScope": null,
@@ -46,16 +139,73 @@
               "displayOrder": 1
             },
             {
-              "code": "ENV-02-002",
-              "name": "Protection of Land with High Carbon Stock (Criteria 1.2)",
-              "description": "Biomass is not produced on land that had a high carbon stock in January 2008.",
-              "guidanceText": "Check for wetlands, continuously forested areas.",
+              "code": "SOC-01-002",
+              "name": "Grievance Cases Recorded",
+              "description": "Number of worker grievance cases recorded and resolved.",
+              "guidanceText": "Enter the count of grievances opened and separately resolved.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "NON_CRITICAL",
+              "ghgScope": null,
+              "unit": "cases",
+              "requiresForm": true,
+              "displayOrder": 2
+            }
+          ]
+        },
+        {
+          "code": "SOC-02",
+          "name": "Health & Safety",
+          "displayOrder": 2,
+          "requirements": [
+            {
+              "code": "SOC-02-001",
+              "name": "Lost-Time Injury Rate (LTIR)",
+              "description": "Number of lost-time injuries per million hours worked.",
+              "guidanceText": "LTIR = (LTIs × 1,000,000) / Total hours worked.",
+              "dataType": "RATE",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": "LTIs per million hours",
+              "requiresForm": true,
+              "displayOrder": 1
+            },
+            {
+              "code": "SOC-02-002",
+              "name": "Safety Training Hours",
+              "description": "Total safety training hours delivered to mill workers.",
+              "guidanceText": "Include induction, toolbox talks, and formal safety courses.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "NON_CRITICAL",
+              "ghgScope": null,
+              "unit": "hours",
+              "requiresForm": true,
+              "displayOrder": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "GOV",
+      "name": "Governance & Legal",
+      "displayOrder": 3,
+      "categories": [
+        {
+          "code": "GOV-01",
+          "name": "Legal Compliance",
+          "displayOrder": 1,
+          "requirements": [
+            {
+              "code": "GOV-01-001",
+              "name": "Legal Compliance Declaration",
+              "description": "Annual declaration that the mill operates in full compliance with all applicable national and local laws, including environmental permits, labour regulations, land-use rights, and tax obligations.",
+              "guidanceText": "Complete and sign the annual legal compliance self-declaration form. Attach copies of current operating licenses, environmental permits (DOE approval), and evidence that any regulatory notices or corrective-action requests have been resolved.",
               "dataType": "DOCUMENT_ONLY",
               "criticality": "CRITICAL",
               "ghgScope": null,
               "unit": null,
               "requiresForm": false,
-              "displayOrder": 2
+              "displayOrder": 1
             }
           ]
         }

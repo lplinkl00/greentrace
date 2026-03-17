@@ -10,6 +10,8 @@ export interface ClimatiqActivity {
   units: string[]     // Available units in dropdown
 }
 
+// Activity IDs verified against Climatiq data_version ^32 (latest as of 2024).
+// Re-verify if switching to a newer data_version in route.ts.
 export const CLIMATIQ_ACTIVITIES: ClimatiqActivity[] = [
   {
     id: 'fuel-type_diesel-fuel_use_na',
@@ -33,7 +35,7 @@ export const CLIMATIQ_ACTIVITIES: ClimatiqActivity[] = [
     units: ['m3'],
   },
   {
-    id: 'fuel-type_gasoline-fuel_use_na',
+    id: 'fuel-type_motor_gasoline-fuel_use_na',
     label: 'Petrol / gasoline',
     parameterType: 'volume',
     defaultUnit: 'l',
@@ -48,7 +50,7 @@ export const CLIMATIQ_ACTIVITIES: ClimatiqActivity[] = [
   },
   {
     id: 'land_use-type_inorganic_nitrogen_fertilizers',
-    label: 'Nitrogen fertilizer',
+    label: 'Nitrogen fertilizer (direct field emissions)',
     parameterType: 'weight',
     defaultUnit: 'kg',
     units: ['kg', 't'],
@@ -61,13 +63,6 @@ export const CLIMATIQ_ACTIVITIES: ClimatiqActivity[] = [
     units: ['tonne_km'],
   },
   {
-    id: 'water_treatment-type_domestic_wastewater_average_for_wastewater_treatment_plants',
-    label: 'Wastewater treatment (POME)',
-    parameterType: 'volume',
-    defaultUnit: 'm3',
-    units: ['m3'],
-  },
-  {
     id: 'fugitive_gas-type_r410a',
     label: 'Refrigerant leakage (R-410A)',
     parameterType: 'weight',
@@ -75,8 +70,8 @@ export const CLIMATIQ_ACTIVITIES: ClimatiqActivity[] = [
     units: ['kg'],
   },
   {
-    id: 'fuel-type_coal_coking-fuel_use_na',
-    label: 'Coal combustion',
+    id: 'fuel-type_coal_bituminous-fuel_use_na',
+    label: 'Coal combustion (bituminous)',
     parameterType: 'weight',
     defaultUnit: 't',
     units: ['t', 'kg'],
