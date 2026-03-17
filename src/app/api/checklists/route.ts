@@ -11,13 +11,13 @@ export const GET = withAuth([UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, 
     const status = searchParams.get('status') || undefined
     const year = searchParams.get('year') || undefined
 
-    // Mill users can only see their own mill's checklists
-    const effectiveMillId =
+    // Company users can only see their own company's checklists
+    const effectiveCompanyId =
         user.role === UserRole.COMPANY_MANAGER || user.role === UserRole.COMPANY_STAFF
             ? user.companyId!
             : companyId
 
-    const checklists = await getChecklists({ companyId: effectiveMillId, regulation, status, year })
+    const checklists = await getChecklists({ companyId: effectiveCompanyId, regulation, status, year })
     return NextResponse.json({ data: checklists, error: null, meta: null })
 })
 

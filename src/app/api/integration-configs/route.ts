@@ -20,7 +20,7 @@ export const GET = withAuth(
         // TS narrowing
         if (!companyId) return NextResponse.json({ error: 'companyId is missing' }, { status: 400 })
 
-        // Basic RBAC check: if user belongs to a mill, they can only request their own mill
+        // Basic RBAC check: if user belongs to a company, they can only request their own company
         if (user.companyId && user.companyId !== companyId) {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
         }
