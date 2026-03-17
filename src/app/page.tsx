@@ -7,7 +7,7 @@ const features = [
         icon: CheckCircle2,
         title: 'Compliance Tracking',
         description:
-            "Monitor your mill's real-time compliance posture across RSPO, MSPO, and ISPO frameworks with detailed audit trails.",
+            "Monitor your company's real-time compliance posture across RSPO, MSPO, and ISPO frameworks with detailed audit trails.",
         link: 'Learn more',
     },
     {

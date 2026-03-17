@@ -88,7 +88,7 @@ export default function AuditDetailPage({
     }
 
     const handlePublish = async () => {
-        if (!confirm('Publishing this audit will mark the checklist as CERTIFIED and update the mill\'s certification status. This cannot be undone. Continue?')) return
+        if (!confirm('Publishing this audit will mark the checklist as CERTIFIED and update the company\'s certification status. This cannot be undone. Continue?')) return
         setPublishing(true)
         const res = await fetch(`/api/audits/${params.auditId}/publish`, { method: 'POST' })
         const data = await res.json()
@@ -113,7 +113,7 @@ export default function AuditDetailPage({
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">
-                        Audit: {audit.mill?.name}
+                        Audit: {audit.company?.name}
                     </h1>
                     <p className="text-sm text-gray-500">
                         {audit.regulation?.replace(/_/g, ' ')} &bull; {audit.periodStart?.substring(0, 10)} → {audit.periodEnd?.substring(0, 10)}
@@ -175,7 +175,7 @@ export default function AuditDetailPage({
 
                 {audit.status === 'PUBLISHED' && (
                     <div className="px-6 py-3 bg-green-50 border-b text-sm text-green-800">
-                        ✅ This audit has been published. Findings are now visible to the mill.
+                        ✅ This audit has been published. Findings are now visible to the company.
                     </div>
                 )}
 

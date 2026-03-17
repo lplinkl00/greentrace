@@ -74,7 +74,7 @@ export default function UsersPage() {
                     <table className="min-w-full text-sm">
                         <thead>
                             <tr className="border-b border-zinc-50 bg-zinc-50/60">
-                                {['User', 'Email', 'Role', 'Mill'].map(h => (
+                                {['User', 'Email', 'Role', 'Company'].map(h => (
                                     <th key={h} className="px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wide">
                                         {h}
                                     </th>

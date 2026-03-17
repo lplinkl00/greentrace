@@ -73,7 +73,7 @@ export default function AggregatorDashboard() {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-xl font-bold text-zinc-900">Portfolio Health Dashboard</h1>
-                    <p className="text-sm text-zinc-400 mt-0.5">Global overview across all mills and certifications.</p>
+                    <p className="text-sm text-zinc-400 mt-0.5">Global overview across all companies and certifications.</p>
                 </div>
                 <Link
                     href="/aggregator/companies"
@@ -89,7 +89,7 @@ export default function AggregatorDashboard() {
                     icon={Building2}
                     label="Total Compliance"
                     value={<>{complianceRate}%</>}
-                    sub={`${stats.certifiedCompanies} of ${stats.totalCompanies} mills certified`}
+                    sub={`${stats.certifiedCompanies} of ${stats.totalCompanies} companies certified`}
                     accent="#f97316"
                 />
                 <StatCard
@@ -125,13 +125,13 @@ export default function AggregatorDashboard() {
                 </div>
 
                 {stats.expiryTimeline.length === 0 ? (
-                    <p className="p-6 text-zinc-400 text-sm">No certified mills to display.</p>
+                    <p className="p-6 text-zinc-400 text-sm">No certified companies to display.</p>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="min-w-full text-sm">
                             <thead>
                                 <tr className="border-b border-zinc-50 bg-zinc-50/60">
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wide">Mill Name</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wide">Company Name</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wide">Regulation</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wide">Status</th>
                                     <th className="px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wide">Expiry Date</th>

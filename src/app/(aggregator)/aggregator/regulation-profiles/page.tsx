@@ -63,7 +63,7 @@ export default function RegulationProfilesPage() {
             </div>
             <div className="bg-white shadow rounded-lg overflow-hidden">
                 <p className="px-6 py-4 text-sm text-gray-500 border-b">
-                    Regulation profiles define the pillars, categories, and requirements that mills must track.
+                    Regulation profiles define the pillars, categories, and requirements that companies must track.
                     Each checklist is pinned to the profile version it was created from.
                 </p>
                 {profiles.length === 0 ? (

@@ -16,7 +16,7 @@ export const GET = withAuth([UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, 
         )
     }
 
-    // Scope check: mill users can only access their own mill's checklists
+    // Scope check: company users can only access their own company's checklists
     if (
         (user.role === UserRole.COMPANY_MANAGER || user.role === UserRole.COMPANY_STAFF) &&
         checklist.companyId !== user.companyId

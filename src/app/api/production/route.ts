@@ -28,7 +28,7 @@ export const POST = withAuth(
     async (request: Request, _context: any, user) => {
         if (!user.companyId) {
             return NextResponse.json(
-                { data: null, error: { code: 'FORBIDDEN', message: 'No mill associated with user' }, meta: null },
+                { data: null, error: { code: 'FORBIDDEN', message: 'No company associated with user' }, meta: null },
                 { status: 403 },
             )
         }
