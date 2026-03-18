@@ -33,7 +33,7 @@ Be formal, precise, and evidence-based. Do not add commentary outside the JSON.`
 function buildPrompt(payload: ReportPayload): string {
     return `Generate a formal certification audit report as JSON for the following audit:
 
-Mill: ${payload.millName} (${payload.millCode})
+Company: ${payload.companyName} (${payload.companyCode})
 Regulation: ${payload.regulation.replace(/_/g, ' ')}
 Period: ${payload.periodStart} to ${payload.periodEnd}
 Audit Type: ${payload.auditType}

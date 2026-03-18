@@ -9,7 +9,7 @@ type Profile = {
     isActive: boolean
 }
 
-type Mill = {
+type Company = {
     id: string
     name: string
     code: string
@@ -17,12 +17,12 @@ type Mill = {
 
 export default function NewChecklistPage() {
     const [profiles, setProfiles] = useState<Profile[]>([])
-    const [mills, setMills] = useState<Mill[]>([])
+    const [companies, setCompanies] = useState<Company[]>([])
     const [loading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false)
     const [error, setError] = useState<string | null>(null)
 
-    const [millId, setMillId] = useState('')
+    const [companyId, setCompanyId] = useState('')
     const [profileId, setProfileId] = useState('')
     const [periodStart, setPeriodStart] = useState('')
     const [periodEnd, setPeriodEnd] = useState('')
@@ -30,10 +30,10 @@ export default function NewChecklistPage() {
     useEffect(() => {
         Promise.all([
             fetch('/api/regulation-profiles').then(r => r.json()),
-            fetch('/api/mills').then(r => r.json()),
-        ]).then(([profilesData, millsData]) => {
+            fetch('/api/companies').then(r => r.json()),
+        ]).then(([profilesData, companiesData]) => {
             setProfiles((profilesData.data ?? []).filter((p: Profile) => p.isActive))
-            setMills(millsData.data ?? [])
+            setCompanies(companiesData.data ?? [])
             setLoading(false)
         })
     }, [])
@@ -46,7 +46,7 @@ export default function NewChecklistPage() {
         const res = await fetch('/api/checklists', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ millId, profileId, periodStart, periodEnd }),
+            body: JSON.stringify({ companyId, profileId, periodStart, periodEnd }),
         })
 
         const data = await res.json()
@@ -58,14 +58,14 @@ export default function NewChecklistPage() {
         }
 
         // Redirect to the new checklist
-        window.location.href = `/aggregator/mills/${millId}/checklists/${data.data.id}/review`
+        window.location.href = `/aggregator/companies/${companyId}/checklists/${data.data.id}/review`
     }
 
     if (loading) return <div className="text-gray-500 p-8">Loading...</div>
 
     return (
         <div className="space-y-6 max-w-xl">
-            <h1 className="text-2xl font-bold text-gray-900">Assign Regulation to Mill</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Assign Regulation to Company</h1>
             <form onSubmit={handleSubmit} className="bg-white shadow rounded-lg p-6 space-y-4">
                 {error && (
                     <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded p-3">
@@ -73,17 +73,17 @@ export default function NewChecklistPage() {
                     </div>
                 )}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Mill</label>
+                    <label className="block text-sm font-medium text-gray-700">Company</label>
                     <select
                         required
-                        value={millId}
-                        onChange={e => setMillId(e.target.value)}
+                        value={companyId}
+                        onChange={e => setCompanyId(e.target.value)}
                         className="mt-1 block w-full border rounded-md p-2 text-sm"
                     >
-                        <option value="">Select a mill…</option>
-                        {mills.map(mill => (
-                            <option key={mill.id} value={mill.id}>
-                                {mill.name} ({mill.code})
+                        <option value="">Select a company…</option>
+                        {companies.map(company => (
+                            <option key={company.id} value={company.id}>
+                                {company.name} ({company.code})
                             </option>
                         ))}
                     </select>

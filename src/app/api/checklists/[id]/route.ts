@@ -3,7 +3,7 @@ import { getSessionUser, withAuth } from '@/lib/auth'
 import { UserRole } from '@prisma/client'
 import { getChecklistById } from '@/lib/checklists'
 
-export const GET = withAuth([UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, UserRole.MILL_MANAGER, UserRole.MILL_STAFF, UserRole.AUDITOR], async (
+export const GET = withAuth([UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, UserRole.COMPANY_MANAGER, UserRole.COMPANY_STAFF, UserRole.AUDITOR], async (
     _request: Request,
     { params }: { params: { id: string } }
 , user) => {
@@ -16,10 +16,10 @@ export const GET = withAuth([UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, 
         )
     }
 
-    // Scope check: mill users can only access their own mill's checklists
+    // Scope check: company users can only access their own company's checklists
     if (
-        (user.role === UserRole.MILL_MANAGER || user.role === UserRole.MILL_STAFF) &&
-        checklist.millId !== user.millId
+        (user.role === UserRole.COMPANY_MANAGER || user.role === UserRole.COMPANY_STAFF) &&
+        checklist.companyId !== user.companyId
     ) {
         return new NextResponse('Forbidden', { status: 403 })
     }

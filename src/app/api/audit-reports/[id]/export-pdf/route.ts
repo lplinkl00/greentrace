@@ -34,7 +34,7 @@ function ReportDocument({ report, content }: { report: any; content: ReportConte
             ),
             React.createElement(View, null,
                 React.createElement(Text, { style: styles.title }, `${report.audit?.regulation?.replace(/_/g, ' ')} Certification Audit Report`),
-                React.createElement(Text, { style: styles.subtitle }, `${report.audit?.mill?.name} · Version ${report.version} · ${new Date(report.generatedAt).toLocaleDateString()}`),
+                React.createElement(Text, { style: styles.subtitle }, `${report.audit?.company?.name} · Version ${report.version} · ${new Date(report.generatedAt).toLocaleDateString()}`),
             ),
             React.createElement(View, null,
                 React.createElement(Text, { style: styles.sectionHeader }, 'Executive Summary'),
@@ -76,7 +76,7 @@ export const POST = withAuth(
         const report = await prisma.auditReport.findUnique({
             where: { id },
             include: {
-                audit: { include: { mill: true } },
+                audit: { include: { company: true } },
             },
         })
         if (!report) return NextResponse.json({ error: 'Not found' }, { status: 404 })
@@ -95,7 +95,7 @@ export const POST = withAuth(
                 ),
                 React.createElement(View, null,
                     React.createElement(Text, { style: styles.title }, `${(report as any).audit?.regulation?.replace(/_/g, ' ')} Certification Audit Report`),
-                    React.createElement(Text, { style: styles.subtitle }, `${(report as any).audit?.mill?.name} \u00b7 Version ${report.version} \u00b7 ${new Date(report.generatedAt).toLocaleDateString()}`),
+                    React.createElement(Text, { style: styles.subtitle }, `${(report as any).audit?.company?.name} \u00b7 Version ${report.version} \u00b7 ${new Date(report.generatedAt).toLocaleDateString()}`),
                 ),
                 React.createElement(View, null,
                     React.createElement(Text, { style: styles.sectionHeader }, 'Executive Summary'),

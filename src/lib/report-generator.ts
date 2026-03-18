@@ -10,7 +10,7 @@ export async function buildReportPayload(auditId: string): Promise<ReportPayload
     const audit = await prisma.audit.findUniqueOrThrow({
         where: { id: auditId },
         include: {
-            mill: true,
+            company: true,
             checklist: {
                 include: {
                     items: {
@@ -70,8 +70,8 @@ export async function buildReportPayload(auditId: string): Promise<ReportPayload
 
     return {
         auditId,
-        millName: audit.mill.name,
-        millCode: audit.mill.code,
+        companyName: audit.company.name,
+        companyCode: audit.company.code,
         regulation: audit.regulation,
         periodStart: audit.periodStart.toISOString().substring(0, 10),
         periodEnd: audit.periodEnd.toISOString().substring(0, 10),

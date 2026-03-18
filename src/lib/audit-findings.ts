@@ -83,16 +83,16 @@ export async function bulkUpdateFindings(
 
 /**
  * Get findings for an audit, with access gating:
- * - MILL_STAFF and MILL_MANAGER: only if audit is PUBLISHED.
+ * - COMPANY_STAFF and COMPANY_MANAGER: only if audit is PUBLISHED.
  * - Auditor, Aggregator, Super Admin: always.
  */
 export async function getFindingsForAudit(
     auditId: string,
     role: UserRole
 ) {
-    const millRoles: UserRole[] = [UserRole.MILL_STAFF, UserRole.MILL_MANAGER]
+    const companyRoles: UserRole[] = [UserRole.COMPANY_STAFF, UserRole.COMPANY_MANAGER]
 
-    if (millRoles.includes(role)) {
+    if (companyRoles.includes(role)) {
         const audit = await prisma.audit.findUnique({ where: { id: auditId }, select: { status: true } })
         if (!audit || audit.status !== 'PUBLISHED') {
             return [] // Gate: hide until published

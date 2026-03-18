@@ -8,7 +8,7 @@ type AuditorStats = {
     activeAuditsCount: number
     auditsDueSoon: Array<{
         id: string
-        millName: string
+        companyName: string
         regulation: string
         conductedDate: string
         status: string
@@ -16,7 +16,7 @@ type AuditorStats = {
     reportsToFinalise: Array<{
         id: string
         auditId: string
-        millName: string
+        companyName: string
         version: number
         generatedAt: string
     }>
@@ -118,7 +118,7 @@ export default function AuditorDashboardPage() {
                                         <div className="flex items-center justify-between gap-3">
                                             <div className="min-w-0">
                                                 <Link href={`/auditor/audits/${audit.id}`} className="text-sm font-medium text-zinc-800 hover:text-orange-600 truncate block transition">
-                                                    {audit.millName}
+                                                    {audit.companyName}
                                                 </Link>
                                                 <p className="text-xs text-zinc-400 mt-0.5">
                                                     {audit.regulation.replace(/_/g, ' ')}
@@ -161,7 +161,7 @@ export default function AuditorDashboardPage() {
                                 <li key={report.id} className="px-6 py-3.5 hover:bg-zinc-50/60 transition-colors">
                                     <div className="flex items-center justify-between gap-3">
                                         <div className="min-w-0">
-                                            <p className="text-sm font-medium text-zinc-800 truncate">{report.millName}</p>
+                                            <p className="text-sm font-medium text-zinc-800 truncate">{report.companyName}</p>
                                             <p className="text-xs text-zinc-400 mt-0.5">
                                                 Draft v{report.version} · {new Date(report.generatedAt).toLocaleDateString()}
                                             </p>

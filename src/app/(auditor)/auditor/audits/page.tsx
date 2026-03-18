@@ -45,7 +45,7 @@ export default function AuditorAuditsPage() {
                     <table className="min-w-full text-sm">
                         <thead>
                             <tr className="border-b border-zinc-50 bg-zinc-50/60">
-                                {['Mill', 'Regulation', 'Period', 'Status', 'Findings', ''].map((h, i) => (
+                                {['Company', 'Regulation', 'Period', 'Status', 'Findings', ''].map((h, i) => (
                                     <th key={i} className="px-6 py-3 text-left text-xs font-medium text-zinc-400 uppercase tracking-wide">
                                         {h}
                                     </th>
@@ -58,8 +58,8 @@ export default function AuditorAuditsPage() {
                                 return (
                                     <tr key={audit.id} className="hover:bg-zinc-50/50 transition-colors">
                                         <td className="px-6 py-3.5">
-                                            <div className="font-medium text-zinc-800 text-sm">{audit.mill?.name ?? '—'}</div>
-                                            <div className="text-xs text-zinc-400 font-mono mt-0.5">{audit.mill?.code}</div>
+                                            <div className="font-medium text-zinc-800 text-sm">{audit.company?.name ?? '—'}</div>
+                                            <div className="text-xs text-zinc-400 font-mono mt-0.5">{audit.company?.code}</div>
                                         </td>
                                         <td className="px-6 py-3.5 text-zinc-600 text-xs">
                                             {audit.regulation?.replace(/_/g, ' ')}

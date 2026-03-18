@@ -129,9 +129,9 @@ async function main() {
 
     const adminUid      = await upsertSupabaseUser('admin@greentrace.local',      'admin123',   'SUPER_ADMIN')
     const managerUid    = await upsertSupabaseUser('manager@greentrace.local',    'manager123', 'AGGREGATOR_MANAGER')
-    const psManagerUid  = await upsertSupabaseUser('ps.manager@greentrace.local', 'manager123', 'MILL_MANAGER')
-    const psStaffUid    = await upsertSupabaseUser('ps.staff@greentrace.local',   'staff123',   'MILL_STAFF')
-    const gvManagerUid  = await upsertSupabaseUser('gv.manager@greentrace.local', 'manager123', 'MILL_MANAGER')
+    const psManagerUid  = await upsertSupabaseUser('ps.manager@greentrace.local', 'manager123', 'COMPANY_MANAGER')
+    const psStaffUid    = await upsertSupabaseUser('ps.staff@greentrace.local',   'staff123',   'COMPANY_STAFF')
+    const gvManagerUid  = await upsertSupabaseUser('gv.manager@greentrace.local', 'manager123', 'COMPANY_MANAGER')
     const auditorUid    = await upsertSupabaseUser('auditor@greentrace.local',    'auditor123', 'AUDITOR')
 
     // ═══════════════════════════════════════════════════════════════════════════
@@ -147,11 +147,11 @@ async function main() {
     console.log(`  ✓ Organisation: ${org.name}`)
 
     // ═══════════════════════════════════════════════════════════════════════════
-    // STEP 3 — Mills
+    // STEP 3 — Companies
     // ═══════════════════════════════════════════════════════════════════════════
-    console.log('\n─── Step 3: Mills ─────────────────────────────────────────────────')
+    console.log('\n─── Step 3: Companies ─────────────────────────────────────────────────')
 
-    const palmStar = await prisma.mill.upsert({
+    const palmStar = await prisma.company.upsert({
         where: { code: 'MY-PS-001' },
         update: {},
         create: {
@@ -167,7 +167,7 @@ async function main() {
         },
     })
 
-    const greenValley = await prisma.mill.upsert({
+    const greenValley = await prisma.company.upsert({
         where: { code: 'MY-GV-002' },
         update: {},
         create: {
@@ -181,7 +181,7 @@ async function main() {
             isccEuCertStatus: 'Draft',
         },
     })
-    console.log(`  ✓ Mills: ${palmStar.name}, ${greenValley.name}`)
+    console.log(`  ✓ Companies: ${palmStar.name}, ${greenValley.name}`)
 
     // ═══════════════════════════════════════════════════════════════════════════
     // STEP 4 — Users (Prisma)
@@ -203,19 +203,19 @@ async function main() {
     const psManagerUser = await prisma.user.upsert({
         where: { email: 'ps.manager@greentrace.local' },
         update: { supabaseUserId: psManagerUid },
-        create: { supabaseUserId: psManagerUid, email: 'ps.manager@greentrace.local', name: 'Sarah Chen', role: UserRole.MILL_MANAGER, millId: palmStar.id },
+        create: { supabaseUserId: psManagerUid, email: 'ps.manager@greentrace.local', name: 'Sarah Chen', role: UserRole.COMPANY_MANAGER, companyId: palmStar.id },
     })
 
     const psStaffUser = await prisma.user.upsert({
         where: { email: 'ps.staff@greentrace.local' },
         update: { supabaseUserId: psStaffUid },
-        create: { supabaseUserId: psStaffUid, email: 'ps.staff@greentrace.local', name: 'Raj Kumar', role: UserRole.MILL_STAFF, millId: palmStar.id },
+        create: { supabaseUserId: psStaffUid, email: 'ps.staff@greentrace.local', name: 'Raj Kumar', role: UserRole.COMPANY_STAFF, companyId: palmStar.id },
     })
 
     const gvManagerUser = await prisma.user.upsert({
         where: { email: 'gv.manager@greentrace.local' },
         update: { supabaseUserId: gvManagerUid },
-        create: { supabaseUserId: gvManagerUid, email: 'gv.manager@greentrace.local', name: 'James Wong', role: UserRole.MILL_MANAGER, millId: greenValley.id },
+        create: { supabaseUserId: gvManagerUid, email: 'gv.manager@greentrace.local', name: 'James Wong', role: UserRole.COMPANY_MANAGER, companyId: greenValley.id },
     })
 
     const auditorUser = await prisma.user.upsert({
@@ -345,10 +345,10 @@ async function main() {
 
     // Palm Star 2023 — CERTIFIED (for audit base)
     const ps2023Checklist = await prisma.checklist.upsert({
-        where: { millId_profileId_periodStart_periodEnd: { millId: palmStar.id, profileId: profile.id, periodStart: new Date('2023-01-01'), periodEnd: new Date('2023-12-31') } },
+        where: { companyId_profileId_periodStart_periodEnd: { companyId: palmStar.id, profileId: profile.id, periodStart: new Date('2023-01-01'), periodEnd: new Date('2023-12-31') } },
         update: {},
         create: {
-            millId: palmStar.id, profileId: profile.id,
+            companyId: palmStar.id, profileId: profile.id,
             regulation: RegulationCode.ISCC_EU,
             periodStart: new Date('2023-01-01'), periodEnd: new Date('2023-12-31'),
             status: ChecklistStatus.CERTIFIED,
@@ -363,10 +363,10 @@ async function main() {
 
     // Palm Star 2024 — SUBMITTED
     const ps2024Checklist = await prisma.checklist.upsert({
-        where: { millId_profileId_periodStart_periodEnd: { millId: palmStar.id, profileId: profile.id, periodStart: new Date('2024-01-01'), periodEnd: new Date('2024-12-31') } },
+        where: { companyId_profileId_periodStart_periodEnd: { companyId: palmStar.id, profileId: profile.id, periodStart: new Date('2024-01-01'), periodEnd: new Date('2024-12-31') } },
         update: {},
         create: {
-            millId: palmStar.id, profileId: profile.id,
+            companyId: palmStar.id, profileId: profile.id,
             regulation: RegulationCode.ISCC_EU,
             periodStart: new Date('2024-01-01'), periodEnd: new Date('2024-12-31'),
             status: ChecklistStatus.SUBMITTED,
@@ -379,10 +379,10 @@ async function main() {
 
     // Green Valley 2024 — DRAFT
     const gv2024Checklist = await prisma.checklist.upsert({
-        where: { millId_profileId_periodStart_periodEnd: { millId: greenValley.id, profileId: profile.id, periodStart: new Date('2024-01-01'), periodEnd: new Date('2024-12-31') } },
+        where: { companyId_profileId_periodStart_periodEnd: { companyId: greenValley.id, profileId: profile.id, periodStart: new Date('2024-01-01'), periodEnd: new Date('2024-12-31') } },
         update: {},
         create: {
-            millId: greenValley.id, profileId: profile.id,
+            companyId: greenValley.id, profileId: profile.id,
             regulation: RegulationCode.ISCC_EU,
             periodStart: new Date('2024-01-01'), periodEnd: new Date('2024-12-31'),
             status: ChecklistStatus.DRAFT,
@@ -486,10 +486,10 @@ async function main() {
     if (existingComments === 0) {
         await prisma.checklistItemComment.createMany({
             data: [
-                { checklistItemId: ps24Items['ENV-01-002'], authorId: psStaffUser.id, roleAtTimeOfComment: UserRole.MILL_STAFF, body: 'Monthly electricity bills uploaded for Jan–Dec 2024. Total consumption: 4,820 MWh.', createdAt: new Date('2025-01-08T09:00:00Z') },
+                { checklistItemId: ps24Items['ENV-01-002'], authorId: psStaffUser.id, roleAtTimeOfComment: UserRole.COMPANY_STAFF, body: 'Monthly electricity bills uploaded for Jan–Dec 2024. Total consumption: 4,820 MWh.', createdAt: new Date('2025-01-08T09:00:00Z') },
                 { checklistItemId: ps24Items['ENV-01-002'], authorId: managerUser.id, roleAtTimeOfComment: UserRole.AGGREGATOR_MANAGER, body: 'Reviewed and confirmed. Figures align with the utility invoices. No discrepancy noted.', createdAt: new Date('2025-01-23T14:30:00Z') },
-                { checklistItemId: ps24Items['ENV-01-001'], authorId: psManagerUser.id, roleAtTimeOfComment: UserRole.MILL_MANAGER, body: 'Diesel consumption was higher in Q3 due to scheduled generator maintenance. Supporting log attached.', createdAt: new Date('2025-01-10T11:15:00Z') },
-                { checklistItemId: ps24Items['ENV-02-001'], authorId: psStaffUser.id, roleAtTimeOfComment: UserRole.MILL_STAFF, body: 'Waste disposal manifests from Q1-Q3 uploaded. Awaiting Q4 manifest from contractor.', createdAt: new Date('2025-01-25T16:00:00Z') },
+                { checklistItemId: ps24Items['ENV-01-001'], authorId: psManagerUser.id, roleAtTimeOfComment: UserRole.COMPANY_MANAGER, body: 'Diesel consumption was higher in Q3 due to scheduled generator maintenance. Supporting log attached.', createdAt: new Date('2025-01-10T11:15:00Z') },
+                { checklistItemId: ps24Items['ENV-02-001'], authorId: psStaffUser.id, roleAtTimeOfComment: UserRole.COMPANY_STAFF, body: 'Waste disposal manifests from Q1-Q3 uploaded. Awaiting Q4 manifest from contractor.', createdAt: new Date('2025-01-25T16:00:00Z') },
             ],
         })
     }
@@ -598,6 +598,61 @@ async function main() {
     console.log('  ✓ Data entries for GHG, grievances, safety')
 
     // ═══════════════════════════════════════════════════════════════════════════
+    // STEP 10b — Data Entries (GHG items for PS 2023 CERTIFIED)
+    // ═══════════════════════════════════════════════════════════════════════════
+    console.log('\n─── Step 10b: Data Entries PS 2023 (CERTIFIED) ────────────────────')
+
+    const existingDE23 = await prisma.dataEntry.count({ where: { checklistItemId: ps23Items['ENV-01-002'] } })
+    if (existingDE23 === 0) {
+        // Monthly electricity 2023 (Scope 2) — ENV-01-002
+        const monthlyMWh23 = [388, 372, 405, 381, 395, 420, 398, 390, 380, 374, 362, 378]
+        const elecEntries23 = monthlyMWh23.map((mwh, i) => ({
+            checklistItemId: ps23Items['ENV-01-002'],
+            enteredById: psStaffUser.id,
+            entryType: DataEntryType.FORM01_ABSOLUTE,
+            valueRaw: new Prisma.Decimal(mwh),
+            unitInput: 'MWh',
+            valueConverted: new Prisma.Decimal(mwh * 620),
+            unitReference: 'kgCO2e',
+            emissionFactorId: 'seed-ef-grid_electricity',
+            reportingMonth: new Date(`2023-${String(i + 1).padStart(2, '0')}-01`),
+        }))
+        await prisma.dataEntry.createMany({ data: elecEntries23 })
+
+        // Annual diesel (Scope 1) — ENV-01-001
+        await prisma.dataEntry.create({
+            data: {
+                checklistItemId: ps23Items['ENV-01-001'],
+                enteredById: psStaffUser.id,
+                entryType: DataEntryType.FORM01_ABSOLUTE,
+                valueRaw: new Prisma.Decimal('81200'),
+                unitInput: 'litres',
+                valueConverted: new Prisma.Decimal('217616'),
+                unitReference: 'kgCO2e',
+                emissionFactorId: 'seed-ef-diesel',
+                notes: 'Annual diesel consumption 2023.',
+            },
+        })
+
+        // POME methane (Scope 1) — ENV-01-001
+        await prisma.dataEntry.create({
+            data: {
+                checklistItemId: ps23Items['ENV-01-001'],
+                enteredById: psStaffUser.id,
+                entryType: DataEntryType.FORM01_ABSOLUTE,
+                valueRaw: new Prisma.Decimal('11800'),
+                unitInput: 'm3',
+                valueConverted: new Prisma.Decimal('295000'),
+                unitReference: 'kgCO2e',
+                emissionFactorId: 'seed-ef-pome_methane',
+                notes: 'POME methane 2023 from open lagoon system.',
+            },
+        })
+
+        console.log('  ✓ GHG data entries seeded for PS 2023 CERTIFIED checklist')
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════════
     // STEP 11 — Mass Balance Entries
     // ═══════════════════════════════════════════════════════════════════════════
     console.log('\n─── Step 11: Mass Balance Entries ─────────────────────────────────')
@@ -622,10 +677,10 @@ async function main() {
 
     for (const mb of mbDefs) {
         await prisma.massBalanceEntry.upsert({
-            where: { millId_checklistId_regulation_materialType: { millId: palmStar.id, checklistId: ps2024Checklist.id, regulation: RegulationCode.ISCC_EU, materialType: mb.materialType } },
+            where: { companyId_checklistId_regulation_materialType: { companyId: palmStar.id, checklistId: ps2024Checklist.id, regulation: RegulationCode.ISCC_EU, materialType: mb.materialType } },
             update: {},
             create: {
-                millId: palmStar.id,
+                companyId: palmStar.id,
                 checklistId: ps2024Checklist.id,
                 regulation: RegulationCode.ISCC_EU,
                 periodStart: new Date('2024-01-01'),
@@ -670,10 +725,10 @@ async function main() {
 
     for (const s of shipmentDefs) {
         await prisma.shipmentRecord.upsert({
-            where: { millId_referenceNumber_shipmentDate: { millId: palmStar.id, referenceNumber: s.referenceNumber, shipmentDate: s.shipmentDate } },
+            where: { companyId_referenceNumber_shipmentDate: { companyId: palmStar.id, referenceNumber: s.referenceNumber, shipmentDate: s.shipmentDate } },
             update: {},
             create: {
-                millId: palmStar.id,
+                companyId: palmStar.id,
                 direction: s.direction,
                 materialType: s.materialType,
                 volumeMt: new Prisma.Decimal(s.volumeMt),
@@ -702,7 +757,7 @@ async function main() {
         update: {},
         create: {
             id: 'seed-import-job-01',
-            millId: palmStar.id,
+            companyId: palmStar.id,
             uploadedById: psManagerUser.id,
             fileName: 'shipments_q1_2024.csv',
             fileType: ImportFileType.CSV,
@@ -721,7 +776,7 @@ async function main() {
         update: {},
         create: {
             id: 'seed-import-job-02',
-            millId: palmStar.id,
+            companyId: palmStar.id,
             uploadedById: psManagerUser.id,
             fileName: 'weighbridge_data_oct2024.xlsx',
             fileType: ImportFileType.XLSX,
@@ -750,7 +805,7 @@ async function main() {
         update: {},
         create: {
             id: 'seed-audit-ps-2023',
-            millId: palmStar.id,
+            companyId: palmStar.id,
             checklistId: ps2023Checklist.id,
             regulation: RegulationCode.ISCC_EU,
             auditType: AuditType.SURVEILLANCE,
@@ -770,7 +825,7 @@ async function main() {
         update: {},
         create: {
             id: 'seed-audit-ps-2024',
-            millId: palmStar.id,
+            companyId: palmStar.id,
             checklistId: ps2024Checklist.id,
             regulation: RegulationCode.ISCC_EU,
             auditType: AuditType.RECERTIFICATION,
@@ -840,14 +895,14 @@ async function main() {
     console.log('\n─── Step 15: Integration Configs ──────────────────────────────────')
 
     await prisma.integrationConfig.upsert({
-        where: { millId_systemType: { millId: palmStar.id, systemType: 'SAP' } },
+        where: { companyId_systemType: { companyId: palmStar.id, systemType: 'SAP' } },
         update: {},
-        create: { millId: palmStar.id, systemType: 'SAP', displayName: 'SAP ERP (Placeholder)', isActive: false, configJson: { endpointUrl: 'https://sap.palmstar.internal/api', authType: 'oauth2' } },
+        create: { companyId: palmStar.id, systemType: 'SAP', displayName: 'SAP ERP (Placeholder)', isActive: false, configJson: { endpointUrl: 'https://sap.palmstar.internal/api', authType: 'oauth2' } },
     })
     await prisma.integrationConfig.upsert({
-        where: { millId_systemType: { millId: palmStar.id, systemType: 'WEIGHBRIDGE_GENERIC' } },
+        where: { companyId_systemType: { companyId: palmStar.id, systemType: 'WEIGHBRIDGE_GENERIC' } },
         update: {},
-        create: { millId: palmStar.id, systemType: 'WEIGHBRIDGE_GENERIC', displayName: 'Weighbridge System', isActive: false, configJson: { endpointUrl: 'http://192.168.1.50/weighbridge', authType: 'api_key' } },
+        create: { companyId: palmStar.id, systemType: 'WEIGHBRIDGE_GENERIC', displayName: 'Weighbridge System', isActive: false, configJson: { endpointUrl: 'http://192.168.1.50/weighbridge', authType: 'api_key' } },
     })
     console.log('  ✓ 2 integration configs (SAP, Weighbridge)')
 
@@ -905,9 +960,9 @@ async function main() {
     console.log('  ├──────────────────────────────────────┼─────────────┼────────────────────┤')
     console.log('  │ admin@greentrace.local                │ admin123    │ SUPER_ADMIN        │')
     console.log('  │ manager@greentrace.local              │ manager123  │ AGGREGATOR_MANAGER │')
-    console.log('  │ ps.manager@greentrace.local           │ manager123  │ MILL_MANAGER       │')
-    console.log('  │ ps.staff@greentrace.local             │ staff123    │ MILL_STAFF         │')
-    console.log('  │ gv.manager@greentrace.local           │ manager123  │ MILL_MANAGER       │')
+    console.log('  │ ps.manager@greentrace.local           │ manager123  │ COMPANY_MANAGER    │')
+    console.log('  │ ps.staff@greentrace.local             │ staff123    │ COMPANY_STAFF      │')
+    console.log('  │ gv.manager@greentrace.local           │ manager123  │ COMPANY_MANAGER    │')
     console.log('  │ auditor@greentrace.local              │ auditor123  │ AUDITOR            │')
     console.log('  └──────────────────────────────────────┴─────────────┴────────────────────┘')
     console.log('══════════════════════════════════════════════════════════════════\n')

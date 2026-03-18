@@ -3,32 +3,32 @@ import { withAuth } from '@/lib/auth'
 import { UserRole, Prisma } from '@prisma/client'
 import { getProductionRecords, createProductionRecord } from '@/lib/production'
 
-const MILL_ROLES = [UserRole.MILL_MANAGER, UserRole.MILL_STAFF]
+const COMPANY_ROLES = [UserRole.COMPANY_MANAGER, UserRole.COMPANY_STAFF]
 
 export const GET = withAuth(
-    [...MILL_ROLES, UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, UserRole.AUDITOR],
+    [...COMPANY_ROLES, UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, UserRole.AUDITOR],
     async (request: Request, _context: any, user) => {
         const { searchParams } = new URL(request.url)
-        const millId = searchParams.get('millId')
+        const companyId = searchParams.get('companyId')
 
-        if (!millId) {
+        if (!companyId) {
             return NextResponse.json(
-                { data: null, error: { code: 'VALIDATION_ERROR', message: 'millId is required' }, meta: null },
+                { data: null, error: { code: 'VALIDATION_ERROR', message: 'companyId is required' }, meta: null },
                 { status: 422 },
             )
         }
 
-        const records = await getProductionRecords(millId)
+        const records = await getProductionRecords(companyId)
         return NextResponse.json({ data: records, error: null, meta: null })
     },
 )
 
 export const POST = withAuth(
-    MILL_ROLES,
+    COMPANY_ROLES,
     async (request: Request, _context: any, user) => {
-        if (!user.millId) {
+        if (!user.companyId) {
             return NextResponse.json(
-                { data: null, error: { code: 'FORBIDDEN', message: 'No mill associated with user' }, meta: null },
+                { data: null, error: { code: 'FORBIDDEN', message: 'No company associated with user' }, meta: null },
                 { status: 403 },
             )
         }
@@ -45,7 +45,7 @@ export const POST = withAuth(
 
         try {
             const record = await createProductionRecord({
-                millId: user.millId,
+                companyId: user.companyId,
                 recordedById: user.id,
                 productionDate: new Date(productionDate),
                 ffbReceivedMt,

@@ -5,15 +5,15 @@ import { UserRole } from '@prisma/client'
 
 export async function GET(request: Request) {
     const user = await getSessionUser()
-    if (!user || user.role === UserRole.MILL_STAFF) return new NextResponse('Unauthorized', { status: 403 })
+    if (!user || user.role === UserRole.COMPANY_STAFF) return new NextResponse('Unauthorized', { status: 403 })
 
     const { searchParams } = new URL(request.url)
-    const millId = searchParams.get('millId') || undefined
+    const companyId = searchParams.get('companyId') || undefined
     const role = searchParams.get('role') as UserRole || undefined
 
     const usersQuery = await prisma.user.findMany({
         where: {
-            millId: user.role === UserRole.MILL_MANAGER ? user.millId! : millId,
+            companyId: user.role === UserRole.COMPANY_MANAGER ? user.companyId! : companyId,
             role
         }
     })
@@ -23,19 +23,19 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
     const user = await getSessionUser()
-    if (!user || user.role === UserRole.MILL_STAFF) return new NextResponse('Unauthorized', { status: 403 })
+    if (!user || user.role === UserRole.COMPANY_STAFF) return new NextResponse('Unauthorized', { status: 403 })
 
     const body = await request.json()
-    const { email, name, role, millId } = body
+    const { email, name, role, companyId } = body
 
-    if (user.role === UserRole.MILL_MANAGER && role !== UserRole.MILL_STAFF) return new NextResponse('Forbidden', { status: 403 })
+    if (user.role === UserRole.COMPANY_MANAGER && role !== UserRole.COMPANY_STAFF) return new NextResponse('Forbidden', { status: 403 })
 
     const newUser = await prisma.user.create({
         data: {
             email,
             name,
             role,
-            millId: user.role === UserRole.MILL_MANAGER ? user.millId! : millId,
+            companyId: user.role === UserRole.COMPANY_MANAGER ? user.companyId! : companyId,
             supabaseUserId: crypto.randomUUID(), // Mocked mapping
         }
     })

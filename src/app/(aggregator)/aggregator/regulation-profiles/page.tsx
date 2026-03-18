@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { supabase } from '@/lib/supabase'
 
 type Profile = {
     id: string
@@ -22,6 +23,13 @@ export default function RegulationProfilesPage() {
     const [profiles, setProfiles] = useState<Profile[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const [userRole, setUserRole] = useState<string | null>(null)
+
+    useEffect(() => {
+        supabase.auth.getUser().then(({ data }) => {
+            setUserRole(data.user?.user_metadata?.role ?? null)
+        })
+    }, [])
 
     useEffect(() => {
         fetch('/api/regulation-profiles')
@@ -44,10 +52,18 @@ export default function RegulationProfilesPage() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold text-gray-900">Regulation Profiles</h1>
+                {userRole === 'SUPER_ADMIN' && (
+                    <a
+                        href="/aggregator/regulation-profiles/new"
+                        className="inline-flex items-center gap-2 rounded-md bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 transition"
+                    >
+                        + New Profile
+                    </a>
+                )}
             </div>
             <div className="bg-white shadow rounded-lg overflow-hidden">
                 <p className="px-6 py-4 text-sm text-gray-500 border-b">
-                    Regulation profiles define the pillars, categories, and requirements that mills must track.
+                    Regulation profiles define the pillars, categories, and requirements that companies must track.
                     Each checklist is pinned to the profile version it was created from.
                 </p>
                 {profiles.length === 0 ? (

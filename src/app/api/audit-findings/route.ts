@@ -7,8 +7,8 @@ const ALL_ROLES = [
     UserRole.AUDITOR,
     UserRole.AGGREGATOR_MANAGER,
     UserRole.SUPER_ADMIN,
-    UserRole.MILL_MANAGER,
-    UserRole.MILL_STAFF,
+    UserRole.COMPANY_MANAGER,
+    UserRole.COMPANY_STAFF,
 ]
 
 export const GET = withAuth(ALL_ROLES, async (req: Request, _ctx: any, user: any) => {

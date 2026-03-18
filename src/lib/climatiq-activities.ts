@@ -10,13 +10,15 @@ export interface ClimatiqActivity {
   units: string[]     // Available units in dropdown
 }
 
+// Activity IDs verified against Climatiq data_version ^32 (latest as of 2024).
+// Re-verify if switching to a newer data_version in route.ts.
 export const CLIMATIQ_ACTIVITIES: ClimatiqActivity[] = [
   {
-    id: 'fuel_combustion-type_diesel-fuel_use',
+    id: 'fuel-type_diesel-fuel_use_na',
     label: 'Diesel combustion',
     parameterType: 'volume',
-    defaultUnit: 'L',
-    units: ['L', 'm3'],
+    defaultUnit: 'l',
+    units: ['l', 'm3'],
   },
   {
     id: 'electricity-supply_grid-source_residual_mix',
@@ -26,57 +28,50 @@ export const CLIMATIQ_ACTIVITIES: ClimatiqActivity[] = [
     units: ['kWh', 'MWh'],
   },
   {
-    id: 'fuel_combustion-type_natural_gas-fuel_use',
+    id: 'fuel-type_natural_gas-fuel_use_na',
     label: 'Natural gas combustion',
     parameterType: 'volume',
     defaultUnit: 'm3',
     units: ['m3'],
   },
   {
-    id: 'fuel_combustion-type_petrol-fuel_use',
+    id: 'fuel-type_motor_gasoline-fuel_use_na',
     label: 'Petrol / gasoline',
     parameterType: 'volume',
-    defaultUnit: 'L',
-    units: ['L'],
+    defaultUnit: 'l',
+    units: ['l'],
   },
   {
-    id: 'fuel_combustion-type_biomass-fuel_use',
+    id: 'fuel-type_biomass_solid_other_bio_100-fuel_use_na',
     label: 'Palm kernel shell (biomass)',
     parameterType: 'weight',
     defaultUnit: 't',
     units: ['t', 'kg'],
   },
   {
-    id: 'chemical_production-type_nitrogen_fertiliser',
-    label: 'Nitrogen fertilizer',
+    id: 'land_use-type_inorganic_nitrogen_fertilizers',
+    label: 'Nitrogen fertilizer (direct field emissions)',
     parameterType: 'weight',
     defaultUnit: 'kg',
     units: ['kg', 't'],
   },
   {
-    id: 'freight_vehicle-vehicle_type_hgv-fuel_source_diesel-vehicle_weight_gt_17t-loading_half_load',
+    id: 'freight_vehicle-vehicle_type_hgv-fuel_source_diesel-vehicle_weight_na-percentage_load_avg',
     label: 'Road freight (CPO transport)',
     parameterType: 'weight_distance',
     defaultUnit: 'tonne_km',
     units: ['tonne_km'],
   },
   {
-    id: 'wastewater_treatment-type_anaerobic_lagoon',
-    label: 'Wastewater treatment (POME)',
-    parameterType: 'volume',
-    defaultUnit: 'm3',
-    units: ['m3'],
-  },
-  {
-    id: 'refrigerants-type_r410a',
+    id: 'fugitive_gas-type_r410a',
     label: 'Refrigerant leakage (R-410A)',
     parameterType: 'weight',
     defaultUnit: 'kg',
     units: ['kg'],
   },
   {
-    id: 'fuel_combustion-type_coal-fuel_use',
-    label: 'Coal combustion',
+    id: 'fuel-type_coal_bituminous-fuel_use_na',
+    label: 'Coal combustion (bituminous)',
     parameterType: 'weight',
     defaultUnit: 't',
     units: ['t', 'kg'],
