@@ -4,38 +4,34 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 
-/**
- * Handles Supabase auth redirects that arrive with session tokens in the URL hash.
- * Uses onAuthStateChange to reliably detect when the token exchange completes.
- *
- * Supported flows:
- *  - PASSWORD_RECOVERY → /set-password?type=recovery
- *  - type=invite in hash → /set-password?type=invite
- *  - anything else → / (role-based redirect via middleware)
- */
 export default function AuthCallbackPage() {
     const router = useRouter()
 
     useEffect(() => {
-        // Read the type from the hash before the client clears it
         const hash = window.location.hash
         const params = new URLSearchParams(hash.replace('#', ''))
-        const hashType = params.get('type')
 
-        // onAuthStateChange fires once the client has exchanged the hash tokens
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-            if (!session) return
+        const accessToken = params.get('access_token')
+        const refreshToken = params.get('refresh_token')
+        const type = params.get('type')
 
-            if (event === 'PASSWORD_RECOVERY' || hashType === 'recovery') {
-                router.replace('/set-password?type=recovery')
-            } else if (event === 'SIGNED_IN' && hashType === 'invite') {
-                router.replace('/set-password?type=invite')
-            } else if (event === 'SIGNED_IN') {
-                router.replace('/')
-            }
-        })
+        if (!accessToken || !refreshToken) {
+            router.replace('/login?error=invalid_token')
+            return
+        }
 
-        return () => subscription.unsubscribe()
+        supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken })
+            .then(({ error }) => {
+                if (error) {
+                    router.replace('/login?error=invalid_token')
+                    return
+                }
+                if (type === 'recovery' || type === 'invite') {
+                    router.replace(`/set-password?type=${type}`)
+                } else {
+                    router.replace('/')
+                }
+            })
     }, [router])
 
     return (
