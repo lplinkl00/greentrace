@@ -12,6 +12,21 @@
 
 import fs from 'node:fs'
 
+// Patch 2 – main process fs.promises.readdir (for Next.js route file scanner)
+// On Windows, some directories (e.g. git-incomplete reparse points) are listed
+// by the parent readdir but return EPERM when scanned. Treat them as empty.
+;(function patchFsPromisesReaddir() {
+    const orig = fs.promises.readdir.bind(fs.promises)
+    fs.promises.readdir = async function (path, options) {
+        try {
+            return await orig(path, options)
+        } catch (err) {
+            if (err?.code === 'EPERM') return []
+            throw err
+        }
+    }
+})()
+
 // Patch 1 – main process fs.promises.readlink (for @vercel/nft)
 ;(function patchFsPromisesReadlink() {
     const orig = fs.promises.readlink.bind(fs.promises)
