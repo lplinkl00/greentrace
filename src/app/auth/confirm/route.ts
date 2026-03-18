@@ -1,5 +1,4 @@
 import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest) {
@@ -11,17 +10,22 @@ export async function GET(request: NextRequest) {
         return NextResponse.redirect(`${origin}/login?error=invalid_token`)
     }
 
-    const cookieStore = await cookies()
+    // Create the redirect response first so we can attach cookies to it
+    const redirectSuccess = NextResponse.redirect(`${origin}/set-password?type=${type}`)
+    const redirectError = NextResponse.redirect(`${origin}/login?error=invalid_token`)
+
     const supabase = createServerClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
             cookies: {
-                getAll() { return cookieStore.getAll() },
+                getAll() {
+                    return request.cookies.getAll()
+                },
                 setAll(cookiesToSet) {
-                    cookiesToSet.forEach(({ name, value, options }) =>
-                        cookieStore.set(name, value, options)
-                    )
+                    cookiesToSet.forEach(({ name, value, options }) => {
+                        redirectSuccess.cookies.set(name, value, options)
+                    })
                 },
             },
         }
@@ -30,8 +34,8 @@ export async function GET(request: NextRequest) {
     const { error } = await supabase.auth.verifyOtp({ token_hash, type })
 
     if (error) {
-        return NextResponse.redirect(`${origin}/login?error=invalid_token`)
+        return redirectError
     }
 
-    return NextResponse.redirect(`${origin}/set-password?type=${type}`)
+    return redirectSuccess
 }
