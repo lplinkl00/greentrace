@@ -43,6 +43,7 @@ export async function middleware(request: NextRequest) {
         || request.nextUrl.pathname.startsWith('/signup')
         || request.nextUrl.pathname.startsWith('/auth/confirm')
         || request.nextUrl.pathname.startsWith('/set-password')
+        || request.nextUrl.pathname.startsWith('/callback')
 
     if (!user && !isAuthRoute) {
         return NextResponse.redirect(new URL('/login', request.url))
