@@ -6,34 +6,36 @@ import { supabase } from '@/lib/supabase'
 
 /**
  * Handles Supabase auth redirects that arrive with session tokens in the URL hash.
- * This happens when using the default Supabase email templates (ConfirmationURL),
- * which redirect through Supabase's verify endpoint and pass the session as a hash fragment.
+ * Uses onAuthStateChange to reliably detect when the token exchange completes.
  *
  * Supported flows:
- *  - type=recovery → /set-password
- *  - type=invite   → /set-password?type=invite
+ *  - PASSWORD_RECOVERY → /set-password?type=recovery
+ *  - type=invite in hash → /set-password?type=invite
  *  - anything else → / (role-based redirect via middleware)
  */
 export default function AuthCallbackPage() {
     const router = useRouter()
 
     useEffect(() => {
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            if (!session) {
-                router.replace('/login?error=invalid_token')
-                return
-            }
+        // Read the type from the hash before the client clears it
+        const hash = window.location.hash
+        const params = new URLSearchParams(hash.replace('#', ''))
+        const hashType = params.get('type')
 
-            const hash = window.location.hash
-            const params = new URLSearchParams(hash.replace('#', ''))
-            const type = params.get('type')
+        // onAuthStateChange fires once the client has exchanged the hash tokens
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            if (!session) return
 
-            if (type === 'recovery' || type === 'invite') {
-                router.replace(`/set-password?type=${type}`)
-            } else {
+            if (event === 'PASSWORD_RECOVERY' || hashType === 'recovery') {
+                router.replace('/set-password?type=recovery')
+            } else if (event === 'SIGNED_IN' && hashType === 'invite') {
+                router.replace('/set-password?type=invite')
+            } else if (event === 'SIGNED_IN') {
                 router.replace('/')
             }
         })
+
+        return () => subscription.unsubscribe()
     }, [router])
 
     return (
@@ -45,4 +47,3 @@ export default function AuthCallbackPage() {
         </div>
     )
 }
-
