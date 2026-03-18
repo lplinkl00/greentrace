@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Mail, CheckCircle2, ArrowLeft } from 'lucide-react'
-import { supabase } from '@/lib/supabase'
 import Logo from '@/components/Logo'
 
 const testimonials = [
@@ -23,11 +22,14 @@ export default function ResetPasswordPage() {
         setError(null)
         setLoading(true)
         try {
-            const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                redirectTo: `${window.location.origin}/callback`,
+            const res = await fetch('/api/auth/reset-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email }),
             })
-            if (error) {
-                setError(error.message)
+            const body = await res.json()
+            if (!res.ok) {
+                setError(body.error ?? 'Failed to send reset email.')
             } else {
                 setSent(true)
             }
