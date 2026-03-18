@@ -69,7 +69,13 @@ export async function middleware(request: NextRequest) {
         }
     }
 
-    if (user && isAuthRoute) {
+    // Allow authenticated users through /set-password and /callback
+    // (needed for password reset and invite flows)
+    const isRedirectIfLoggedIn = isAuthRoute
+        && !request.nextUrl.pathname.startsWith('/set-password')
+        && !request.nextUrl.pathname.startsWith('/callback')
+
+    if (user && isRedirectIfLoggedIn) {
         return NextResponse.redirect(new URL('/', request.url))
     }
 
