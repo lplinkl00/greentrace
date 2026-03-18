@@ -1,11 +1,14 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
+import { Suspense } from 'react'
 
-export default function AuthCallbackPage() {
+function CallbackHandler() {
     const router = useRouter()
+    const searchParams = useSearchParams()
+    const type = searchParams.get('type')
 
     useEffect(() => {
         const hash = window.location.hash
@@ -13,7 +16,8 @@ export default function AuthCallbackPage() {
 
         const accessToken = params.get('access_token')
         const refreshToken = params.get('refresh_token')
-        const type = params.get('type')
+        // Fall back to hash type if query param not set
+        const resolvedType = type ?? params.get('type')
 
         if (!accessToken || !refreshToken) {
             router.replace('/login?error=invalid_token')
@@ -26,13 +30,13 @@ export default function AuthCallbackPage() {
                     router.replace('/login?error=invalid_token')
                     return
                 }
-                if (type === 'recovery' || type === 'invite') {
-                    router.replace(`/set-password?type=${type}`)
+                if (resolvedType === 'recovery' || resolvedType === 'invite') {
+                    router.replace(`/set-password?type=${resolvedType}`)
                 } else {
                     router.replace('/')
                 }
             })
-    }, [router])
+    }, [router, type])
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-[#141414]">
@@ -41,5 +45,17 @@ export default function AuthCallbackPage() {
                 <p className="text-sm text-zinc-500">Verifying your link…</p>
             </div>
         </div>
+    )
+}
+
+export default function AuthCallbackPage() {
+    return (
+        <Suspense fallback={
+            <div className="flex min-h-screen items-center justify-center bg-[#141414]">
+                <div className="w-6 h-6 border-2 border-sunset-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+        }>
+            <CallbackHandler />
+        </Suspense>
     )
 }
