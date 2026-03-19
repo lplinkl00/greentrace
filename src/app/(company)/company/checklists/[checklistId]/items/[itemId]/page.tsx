@@ -1,4 +1,7 @@
+import { ChecklistItemComments } from '@/components/checklist-item-comments'
 import { ChecklistItemDataEntry } from '@/components/checklist-item-data-entry'
+import { ChecklistItemDocuments } from '@/components/checklist-item-documents'
+import { ChecklistItemStatus } from '@/components/checklist-item-status'
 
 export default function ChecklistItemDetailPage({
     params,
@@ -19,46 +22,14 @@ export default function ChecklistItemDetailPage({
                 <div className="lg:col-span-2 space-y-4">
                     <ChecklistItemDataEntry checklistId={params.checklistId} itemId={params.itemId} />
 
-                    {/* Document Upload */}
-                    <div className="bg-white shadow rounded-lg p-6">
-                        <h2 className="font-semibold text-gray-800 mb-4">Documents</h2>
-                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                            <p className="text-sm text-gray-500">Drag & drop files here, or click to browse</p>
-                            <p className="text-xs text-gray-400 mt-1">PDF, JPEG, PNG, XLSX, CSV, DOCX — max 25 MB</p>
-                            <input type="file" className="mt-2" />
-                        </div>
-                        <div className="mt-4 text-sm text-gray-500">No documents uploaded yet.</div>
-                    </div>
+                    <ChecklistItemDocuments itemId={params.itemId} />
                 </div>
 
                 {/* Comment Thread + Status */}
                 <div className="space-y-4">
-                    <div className="bg-white shadow rounded-lg p-6">
-                        <h2 className="font-semibold text-gray-800 mb-4">Status</h2>
-                        <div className="space-y-2 text-sm">
-                            <div className="flex justify-between">
-                                <span className="text-gray-500">Status</span>
-                                <span className="font-medium">Not Started</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-gray-500">Assignee</span>
-                                <span className="font-medium">Unassigned</span>
-                            </div>
-                        </div>
-                    </div>
+                    <ChecklistItemStatus itemId={params.itemId} />
 
-                    <div className="bg-white shadow rounded-lg p-6">
-                        <h2 className="font-semibold text-gray-800 mb-4">Comments</h2>
-                        <div className="space-y-3 text-sm text-gray-500">
-                            <p>No comments yet.</p>
-                        </div>
-                        <div className="mt-4 border-t pt-4">
-                            <textarea className="w-full border rounded-md p-2 text-sm" rows={2} placeholder="Add a comment…" />
-                            <button className="mt-2 px-3 py-1 bg-green-600 text-white text-xs font-medium rounded hover:bg-green-700">
-                                Post
-                            </button>
-                        </div>
-                    </div>
+                    <ChecklistItemComments itemId={params.itemId} />
                 </div>
             </div>
         </div>

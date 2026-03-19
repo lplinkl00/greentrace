@@ -41,6 +41,9 @@ export async function middleware(request: NextRequest) {
     const isAuthRoute = request.nextUrl.pathname.startsWith('/login')
         || request.nextUrl.pathname.startsWith('/reset-password')
         || request.nextUrl.pathname.startsWith('/signup')
+        || request.nextUrl.pathname.startsWith('/auth/confirm')
+        || request.nextUrl.pathname.startsWith('/set-password')
+        || request.nextUrl.pathname.startsWith('/callback')
 
     if (!user && !isAuthRoute) {
         return NextResponse.redirect(new URL('/login', request.url))
@@ -66,7 +69,13 @@ export async function middleware(request: NextRequest) {
         }
     }
 
-    if (user && isAuthRoute) {
+    // Allow authenticated users through /set-password and /callback
+    // (needed for password reset and invite flows)
+    const isRedirectIfLoggedIn = isAuthRoute
+        && !request.nextUrl.pathname.startsWith('/set-password')
+        && !request.nextUrl.pathname.startsWith('/callback')
+
+    if (user && isRedirectIfLoggedIn) {
         return NextResponse.redirect(new URL('/', request.url))
     }
 

@@ -44,5 +44,5 @@ export async function POST(request: Request) {
         periodEnd: new Date(periodEnd),
     })
 
-    return NextResponse.json({ data: result, error: null, meta: null }, { status: 201 })
+    return NextResponse.json({ data: result.checklist, error: null, meta: null }, { status: 201 })
 }

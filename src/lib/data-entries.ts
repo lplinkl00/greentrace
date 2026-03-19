@@ -36,6 +36,8 @@ export async function createDataEntry(data: {
     reportingMonth?: Date | null
     location?: string | null
     notes?: string | null
+    valueConverted?: number | null
+    unitReference?: string | null
 }) {
     // Check the checklist is not locked
     const item = await prisma.checklistItem.findUniqueOrThrow({
@@ -48,17 +50,17 @@ export async function createDataEntry(data: {
     }
 
     let emissionFactorId = data.emissionFactorId ?? null
+    // Never trust caller-supplied valueConverted/unitReference — always derive from factor computation.
+    // data.valueConverted and data.unitReference are intentionally ignored here.
     let valueConverted: Prisma.Decimal | null = null
     let unitReference: string | null = null
 
-    // GHG-4: Auto-select default factor if scope is set and no factor provided
-    if (!emissionFactorId && item.requirement.ghgScope) {
-        // Try to find a default factor based on materialType context
-        // For now, we skip auto-selection if no factor is provided
-        // This would require knowing the materialType from context
+    // Reject emissionFactorId without valueRaw — we cannot compute without a raw measurement.
+    if (emissionFactorId && data.valueRaw == null) {
+        throw new Error('emissionFactorId requires valueRaw to compute valueConverted')
     }
 
-    // GHG-1 & GHG-2: Compute if factor is provided
+    // GHG-1 & GHG-2: Compute valueConverted only from fetched factor × valueRaw.
     if (emissionFactorId && data.valueRaw != null) {
         const factor = await prisma.emissionFactor.findUniqueOrThrow({
             where: { id: emissionFactorId },
