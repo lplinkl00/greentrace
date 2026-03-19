@@ -1,4 +1,5 @@
 import { ChecklistItemDataEntry } from '@/components/checklist-item-data-entry'
+import { ChecklistItemStatus } from '@/components/checklist-item-status'
 
 export default function ChecklistItemDetailPage({
     params,
@@ -33,19 +34,7 @@ export default function ChecklistItemDetailPage({
 
                 {/* Comment Thread + Status */}
                 <div className="space-y-4">
-                    <div className="bg-white shadow rounded-lg p-6">
-                        <h2 className="font-semibold text-gray-800 mb-4">Status</h2>
-                        <div className="space-y-2 text-sm">
-                            <div className="flex justify-between">
-                                <span className="text-gray-500">Status</span>
-                                <span className="font-medium">Not Started</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-gray-500">Assignee</span>
-                                <span className="font-medium">Unassigned</span>
-                            </div>
-                        </div>
-                    </div>
+                    <ChecklistItemStatus itemId={params.itemId} />
 
                     <div className="bg-white shadow rounded-lg p-6">
                         <h2 className="font-semibold text-gray-800 mb-4">Comments</h2>
