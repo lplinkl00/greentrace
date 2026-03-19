@@ -83,7 +83,7 @@ export function ChecklistItemDataEntry({
         }
 
         // Numeric vs text entry
-        const numeric = parseFloat(value)
+        const numeric = value.trim() !== '' ? Number(value.trim()) : NaN
         if (!isNaN(numeric)) {
             payload.valueRaw = numeric
         } else if (value.trim()) {
@@ -96,29 +96,34 @@ export function ChecklistItemDataEntry({
             payload.co2eUnit = appliedCo2e.unit
         }
 
-        const res = await fetch(`/api/checklist-items/${itemId}/data-entries`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-        })
-        setSaving(false)
-        if (res.ok) {
-            setSaveSuccess(true)
-            // Refresh so pre-fill reflects the newly saved entry
-            const refreshed = await fetch(`/api/checklist-items/${itemId}`).then(r => r.json())
-            if (refreshed.data) {
-                setItem(refreshed.data)
-                const latest = refreshed.data.dataEntries?.[0]
-                if (latest) {
-                    setValue(latest.valueRaw != null ? String(latest.valueRaw) : (latest.textValue ?? ''))
-                    setUnit(latest.unitInput ?? refreshed.data.requirement?.unit ?? '')
-                    setNotes(latest.notes ?? '')
-                    setReportingMonth(latest.reportingMonth?.substring(0, 7) ?? '')
+        try {
+            const res = await fetch(`/api/checklist-items/${itemId}/data-entries`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            })
+            if (res.ok) {
+                setSaveSuccess(true)
+                // Refresh so pre-fill reflects the newly saved entry
+                const refreshed = await fetch(`/api/checklist-items/${itemId}`).then(r => r.json())
+                if (refreshed.data) {
+                    setItem(refreshed.data)
+                    const latest = refreshed.data.dataEntries?.[0]
+                    if (latest) {
+                        setValue(latest.valueRaw != null ? String(latest.valueRaw) : (latest.textValue ?? ''))
+                        setUnit(latest.unitInput ?? refreshed.data.requirement?.unit ?? '')
+                        setNotes(latest.notes ?? '')
+                        setReportingMonth(latest.reportingMonth?.substring(0, 7) ?? '')
+                    }
                 }
+            } else {
+                const json = await res.json().catch(() => ({}))
+                setSaveError(json?.error?.message ?? 'Failed to save. Please try again.')
             }
-        } else {
-            const json = await res.json().catch(() => ({}))
-            setSaveError(json?.error?.message ?? 'Failed to save. Please try again.')
+        } catch {
+            setSaveError('Network error. Please try again.')
+        } finally {
+            setSaving(false)
         }
     }
 
