@@ -1,3 +1,4 @@
+import { ChecklistItemComments } from '@/components/checklist-item-comments'
 import { ChecklistItemDataEntry } from '@/components/checklist-item-data-entry'
 import { ChecklistItemStatus } from '@/components/checklist-item-status'
 
@@ -36,18 +37,7 @@ export default function ChecklistItemDetailPage({
                 <div className="space-y-4">
                     <ChecklistItemStatus itemId={params.itemId} />
 
-                    <div className="bg-white shadow rounded-lg p-6">
-                        <h2 className="font-semibold text-gray-800 mb-4">Comments</h2>
-                        <div className="space-y-3 text-sm text-gray-500">
-                            <p>No comments yet.</p>
-                        </div>
-                        <div className="mt-4 border-t pt-4">
-                            <textarea className="w-full border rounded-md p-2 text-sm" rows={2} placeholder="Add a comment…" />
-                            <button className="mt-2 px-3 py-1 bg-green-600 text-white text-xs font-medium rounded hover:bg-green-700">
-                                Post
-                            </button>
-                        </div>
-                    </div>
+                    <ChecklistItemComments itemId={params.itemId} />
                 </div>
             </div>
         </div>
