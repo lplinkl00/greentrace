@@ -17,8 +17,9 @@ type ChecklistItem = {
     } | null
     dataEntries: Array<{
         id: string
-        value: string | null
-        unit: string | null
+        valueRaw: number | null
+        textValue: string | null
+        unitInput: string | null
         notes: string | null
         reportingMonth: string | null
     }>
@@ -50,8 +51,8 @@ export function ChecklistItemDataEntry({
                 // Pre-fill from most recent entry if exists
                 const latest = d.data?.dataEntries?.[0]
                 if (latest) {
-                    setValue(latest.value ?? '')
-                    setUnit(latest.unit ?? d.data?.requirement?.unit ?? '')
+                    setValue(latest.valueRaw != null ? String(latest.valueRaw) : (latest.textValue ?? ''))
+                    setUnit(latest.unitInput ?? d.data?.requirement?.unit ?? '')
                     setNotes(latest.notes ?? '')
                     setReportingMonth(latest.reportingMonth?.substring(0, 7) ?? '')
                 } else if (d.data?.requirement?.unit) {
@@ -67,20 +68,62 @@ export function ChecklistItemDataEntry({
     }
 
     const handleSave = async () => {
+        if (!value.trim() && !notes.trim()) {
+            setSaveError('Enter a value or notes before saving.')
+            return
+        }
         setSaving(true)
         setSaveError(null)
         setSaveSuccess(false)
 
-        const res = await fetch(`/api/checklist-items/${itemId}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: 'IN_PROGRESS' }),
-        })
-        setSaving(false)
-        if (res.ok) {
-            setSaveSuccess(true)
-        } else {
-            setSaveError('Failed to save. Please try again.')
+        const payload: Record<string, unknown> = {
+            unitInput: unit || null,
+            reportingMonth: reportingMonth || null,
+            notes: notes || null,
+        }
+
+        // Numeric vs text entry
+        const numeric = value.trim() !== '' ? Number(value.trim()) : NaN
+        if (!isNaN(numeric)) {
+            payload.valueRaw = numeric
+        } else if (value.trim()) {
+            payload.textValue = value.trim()
+        }
+
+        // CO2e from Climatiq calculator
+        if (appliedCo2e) {
+            payload.co2eValue = appliedCo2e.value
+            payload.co2eUnit = appliedCo2e.unit
+        }
+
+        try {
+            const res = await fetch(`/api/checklist-items/${itemId}/data-entries`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            })
+            if (res.ok) {
+                setSaveSuccess(true)
+                // Refresh so pre-fill reflects the newly saved entry
+                const refreshed = await fetch(`/api/checklist-items/${itemId}`).then(r => r.json())
+                if (refreshed.data) {
+                    setItem(refreshed.data)
+                    const latest = refreshed.data.dataEntries?.[0]
+                    if (latest) {
+                        setValue(latest.valueRaw != null ? String(latest.valueRaw) : (latest.textValue ?? ''))
+                        setUnit(latest.unitInput ?? refreshed.data.requirement?.unit ?? '')
+                        setNotes(latest.notes ?? '')
+                        setReportingMonth(latest.reportingMonth?.substring(0, 7) ?? '')
+                    }
+                }
+            } else {
+                const json = await res.json().catch(() => ({}))
+                setSaveError(json?.error?.message ?? 'Failed to save. Please try again.')
+            }
+        } catch {
+            setSaveError('Network error. Please try again.')
+        } finally {
+            setSaving(false)
         }
     }
 
@@ -167,7 +210,7 @@ export function ChecklistItemDataEntry({
                 <CarbonCalculator onValueSet={handleCo2eSet} />
 
                 {saveSuccess && (
-                    <p className="text-green-600 text-sm font-medium">Status updated successfully!</p>
+                    <p className="text-green-600 text-sm font-medium">Entry saved successfully!</p>
                 )}
                 {saveError && (
                     <p className="text-red-500 text-sm">{saveError}</p>

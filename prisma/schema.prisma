@@ -24,15 +24,15 @@ enum RegulationCode {
 }
 
 enum RequirementDataType {
-  ABSOLUTE_QUANTITY   // form01: a measured volume, weight, count
-  RATE                // form02: a ratio or percentage
-  DOCUMENT_ONLY       // no quantitative entry; compliance proven by uploaded document
-  TEXT_RESPONSE       // free-text answer is the primary evidence
+  ABSOLUTE_QUANTITY // form01: a measured volume, weight, count
+  RATE // form02: a ratio or percentage
+  DOCUMENT_ONLY // no quantitative entry; compliance proven by uploaded document
+  TEXT_RESPONSE // free-text answer is the primary evidence
 }
 
 enum RequirementCriticality {
-  CRITICAL      // Maps to RSPO Major NC; non-conformance blocks certification
-  NON_CRITICAL  // Maps to RSPO Minor NC; non-conformance requires corrective action
+  CRITICAL // Maps to RSPO Major NC; non-conformance blocks certification
+  NON_CRITICAL // Maps to RSPO Minor NC; non-conformance requires corrective action
 }
 
 enum ChecklistStatus {
@@ -148,15 +148,15 @@ enum IntegrationSystemType {
 }
 
 enum DueDateStatus {
-  OVERDUE    // due_date <= today
-  DUE_SOON   // due_date within 7 calendar days
-  ON_TRACK   // due_date > 7 days away
-  NO_DATE    // due_date is null
+  OVERDUE // due_date <= today
+  DUE_SOON // due_date within 7 calendar days
+  ON_TRACK // due_date > 7 days away
+  NO_DATE // due_date is null
 }
 
 enum MaterialType {
-  FFB                             // Fresh Fruit Bunch
-  EFB                             // Empty Fruit Bunch
+  FFB // Fresh Fruit Bunch
+  EFB // Empty Fruit Bunch
   CRUDE_PALM_OIL
   PALM_KERNEL_OIL
   PALM_KERNEL_EXPELLER
@@ -178,85 +178,85 @@ enum LLMProvider {
 // ─── 6.1 ORGANISATION AND USERS ────────────────────────────────────────────────────────
 
 model Organisation {
-  id          String   @id @default(cuid())
-  name        String
-  slug        String   @unique // URL-safe identifier
-  country     String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique // URL-safe identifier
+  country   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  companies   Company[]
-  users       User[]
+  companies Company[]
+  users     User[]
 }
 
 model Company {
-  id                    String   @id @default(cuid())
-  organisationId        String
-  organisation          Organisation @relation(fields: [organisationId], references: [id])
+  id             String       @id @default(cuid())
+  organisationId String
+  organisation   Organisation @relation(fields: [organisationId], references: [id])
 
-  name                  String
-  code                  String   @unique // Short internal code, e.g. "MY-ML-001"
-  location              String   // Free-text address or GPS description
-  country               String
-  latitude              Decimal? @db.Decimal(10, 7)
-  longitude             Decimal? @db.Decimal(10, 7)
-  isActive              Boolean  @default(true)
+  name      String
+  code      String   @unique // Short internal code, e.g. "MY-ML-001"
+  location  String // Free-text address or GPS description
+  country   String
+  latitude  Decimal? @db.Decimal(10, 7)
+  longitude Decimal? @db.Decimal(10, 7)
+  isActive  Boolean  @default(true)
 
   // Certification status per regulation — updated on Checklist status transitions
-  isccEuCertStatus      String?  // e.g. "Certified", "In Progress", "Not Started"
-  isccEuCertExpiry      DateTime?
-  isccPlusCertStatus    String?
-  isccPlusCertExpiry    DateTime?
-  rspoPcCertStatus      String?
-  rspoPcCertExpiry      DateTime?
-  rspoSccsCertStatus    String?
-  rspoSccsCertExpiry    DateTime?
+  isccEuCertStatus   String? // e.g. "Certified", "In Progress", "Not Started"
+  isccEuCertExpiry   DateTime?
+  isccPlusCertStatus String?
+  isccPlusCertExpiry DateTime?
+  rspoPcCertStatus   String?
+  rspoPcCertExpiry   DateTime?
+  rspoSccsCertStatus String?
+  rspoSccsCertExpiry DateTime?
 
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  users                 User[]
-  checklists            Checklist[]
-  massBalanceEntries    MassBalanceEntry[]
-  shipments             ShipmentRecord[]
-  imports               ImportJob[]
-  integrationConfigs    IntegrationConfig[]
-  audits                Audit[]
-  productionRecords     ProductionRecord[]
+  users              User[]
+  checklists         Checklist[]
+  massBalanceEntries MassBalanceEntry[]
+  shipments          ShipmentRecord[]
+  imports            ImportJob[]
+  integrationConfigs IntegrationConfig[]
+  audits             Audit[]
+  productionRecords  ProductionRecord[]
 
   @@index([organisationId])
 }
 
 model User {
-  id               String   @id @default(cuid())
+  id             String   @id @default(cuid())
   // supabaseUserId links to auth.users in Supabase; must be unique
-  supabaseUserId   String   @unique
-  email            String   @unique
-  name             String
-  role             UserRole
-  isActive         Boolean  @default(true)
+  supabaseUserId String   @unique
+  email          String   @unique
+  name           String
+  role           UserRole
+  isActive       Boolean  @default(true)
 
   // Exactly one of organisationId or companyId must be set, enforced at app level.
   // Super Admin and Aggregator Manager belong to the Organisation; company roles belong to a Company.
-  organisationId   String?
-  organisation     Organisation? @relation(fields: [organisationId], references: [id])
-  companyId        String?
-  company          Company? @relation(fields: [companyId], references: [id])
+  organisationId String?
+  organisation   Organisation? @relation(fields: [organisationId], references: [id])
+  companyId      String?
+  company        Company?      @relation(fields: [companyId], references: [id])
 
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   // Relations
-  assignedChecklistItems    ChecklistItem[]       @relation("AssignedStaff")
-  reviewedChecklistItems    ChecklistItem[]       @relation("AggregatorReviewer")
-  comments                  ChecklistItemComment[]
-  dataEntries               DataEntry[]
-  uploadedDocuments         Document[]
-  auditsAsAuditor           Audit[]
-  auditReportsReviewed      AuditReport[]
-  imports                   ImportJob[]
-  notifications             Notification[]
-  productionRecords         ProductionRecord[]
+  assignedChecklistItems ChecklistItem[]        @relation("AssignedStaff")
+  reviewedChecklistItems ChecklistItem[]        @relation("AggregatorReviewer")
+  comments               ChecklistItemComment[]
+  dataEntries            DataEntry[]
+  uploadedDocuments      Document[]
+  auditsAsAuditor        Audit[]
+  auditReportsReviewed   AuditReport[]
+  imports                ImportJob[]
+  notifications          Notification[]
+  productionRecords      ProductionRecord[]
 
   @@index([supabaseUserId])
   @@index([companyId])
@@ -266,33 +266,33 @@ model User {
 // ─── 6.2 REGULATION FRAMEWORK ────────────────────────────────────────────────────────
 
 model RegulationProfile {
-  id             String         @id @default(cuid())
-  regulation     RegulationCode
-  version        String         // e.g. "2024-v1", "RSPO-PC-2023"
-  name           String         // Human-readable, e.g. "ISCC EU 2024 v1"
-  description    String?
-  isActive       Boolean        @default(true) // Only one active profile per regulation enforced at app level
-  publishedAt    DateTime?
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  id          String         @id @default(cuid())
+  regulation  RegulationCode
+  version     String // e.g. "2024-v1", "RSPO-PC-2023"
+  name        String // Human-readable, e.g. "ISCC EU 2024 v1"
+  description String?
+  isActive    Boolean        @default(true) // Only one active profile per regulation enforced at app level
+  publishedAt DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 
-  pillars        RequirementPillar[]
-  checklists     Checklist[]
+  pillars    RequirementPillar[]
+  checklists Checklist[]
 
   @@unique([regulation, version])
   @@index([regulation, isActive])
 }
 
 model RequirementPillar {
-  id                  String            @id @default(cuid())
-  profileId           String
-  profile             RegulationProfile @relation(fields: [profileId], references: [id])
-  code                String            // e.g. "ENV", "SOC", "GOV"
-  name                String            // e.g. "Environmental", "Social", "Governance"
-  displayOrder        Int               @default(0)
-  createdAt           DateTime          @default(now())
+  id           String            @id @default(cuid())
+  profileId    String
+  profile      RegulationProfile @relation(fields: [profileId], references: [id])
+  code         String // e.g. "ENV", "SOC", "GOV"
+  name         String // e.g. "Environmental", "Social", "Governance"
+  displayOrder Int               @default(0)
+  createdAt    DateTime          @default(now())
 
-  categories          RequirementCategory[]
+  categories RequirementCategory[]
 
   @@unique([profileId, code])
   @@index([profileId])
@@ -302,8 +302,8 @@ model RequirementCategory {
   id           String            @id @default(cuid())
   pillarId     String
   pillar       RequirementPillar @relation(fields: [pillarId], references: [id])
-  code         String            // e.g. "ENV-01"
-  name         String            // e.g. "GHG Emissions"
+  code         String // e.g. "ENV-01"
+  name         String // e.g. "GHG Emissions"
   displayOrder Int               @default(0)
   createdAt    DateTime          @default(now())
 
@@ -314,25 +314,25 @@ model RequirementCategory {
 }
 
 model Requirement {
-  id              String                 @id @default(cuid())
-  categoryId      String
-  category        RequirementCategory    @relation(fields: [categoryId], references: [id])
+  id         String              @id @default(cuid())
+  categoryId String
+  category   RequirementCategory @relation(fields: [categoryId], references: [id])
 
-  code            String                 // e.g. "ENV-01-GHG-001" — unique within a profile
-  name            String
-  description     String                 // What this requirement measures or proves
-  guidanceText    String?                // Guidance for company staff on how to complete it
-  dataType        RequirementDataType
-  requiresForm    Boolean                @default(true)  // false for DOCUMENT_ONLY items
-  isActive        Boolean                @default(true)  // Inactive requirements excluded from new checklists
-  criticality     RequirementCriticality @default(NON_CRITICAL)
-  ghgScope        GHGScope?              // Set when this requirement contributes to GHG aggregation
-  displayOrder    Int                    @default(0)
-  unit            String?                // Expected input unit for form01 types, e.g. "tonnes", "MWh"
-  createdAt       DateTime               @default(now())
-  updatedAt       DateTime               @updatedAt
+  code         String // e.g. "ENV-01-GHG-001" — unique within a profile
+  name         String
+  description  String // What this requirement measures or proves
+  guidanceText String? // Guidance for company staff on how to complete it
+  dataType     RequirementDataType
+  requiresForm Boolean                @default(true) // false for DOCUMENT_ONLY items
+  isActive     Boolean                @default(true) // Inactive requirements excluded from new checklists
+  criticality  RequirementCriticality @default(NON_CRITICAL)
+  ghgScope     GHGScope? // Set when this requirement contributes to GHG aggregation
+  displayOrder Int                    @default(0)
+  unit         String? // Expected input unit for form01 types, e.g. "tonnes", "MWh"
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
 
-  checklistItems  ChecklistItem[]
+  checklistItems ChecklistItem[]
 
   @@unique([categoryId, code])
   @@index([categoryId, isActive])
@@ -341,68 +341,68 @@ model Requirement {
 // ─── 6.3 COMPANY CHECKLISTS ────────────────────────────────────────────────────────
 
 model Checklist {
-  id                String            @id @default(cuid())
-  companyId         String
-  company           Company           @relation(fields: [companyId], references: [id])
-  profileId         String
-  profile           RegulationProfile @relation(fields: [profileId], references: [id])
-  regulation        RegulationCode    // Denormalised for fast filtering without join
+  id         String            @id @default(cuid())
+  companyId  String
+  company    Company           @relation(fields: [companyId], references: [id])
+  profileId  String
+  profile    RegulationProfile @relation(fields: [profileId], references: [id])
+  regulation RegulationCode // Denormalised for fast filtering without join
 
   // Reporting period: typically calendar year or half-year
-  periodStart       DateTime
-  periodEnd         DateTime
+  periodStart DateTime
+  periodEnd   DateTime
 
-  status            ChecklistStatus   @default(DRAFT)
-  submittedAt       DateTime?
-  submittedById     String?           // User who submitted (Company Manager)
-  reviewStartedAt   DateTime?
-  reviewedById      String?           // Aggregator Manager who took ownership of review
-  lockedAt          DateTime?
-  lockedById        String?           // Super Admin who locked
+  status          ChecklistStatus @default(DRAFT)
+  submittedAt     DateTime?
+  submittedById   String? // User who submitted (Company Manager)
+  reviewStartedAt DateTime?
+  reviewedById    String? // Aggregator Manager who took ownership of review
+  lockedAt        DateTime?
+  lockedById      String? // Super Admin who locked
 
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  items             ChecklistItem[]
+  items              ChecklistItem[]
   massBalanceEntries MassBalanceEntry[]
-  audits            Audit[]
+  audits             Audit[]
 
   @@unique([companyId, profileId, periodStart, periodEnd])
   @@index([companyId, regulation, status])
 }
 
 model ChecklistItem {
-  id                      String              @id @default(cuid())
-  checklistId             String
-  checklist               Checklist           @relation(fields: [checklistId], references: [id])
-  requirementId           String
-  requirement             Requirement         @relation(fields: [requirementId], references: [id])
+  id            String      @id @default(cuid())
+  checklistId   String
+  checklist     Checklist   @relation(fields: [checklistId], references: [id])
+  requirementId String
+  requirement   Requirement @relation(fields: [requirementId], references: [id])
 
-  status                  ChecklistItemStatus @default(NOT_STARTED)
+  status ChecklistItemStatus @default(NOT_STARTED)
 
   // Company staff assignee — optional; if null, the item is unassigned
-  assigneeId              String?
-  assignee                User?               @relation("AssignedStaff", fields: [assigneeId], references: [id])
-  dueDate                 DateTime?
+  assigneeId    String?
+  assignee      User?         @relation("AssignedStaff", fields: [assigneeId], references: [id])
+  dueDate       DateTime?
   // Computed and stored: overdue | due_soon | on_track | no_date
   // Recomputed by a scheduled job or on read via a DB function.
-  dueDateStatus           DueDateStatus       @default(NO_DATE)
+  dueDateStatus DueDateStatus @default(NO_DATE)
 
-  completedAt             DateTime?
+  completedAt DateTime?
 
   // Aggregator review fields
-  aggregatorReviewed      Boolean             @default(false)
-  aggregatorReviewedAt    DateTime?
-  aggregatorReviewerId    String?
-  aggregatorReviewer      User?               @relation("AggregatorReviewer", fields: [aggregatorReviewerId], references: [id])
+  aggregatorReviewed   Boolean   @default(false)
+  aggregatorReviewedAt DateTime?
+  aggregatorReviewerId String?
+  aggregatorReviewer   User?     @relation("AggregatorReviewer", fields: [aggregatorReviewerId], references: [id])
 
-  createdAt               DateTime            @default(now())
-  updatedAt               DateTime            @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  comments                ChecklistItemComment[]
-  dataEntries             DataEntry[]
-  documents               Document[]          @relation("ChecklistItemDocuments")
-  auditFindings           AuditFinding[]
+  comments      ChecklistItemComment[]
+  dataEntries   DataEntry[]
+  documents     Document[]             @relation("ChecklistItemDocuments")
+  auditFindings AuditFinding[]
 
   @@unique([checklistId, requirementId])
   @@index([checklistId, status])
@@ -410,15 +410,15 @@ model ChecklistItem {
 }
 
 model ChecklistItemComment {
-  id                  String   @id @default(cuid())
+  id                  String        @id @default(cuid())
   checklistItemId     String
   checklistItem       ChecklistItem @relation(fields: [checklistItemId], references: [id])
   authorId            String
-  author              User     @relation(fields: [authorId], references: [id])
+  author              User          @relation(fields: [authorId], references: [id])
   // Snapshot of the author's role at the time of comment — immutable for auditability
   roleAtTimeOfComment UserRole
-  body                String   @db.Text
-  createdAt           DateTime @default(now())
+  body                String        @db.Text
+  createdAt           DateTime      @default(now())
   // NO updatedAt — comments are immutable. Application layer must block PUT/PATCH/DELETE.
 
   @@index([checklistItemId, createdAt])
@@ -427,102 +427,102 @@ model ChecklistItemComment {
 // ─── 6.4 DATA ENTRY AND CALCULATIONS ────────────────────────────────────────────────────────
 
 model DataEntry {
-  id                  String        @id @default(cuid())
-  checklistItemId     String
-  checklistItem       ChecklistItem @relation(fields: [checklistItemId], references: [id])
-  enteredById         String
-  enteredBy           User          @relation(fields: [enteredById], references: [id])
+  id              String        @id @default(cuid())
+  checklistItemId String
+  checklistItem   ChecklistItem @relation(fields: [checklistItemId], references: [id])
+  enteredById     String
+  enteredBy       User          @relation(fields: [enteredById], references: [id])
 
-  entryType           DataEntryType
+  entryType DataEntryType
 
   // Raw value as entered by the user (stored as Decimal for numeric types)
-  valueRaw            Decimal?      @db.Decimal(18, 6)
-  unitInput           String?       // Unit as entered, e.g. "m3", "kWh"
-  textValue           String?       @db.Text // Used when entryType = TEXT
+  valueRaw  Decimal? @db.Decimal(18, 6)
+  unitInput String? // Unit as entered, e.g. "m3", "kWh"
+  textValue String?  @db.Text // Used when entryType = TEXT
 
   // Converted / reference value after emission factor application
-  valueConverted      Decimal?      @db.Decimal(18, 6)
-  unitReference       String?       // Reference unit, e.g. "kgCO2e"
+  valueConverted Decimal? @db.Decimal(18, 6)
+  unitReference  String? // Reference unit, e.g. "kgCO2e"
 
-  emissionFactorId    String?       // Nullable; set only for GHG entries
-  emissionFactor      EmissionFactor? @relation(fields: [emissionFactorId], references: [id])
+  emissionFactorId String? // Nullable; set only for GHG entries
+  emissionFactor   EmissionFactor? @relation(fields: [emissionFactorId], references: [id])
 
   // For monthly granularity within a checklist period
-  reportingMonth      DateTime?     // First day of the month, e.g. 2024-01-01
+  reportingMonth DateTime? // First day of the month, e.g. 2024-01-01
 
   // Sub-company location granularity (e.g. a specific processing unit within the company)
-  location            String?
+  location String?
 
-  notes               String?       @db.Text
+  notes String? @db.Text
 
   // Reconciliation tracking (populated by import reconciliation job)
-  reconciliationFlag  Boolean       @default(false)
+  reconciliationFlag             Boolean   @default(false)
   reconciliationAcknowledgedAt   DateTime?
   reconciliationAcknowledgedById String?
 
-  createdAt           DateTime      @default(now())
-  updatedAt           DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([checklistItemId])
   @@index([emissionFactorId])
 }
 
 model EmissionFactor {
-  id             String       @id @default(cuid())
-  name           String
-  materialType   MaterialType
-  scope          GHGScope
-  unitInput      String       // e.g. "m3", "kWh", "tonne"
-  unitReference  String       // Always "kgCO2e"
-  factorValue    Decimal      @db.Decimal(18, 8) // The conversion multiplier
-  source         String       // Citation, e.g. "IPCC 2021 AR6", "ISCC EU 202-5 v4.1"
-  validFrom      DateTime
-  validTo        DateTime?    // Null = no expiry. Expired factors cannot be selected for new entries.
-  isDefault      Boolean      @default(false) // If true, auto-selected for matching materialType on new DataEntry
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  id            String       @id @default(cuid())
+  name          String
+  materialType  MaterialType
+  scope         GHGScope
+  unitInput     String // e.g. "m3", "kWh", "tonne"
+  unitReference String // Always "kgCO2e"
+  factorValue   Decimal      @db.Decimal(18, 8) // The conversion multiplier
+  source        String // Citation, e.g. "IPCC 2021 AR6", "ISCC EU 202-5 v4.1"
+  validFrom     DateTime
+  validTo       DateTime? // Null = no expiry. Expired factors cannot be selected for new entries.
+  isDefault     Boolean      @default(false) // If true, auto-selected for matching materialType on new DataEntry
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 
-  dataEntries    DataEntry[]
+  dataEntries DataEntry[]
 
   @@index([materialType, isDefault])
   @@index([validFrom, validTo])
 }
 
 model MassBalanceEntry {
-  id                  String         @id @default(cuid())
-  companyId           String
-  company             Company        @relation(fields: [companyId], references: [id])
-  checklistId         String
-  checklist           Checklist      @relation(fields: [checklistId], references: [id])
-  regulation          RegulationCode
+  id           String         @id @default(cuid())
+  companyId    String
+  company      Company        @relation(fields: [companyId], references: [id])
+  checklistId  String
+  checklist    Checklist      @relation(fields: [checklistId], references: [id])
+  regulation   RegulationCode
   // Period mirrors the parent Checklist period for fast querying
-  periodStart         DateTime
-  periodEnd           DateTime
-  materialType        MaterialType
+  periodStart  DateTime
+  periodEnd    DateTime
+  materialType MaterialType
 
   // Volumes in metric tonnes
-  certifiedIn         Decimal        @db.Decimal(18, 4)  @default(0)
-  nonCertifiedIn      Decimal        @db.Decimal(18, 4)  @default(0)
-  certifiedOut        Decimal        @db.Decimal(18, 4)  @default(0)
-  nonCertifiedOut     Decimal        @db.Decimal(18, 4)  @default(0)
-  openingStock        Decimal        @db.Decimal(18, 4)  @default(0)
+  certifiedIn     Decimal @default(0) @db.Decimal(18, 4)
+  nonCertifiedIn  Decimal @default(0) @db.Decimal(18, 4)
+  certifiedOut    Decimal @default(0) @db.Decimal(18, 4)
+  nonCertifiedOut Decimal @default(0) @db.Decimal(18, 4)
+  openingStock    Decimal @default(0) @db.Decimal(18, 4)
   // closingStock = openingStock + certifiedIn - certifiedOut (computed on write, never entered)
-  closingStock        Decimal        @db.Decimal(18, 4)  @default(0)
+  closingStock    Decimal @default(0) @db.Decimal(18, 4)
 
-  isReconciled        Boolean        @default(false)
-  discrepancyFlag     Boolean        @default(false)
-  discrepancyNotes    String?        @db.Text  // Required when discrepancyFlag is true after override
+  isReconciled              Boolean   @default(false)
+  discrepancyFlag           Boolean   @default(false)
+  discrepancyNotes          String?   @db.Text // Required when discrepancyFlag is true after override
   // Set by Aggregator Manager when overriding a discrepancy
-  discrepancyOverriddenById  String?
-  discrepancyOverriddenAt    DateTime?
-  openingStockConfirmed      Boolean   @default(false)
-  openingStockConfirmedAt    DateTime?
-  openingStockConfirmedById  String?
+  discrepancyOverriddenById String?
+  discrepancyOverriddenAt   DateTime?
+  openingStockConfirmed     Boolean   @default(false)
+  openingStockConfirmedAt   DateTime?
+  openingStockConfirmedById String?
 
-  createdAt           DateTime       @default(now())
-  updatedAt           DateTime       @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  documents           Document[]     @relation("MassBalanceDocuments")
+  documents Document[] @relation("MassBalanceDocuments")
 
   @@unique([companyId, checklistId, regulation, materialType])
   @@index([companyId, regulation, periodStart])
@@ -531,31 +531,31 @@ model MassBalanceEntry {
 // ─── 6.5 DOCUMENT MANAGEMENT ────────────────────────────────────────────────────────
 
 model Document {
-  id                String           @id @default(cuid())
-  displayName       String
-  filePath          String           // Supabase Storage object key
-  fileType          String           // MIME type
-  fileSize          Int              // Bytes
-  uploadedById      String
-  uploadedBy        User             @relation(fields: [uploadedById], references: [id])
-  uploadedAt        DateTime         @default(now())
+  id           String   @id @default(cuid())
+  displayName  String
+  filePath     String // Supabase Storage object key
+  fileType     String // MIME type
+  fileSize     Int // Bytes
+  uploadedById String
+  uploadedBy   User     @relation(fields: [uploadedById], references: [id])
+  uploadedAt   DateTime @default(now())
 
   // Polymorphic link — exactly one of the relation fields below will be non-null
-  linkedEntityType  LinkedEntityType
+  linkedEntityType   LinkedEntityType
   // Using nullable FK fields for each possible parent type.
   // Only the field matching linkedEntityType should be non-null.
-  checklistItemId   String?
-  checklistItem     ChecklistItem?   @relation("ChecklistItemDocuments", fields: [checklistItemId], references: [id])
+  checklistItemId    String?
+  checklistItem      ChecklistItem?    @relation("ChecklistItemDocuments", fields: [checklistItemId], references: [id])
   massBalanceEntryId String?
-  massBalanceEntry  MassBalanceEntry? @relation("MassBalanceDocuments", fields: [massBalanceEntryId], references: [id])
-  auditFindingId    String?
-  auditFinding      AuditFinding?    @relation("AuditFindingDocuments", fields: [auditFindingId], references: [id])
-  shipmentId        String?
-  shipment          ShipmentRecord?  @relation("ShipmentDocuments", fields: [shipmentId], references: [id])
+  massBalanceEntry   MassBalanceEntry? @relation("MassBalanceDocuments", fields: [massBalanceEntryId], references: [id])
+  auditFindingId     String?
+  auditFinding       AuditFinding?     @relation("AuditFindingDocuments", fields: [auditFindingId], references: [id])
+  shipmentId         String?
+  shipment           ShipmentRecord?   @relation("ShipmentDocuments", fields: [shipmentId], references: [id])
 
-  isDeleted         Boolean          @default(false) // Soft delete only; hard delete never permitted
-  deletedAt         DateTime?
-  deletedById       String?
+  isDeleted   Boolean   @default(false) // Soft delete only; hard delete never permitted
+  deletedAt   DateTime?
+  deletedById String?
 
   @@index([checklistItemId])
   @@index([auditFindingId])
@@ -564,40 +564,40 @@ model Document {
 }
 
 model ShipmentRecord {
-  id                            String              @id @default(cuid())
-  companyId                     String
-  company                       Company             @relation(fields: [companyId], references: [id])
+  id        String  @id @default(cuid())
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
 
-  direction                     ShipmentDirection
-  materialType                  MaterialType
-  volumeMt                      Decimal             @db.Decimal(18, 4)
-  certificationStatus           CertificationStatus
-  counterpartyName              String
+  direction           ShipmentDirection
+  materialType        MaterialType
+  volumeMt            Decimal             @db.Decimal(18, 4)
+  certificationStatus CertificationStatus
+  counterpartyName    String
   // Bill of lading or weighbridge ticket number — used for deduplication on import
-  referenceNumber               String
-  shipmentDate                  DateTime
+  referenceNumber     String
+  shipmentDate        DateTime
 
   // ISCC / RSPO traceability field
   sustainabilityDeclarationNumber String?
 
   // GHG value in kgCO2e — computed from volumeMt × relevant emission factor if available
-  ghgValueKgco2e                Decimal?            @db.Decimal(18, 4)
+  ghgValueKgco2e Decimal? @db.Decimal(18, 4)
 
-  source                        ShipmentSource      @default(MANUAL)
+  source      ShipmentSource @default(MANUAL)
   // FK to the ImportJob that created this record, if source = CSV_IMPORT
-  importJobId                   String?
-  importJob                     ImportJob?          @relation(fields: [importJobId], references: [id])
+  importJobId String?
+  importJob   ImportJob?     @relation(fields: [importJobId], references: [id])
 
   // Double-accounting split — populated when Company Manager confirms allocation
-  isccAllocationPct             Decimal?            @db.Decimal(5, 2) // 0.00–100.00
-  rspoAllocationPct             Decimal?            @db.Decimal(5, 2)
-  allocationConfirmedAt         DateTime?
-  allocationConfirmedById       String?
+  isccAllocationPct       Decimal?  @db.Decimal(5, 2) // 0.00–100.00
+  rspoAllocationPct       Decimal?  @db.Decimal(5, 2)
+  allocationConfirmedAt   DateTime?
+  allocationConfirmedById String?
 
-  createdAt                     DateTime            @default(now())
-  updatedAt                     DateTime            @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  documents                     Document[]          @relation("ShipmentDocuments")
+  documents Document[] @relation("ShipmentDocuments")
 
   @@unique([companyId, referenceNumber, shipmentDate]) // Deduplication key
   @@index([companyId, shipmentDate])
@@ -607,32 +607,32 @@ model ShipmentRecord {
 // ─── 6.6 AUDIT ────────────────────────────────────────────────────────
 
 model Audit {
-  id              String      @id @default(cuid())
-  companyId       String
-  company         Company     @relation(fields: [companyId], references: [id])
-  checklistId     String
-  checklist       Checklist   @relation(fields: [checklistId], references: [id])
-  regulation      RegulationCode
+  id          String         @id @default(cuid())
+  companyId   String
+  company     Company        @relation(fields: [companyId], references: [id])
+  checklistId String
+  checklist   Checklist      @relation(fields: [checklistId], references: [id])
+  regulation  RegulationCode
 
-  auditType       AuditType
-  auditorId       String
-  auditor         User        @relation(fields: [auditorId], references: [id])
+  auditType AuditType
+  auditorId String
+  auditor   User      @relation(fields: [auditorId], references: [id])
 
-  periodStart     DateTime
-  periodEnd       DateTime
+  periodStart DateTime
+  periodEnd   DateTime
 
-  status          AuditStatus @default(SCHEDULED)
-  scheduledDate   DateTime?
-  conductedDate   DateTime?
-  publishedAt     DateTime?
+  status        AuditStatus @default(SCHEDULED)
+  scheduledDate DateTime?
+  conductedDate DateTime?
+  publishedAt   DateTime?
 
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  findings        AuditFinding[]
-  reports         AuditReport[]
+  findings       AuditFinding[]
+  reports        AuditReport[]
   // Latest report version for quick access — updated transactionally
-  latestReportId  String?     @unique
+  latestReportId String?        @unique
 
   @@index([companyId, status])
   @@index([auditorId])
@@ -640,44 +640,44 @@ model Audit {
 }
 
 model AuditFinding {
-  id                        String        @id @default(cuid())
-  auditId                   String
-  audit                     Audit         @relation(fields: [auditId], references: [id])
-  checklistItemId           String
-  checklistItem             ChecklistItem @relation(fields: [checklistItemId], references: [id])
+  id              String        @id @default(cuid())
+  auditId         String
+  audit           Audit         @relation(fields: [auditId], references: [id])
+  checklistItemId String
+  checklistItem   ChecklistItem @relation(fields: [checklistItemId], references: [id])
 
-  findingType               FindingType
-  evidenceReviewed          String        @db.Text  // Description of evidence the auditor reviewed
-  correctiveActionRequired  String?       @db.Text  // Required for NON_CONFORMANT_* findings
-  correctiveActionDeadline  DateTime?
-  findingStatus             FindingStatus @default(OPEN)
+  findingType              FindingType
+  evidenceReviewed         String        @db.Text // Description of evidence the auditor reviewed
+  correctiveActionRequired String?       @db.Text // Required for NON_CONFORMANT_* findings
+  correctiveActionDeadline DateTime?
+  findingStatus            FindingStatus @default(OPEN)
 
-  createdAt                 DateTime      @default(now())
-  updatedAt                 DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  documents                 Document[]    @relation("AuditFindingDocuments")
+  documents Document[] @relation("AuditFindingDocuments")
 
   @@unique([auditId, checklistItemId])
   @@index([auditId, findingStatus])
 }
 
 model AuditReport {
-  id            String            @id @default(cuid())
-  auditId       String
-  audit         Audit             @relation(fields: [auditId], references: [id])
+  id      String @id @default(cuid())
+  auditId String
+  audit   Audit  @relation(fields: [auditId], references: [id])
 
-  version       Int               // Increments with each generation or edit; starts at 1
-  contentJson   Json              // Structured report content; schema defined in lib/report-generator.ts
-  generatedBy   LLMProvider
-  llmModel      String            // Specific model string, e.g. "claude-3-5-sonnet-20241022"
-  generatedAt   DateTime
-  reviewedById  String?
-  reviewedBy    User?             @relation(fields: [reviewedById], references: [id])
-  reviewedAt    DateTime?
-  status        AuditReportStatus @default(DRAFT)
-  pdfPath       String?           // Supabase Storage key; set on export
+  version      Int // Increments with each generation or edit; starts at 1
+  contentJson  Json // Structured report content; schema defined in lib/report-generator.ts
+  generatedBy  LLMProvider
+  llmModel     String // Specific model string, e.g. "claude-3-5-sonnet-20241022"
+  generatedAt  DateTime
+  reviewedById String?
+  reviewedBy   User?             @relation(fields: [reviewedById], references: [id])
+  reviewedAt   DateTime?
+  status       AuditReportStatus @default(DRAFT)
+  pdfPath      String? // Supabase Storage key; set on export
 
-  createdAt     DateTime          @default(now())
+  createdAt DateTime @default(now())
 
   @@unique([auditId, version])
   @@index([auditId, status])
@@ -686,46 +686,46 @@ model AuditReport {
 // ─── 6.7 IMPORTS ────────────────────────────────────────────────────────
 
 model ImportJob {
-  id               String         @id @default(cuid())
-  companyId        String
-  company          Company        @relation(fields: [companyId], references: [id])
-  uploadedById     String
-  uploadedBy       User           @relation(fields: [uploadedById], references: [id])
+  id           String  @id @default(cuid())
+  companyId    String
+  company      Company @relation(fields: [companyId], references: [id])
+  uploadedById String
+  uploadedBy   User    @relation(fields: [uploadedById], references: [id])
 
-  fileName         String
-  fileType         ImportFileType
-  filePath         String         // Supabase Storage key for the uploaded file
-  status           ImportStatus   @default(PENDING)
+  fileName String
+  fileType ImportFileType
+  filePath String // Supabase Storage key for the uploaded file
+  status   ImportStatus   @default(PENDING)
 
-  rowCountTotal    Int            @default(0)
-  rowCountImported Int            @default(0)
-  rowCountFailed   Int            @default(0)
-  errorLog         Json?          // Array of {row: number, error: string} objects
+  rowCountTotal    Int   @default(0)
+  rowCountImported Int   @default(0)
+  rowCountFailed   Int   @default(0)
+  errorLog         Json? // Array of {row: number, error: string} objects
 
   // Applied column mapping (copied from ImportColumnMapping at submission time)
   appliedMappingJson Json?
 
-  createdAt        DateTime       @default(now())
-  completedAt      DateTime?
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
 
-  columnMappings   ImportColumnMapping[]
-  shipments        ShipmentRecord[]
+  columnMappings ImportColumnMapping[]
+  shipments      ShipmentRecord[]
 
   @@index([companyId, status])
 }
 
 model ImportColumnMapping {
-  id            String    @id @default(cuid())
-  companyId     String
+  id           String     @id @default(cuid())
+  companyId    String
   // importJobId is nullable — mappings can be saved as reusable templates without being tied to a job
-  importJobId   String?
-  importJob     ImportJob? @relation(fields: [importJobId], references: [id])
-  templateName  String
+  importJobId  String?
+  importJob    ImportJob? @relation(fields: [importJobId], references: [id])
+  templateName String
   // JSON object: { sourceColumn: gtFieldName }
   // e.g. { "Shipment Date": "shipmentDate", "Volume (MT)": "volumeMt" }
-  mappingJson   Json
-  lastUsedAt    DateTime  @default(now())
-  createdAt     DateTime  @default(now())
+  mappingJson  Json
+  lastUsedAt   DateTime   @default(now())
+  createdAt    DateTime   @default(now())
 
   @@unique([companyId, templateName])
   @@index([companyId])
@@ -734,17 +734,17 @@ model ImportColumnMapping {
 // ─── 6.8 INTEGRATION PLACEHOLDERS ────────────────────────────────────────────────────────
 
 model IntegrationConfig {
-  id           String                @id @default(cuid())
-  companyId    String
-  company      Company               @relation(fields: [companyId], references: [id])
-  systemType   IntegrationSystemType
-  displayName  String
+  id          String                @id @default(cuid())
+  companyId   String
+  company     Company               @relation(fields: [companyId], references: [id])
+  systemType  IntegrationSystemType
+  displayName String
   // isActive is always false in v1 — no live connections
-  isActive     Boolean               @default(false)
+  isActive    Boolean               @default(false)
   // Stores placeholder settings: { endpointUrl: string, authType: "api_key" | "oauth2" | "none" }
-  configJson   Json
-  createdAt    DateTime              @default(now())
-  updatedAt    DateTime              @updatedAt
+  configJson  Json
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
 
   @@unique([companyId, systemType])
   @@index([companyId])
@@ -754,14 +754,14 @@ model IntegrationConfig {
 
 // Append-only log for critical state transitions (period lock/unlock, forced status changes)
 model ActivityLog {
-  id          String   @id @default(cuid())
-  actorId     String   // User who performed the action
-  action      String   // e.g. "CHECKLIST_LOCKED", "STATUS_FORCED", "PERIOD_UNLOCKED"
-  entityType  String   // e.g. "Checklist", "Audit"
-  entityId    String
-  reason      String   @db.Text // Mandatory for forced transitions and lock/unlock
-  metadata    Json?    // Additional context (old status, new status, etc.)
-  createdAt   DateTime @default(now())
+  id         String   @id @default(cuid())
+  actorId    String // User who performed the action
+  action     String // e.g. "CHECKLIST_LOCKED", "STATUS_FORCED", "PERIOD_UNLOCKED"
+  entityType String // e.g. "Checklist", "Audit"
+  entityId   String
+  reason     String   @db.Text // Mandatory for forced transitions and lock/unlock
+  metadata   Json? // Additional context (old status, new status, etc.)
+  createdAt  DateTime @default(now())
 
   @@index([entityType, entityId])
   @@index([actorId])
@@ -780,29 +780,29 @@ model Notification {
 
 model InviteToken {
   id        String    @id @default(cuid())
-  tokenHash String    @unique  // SHA-256 of the raw token — raw token is never stored
+  tokenHash String    @unique // SHA-256 of the raw token — raw token is never stored
   createdAt DateTime  @default(now())
-  expiresAt DateTime             // 30 days from creation
-  usedAt    DateTime?            // null = unused; set atomically on sign-up
+  expiresAt DateTime // 30 days from creation
+  usedAt    DateTime? // null = unused; set atomically on sign-up
 }
 
 model ProductionRecord {
-  id              String           @id @default(cuid())
-  companyId       String
-  company         Company          @relation(fields: [companyId], references: [id])
-  recordedById    String
-  recordedBy      User             @relation(fields: [recordedById], references: [id])
+  id           String  @id @default(cuid())
+  companyId    String
+  company      Company @relation(fields: [companyId], references: [id])
+  recordedById String
+  recordedBy   User    @relation(fields: [recordedById], references: [id])
 
-  productionDate  DateTime         @db.Date
-  ffbReceivedMt   Decimal          @db.Decimal(18, 4)
-  cpoProducedMt   Decimal          @db.Decimal(18, 4)
-  pkoProducedMt   Decimal          @db.Decimal(18, 4)
-  notes           String?          @db.Text
+  productionDate DateTime @db.Date
+  ffbReceivedMt  Decimal  @db.Decimal(18, 4)
+  cpoProducedMt  Decimal  @db.Decimal(18, 4)
+  pkoProducedMt  Decimal  @db.Decimal(18, 4)
+  notes          String?  @db.Text
 
-  source          ProductionSource @default(MANUAL)
+  source ProductionSource @default(MANUAL)
 
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([companyId, productionDate])
   @@index([companyId, productionDate])
