@@ -17,6 +17,7 @@ export default function AggregatorChecklistReviewPage({
     const [actionLoading, setActionLoading] = useState(false)
     const [actionError, setActionError] = useState<string | null>(null)
     const [actionSuccess, setActionSuccess] = useState<string | null>(null)
+    const [forceReason, setForceReason] = useState('')
 
     useEffect(() => {
         Promise.all([
@@ -67,6 +68,28 @@ export default function AggregatorChecklistReviewPage({
             setActionError(data.error)
         } else {
             setActionSuccess('Sent to External Audit successfully.')
+            window.location.reload()
+        }
+    }
+
+    const handleForceToReview = async () => {
+        if (!forceReason) {
+            setActionError('Please enter a reason.')
+            return
+        }
+        setActionError(null)
+        setActionLoading(true)
+        const res = await fetch(`/api/checklists/${params.checklistId}/force-status`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'UNDER_REVIEW', reason: forceReason })
+        })
+        const data = await res.json()
+        setActionLoading(false)
+        if (data.error) {
+            setActionError(data.error)
+        } else {
+            setActionSuccess('Checklist forced to UNDER REVIEW.')
             window.location.reload()
         }
     }
@@ -142,6 +165,30 @@ export default function AggregatorChecklistReviewPage({
                         ))}
                     </div>
                 </div>
+
+                {checklist.status === 'DRAFT' && (
+                    <div className="border-t border-zinc-100 pt-6">
+                        <h3 className="text-sm font-semibold text-zinc-700 mb-1">Super Admin — Force Status</h3>
+                        <p className="text-xs text-zinc-400 mb-4">Bypass normal submission validation and move this checklist directly to UNDER REVIEW.</p>
+                        <div className="bg-amber-50 p-4 rounded-xl border border-amber-100">
+                            <textarea
+                                className="w-full text-sm border border-amber-200 rounded-lg p-2 mb-3 bg-white focus:outline-none focus:ring-2 focus:ring-amber-300"
+                                rows={2}
+                                placeholder="Reason for forcing status change..."
+                                value={forceReason}
+                                onChange={e => setForceReason(e.target.value)}
+                            />
+                            <button
+                                onClick={handleForceToReview}
+                                disabled={actionLoading || !forceReason}
+                                className="w-full text-sm font-semibold text-white px-4 py-2 rounded-lg transition disabled:opacity-50"
+                                style={{ background: '#d97706' }}
+                            >
+                                Force to UNDER REVIEW
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 {checklist.status === 'UNDER_REVIEW' && (
                     <div className="border-t border-zinc-100 pt-6">
