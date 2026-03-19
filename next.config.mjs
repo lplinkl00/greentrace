@@ -36,6 +36,16 @@ import fs from 'node:fs'
             else callback(err, result)
         })
     }
+    // sync form (used by @nodelib/fs.scandir inside postcss-loader)
+    const origSync = fs.readdirSync.bind(fs)
+    fs.readdirSync = function (path, options) {
+        try {
+            return origSync(path, options)
+        } catch (err) {
+            if (err?.code === 'EPERM') return []
+            throw err
+        }
+    }
 })()
 
 // Patch 1 – main process fs.promises.readlink (for @vercel/nft)
@@ -93,6 +103,13 @@ const nextConfig = {
                             if (err?.code === 'EPERM') callback(null, [])
                             else callback(err, result)
                         })
+                    }
+                    if (typeof fs.readdirSync === 'function') {
+                        const origSync = fs.readdirSync.bind(fs)
+                        fs.readdirSync = function (path, options) {
+                            try { return origSync(path, options) }
+                            catch (err) { if (err?.code === 'EPERM') return []; throw err }
+                        }
                     }
                 }
                 patchReadlink(compiler.inputFileSystem)
