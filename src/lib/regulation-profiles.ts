@@ -1,5 +1,42 @@
 import { prisma } from './prisma'
-import { RegulationCode } from '@prisma/client'
+import { GHGScope, RegulationCode } from '@prisma/client'
+
+// ─── Fixture import types ────────────────────────────────────────────────────
+
+export type FixtureRequirement = {
+    code: string
+    name: string
+    description: string
+    guidanceText?: string | null
+    dataType: string
+    criticality: string
+    ghgScope?: string | null
+    unit?: string | null
+    requiresForm?: boolean
+    displayOrder?: number
+}
+
+export type FixtureCategory = {
+    code: string
+    name: string
+    displayOrder?: number
+    requirements: FixtureRequirement[]
+}
+
+export type FixturePillar = {
+    code: string
+    name: string
+    displayOrder?: number
+    categories: FixtureCategory[]
+}
+
+export type RegulationProfileFixture = {
+    regulation: RegulationCode
+    version: string
+    name: string
+    description?: string | null
+    pillars: FixturePillar[]
+}
 
 // ─── Regulation Profiles ────────────────────────────────────────────────────
 
@@ -42,6 +79,46 @@ export async function createProfile(data: {
     description?: string
 }) {
     return prisma.regulationProfile.create({ data })
+}
+
+export async function importProfile(fixture: RegulationProfileFixture) {
+    return prisma.regulationProfile.create({
+        data: {
+            regulation: fixture.regulation,
+            version: fixture.version,
+            name: fixture.name,
+            description: fixture.description ?? null,
+            pillars: {
+                create: fixture.pillars.map((pillar, pi) => ({
+                    code: pillar.code,
+                    name: pillar.name,
+                    displayOrder: pillar.displayOrder ?? pi,
+                    categories: {
+                        create: pillar.categories.map((cat, ci) => ({
+                            code: cat.code,
+                            name: cat.name,
+                            displayOrder: cat.displayOrder ?? ci,
+                            requirements: {
+                                create: cat.requirements.map((req, ri) => ({
+                                    code: req.code,
+                                    name: req.name,
+                                    description: req.description,
+                                    guidanceText: req.guidanceText ?? null,
+                                    dataType: req.dataType as any,
+                                    criticality: req.criticality as any,
+                                    ghgScope: (req.ghgScope ?? null) as GHGScope | null,
+                                    unit: req.unit ?? null,
+                                    requiresForm: req.requiresForm ?? false,
+                                    displayOrder: req.displayOrder ?? ri,
+                                })),
+                            },
+                        })),
+                    },
+                })),
+            },
+        },
+        include: { _count: { select: { pillars: true } } },
+    })
 }
 
 export async function updateProfile(
