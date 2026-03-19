@@ -1,5 +1,5 @@
 import { prisma } from './prisma'
-import { GHGScope, RegulationCode } from '@prisma/client'
+import { GHGScope, RegulationCode, RequirementDataType, RequirementCriticality } from '@prisma/client'
 
 // ─── Fixture import types ────────────────────────────────────────────────────
 
@@ -8,9 +8,9 @@ export type FixtureRequirement = {
     name: string
     description: string
     guidanceText?: string | null
-    dataType: string
-    criticality: string
-    ghgScope?: string | null
+    dataType: RequirementDataType
+    criticality: RequirementCriticality
+    ghgScope?: GHGScope | null
     unit?: string | null
     requiresForm?: boolean
     displayOrder?: number
@@ -104,9 +104,9 @@ export async function importProfile(fixture: RegulationProfileFixture) {
                                     name: req.name,
                                     description: req.description,
                                     guidanceText: req.guidanceText ?? null,
-                                    dataType: req.dataType as any,
-                                    criticality: req.criticality as any,
-                                    ghgScope: (req.ghgScope ?? null) as GHGScope | null,
+                                    dataType: req.dataType,
+                                    criticality: req.criticality,
+                                    ghgScope: req.ghgScope ?? null,
                                     unit: req.unit ?? null,
                                     requiresForm: req.requiresForm ?? false,
                                     displayOrder: req.displayOrder ?? ri,
