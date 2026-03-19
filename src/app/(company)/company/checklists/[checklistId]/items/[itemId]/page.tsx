@@ -1,5 +1,6 @@
 import { ChecklistItemComments } from '@/components/checklist-item-comments'
 import { ChecklistItemDataEntry } from '@/components/checklist-item-data-entry'
+import { ChecklistItemDocuments } from '@/components/checklist-item-documents'
 import { ChecklistItemStatus } from '@/components/checklist-item-status'
 
 export default function ChecklistItemDetailPage({
@@ -21,16 +22,7 @@ export default function ChecklistItemDetailPage({
                 <div className="lg:col-span-2 space-y-4">
                     <ChecklistItemDataEntry checklistId={params.checklistId} itemId={params.itemId} />
 
-                    {/* Document Upload */}
-                    <div className="bg-white shadow rounded-lg p-6">
-                        <h2 className="font-semibold text-gray-800 mb-4">Documents</h2>
-                        <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                            <p className="text-sm text-gray-500">Drag & drop files here, or click to browse</p>
-                            <p className="text-xs text-gray-400 mt-1">PDF, JPEG, PNG, XLSX, CSV, DOCX — max 25 MB</p>
-                            <input type="file" className="mt-2" />
-                        </div>
-                        <div className="mt-4 text-sm text-gray-500">No documents uploaded yet.</div>
-                    </div>
+                    <ChecklistItemDocuments itemId={params.itemId} />
                 </div>
 
                 {/* Comment Thread + Status */}
