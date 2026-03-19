@@ -200,6 +200,7 @@ export default function NewRegulationProfilePage() {
             return
         }
 
+        setManualSubmitting(false)
         router.push('/aggregator/regulation-profiles')
     }
 
@@ -236,6 +237,7 @@ export default function NewRegulationProfilePage() {
         const reader = new FileReader()
         reader.onload = ev => parseJson((ev.target?.result as string) ?? '')
         reader.readAsText(file)
+        e.target.value = ''  // allow re-uploading same filename
     }
 
     // ── Import submit ────────────────────────────────────────────────────────
@@ -260,6 +262,7 @@ export default function NewRegulationProfilePage() {
             return
         }
 
+        setImporting(false)
         router.push('/aggregator/regulation-profiles')
     }
 
