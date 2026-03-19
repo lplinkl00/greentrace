@@ -12,19 +12,21 @@ export default function AggregatorChecklistReviewPage({
     const [checklist, setChecklist] = useState<any>(null)
     const [loading, setLoading] = useState(true)
     const [auditorId, setAuditorId] = useState('')
+    const [auditors, setAuditors] = useState<{ id: string; name: string; email: string }[]>([])
     const [returnReason, setReturnReason] = useState('')
     const [actionLoading, setActionLoading] = useState(false)
     const [actionError, setActionError] = useState<string | null>(null)
     const [actionSuccess, setActionSuccess] = useState<string | null>(null)
 
     useEffect(() => {
-        fetch(`/api/checklists/${params.checklistId}`)
-            .then(res => res.json())
-            .then(data => {
-                setChecklist(data.data)
-                setLoading(false)
-            })
-            .catch(() => setLoading(false))
+        Promise.all([
+            fetch(`/api/checklists/${params.checklistId}`).then(r => r.json()),
+            fetch(`/api/users?role=AUDITOR`).then(r => r.json()),
+        ]).then(([checklistData, auditorsData]) => {
+            setChecklist(checklistData.data)
+            setAuditors(auditorsData.data ?? [])
+            setLoading(false)
+        }).catch(() => setLoading(false))
     }, [params.checklistId])
 
     const handleReturnToCompany = async () => {
@@ -177,7 +179,14 @@ export default function AggregatorChecklistReviewPage({
                                     onChange={e => setAuditorId(e.target.value)}
                                 >
                                     <option value="">Select Auditor...</option>
-                                    <option value="test-auditor-uuid">Jane Doe (Test Auditor)</option>
+                                    {auditors.length === 0 && (
+                                        <option disabled value="">No auditors registered</option>
+                                    )}
+                                    {auditors.map(a => (
+                                        <option key={a.id} value={a.id}>
+                                            {a.name} ({a.email})
+                                        </option>
+                                    ))}
                                 </select>
                                 <button
                                     onClick={handleSendToAudit}
