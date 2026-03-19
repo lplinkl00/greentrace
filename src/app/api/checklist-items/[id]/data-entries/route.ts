@@ -32,6 +32,8 @@ export const POST = withAuth(
         emissionFactorId: emissionFactorId ?? null,
         reportingMonth: reportingMonth ? new Date(`${reportingMonth}-01`) : null,
         notes: notes ?? null,
+        valueConverted: co2eValue ?? null,
+        unitReference: co2eUnit ?? null,
       })
 
       return NextResponse.json({ data: entry, error: null, meta: null }, { status: 201 })

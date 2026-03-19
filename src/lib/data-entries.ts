@@ -36,6 +36,8 @@ export async function createDataEntry(data: {
     reportingMonth?: Date | null
     location?: string | null
     notes?: string | null
+    valueConverted?: number | null
+    unitReference?: string | null
 }) {
     // Check the checklist is not locked
     const item = await prisma.checklistItem.findUniqueOrThrow({
@@ -48,8 +50,9 @@ export async function createDataEntry(data: {
     }
 
     let emissionFactorId = data.emissionFactorId ?? null
-    let valueConverted: Prisma.Decimal | null = null
-    let unitReference: string | null = null
+    let valueConverted: Prisma.Decimal | null =
+        data.valueConverted != null ? new Prisma.Decimal(data.valueConverted) : null
+    let unitReference: string | null = data.unitReference ?? null
 
     // GHG-4: Auto-select default factor if scope is set and no factor provided
     if (!emissionFactorId && item.requirement.ghgScope) {
@@ -58,7 +61,7 @@ export async function createDataEntry(data: {
         // This would require knowing the materialType from context
     }
 
-    // GHG-1 & GHG-2: Compute if factor is provided
+    // GHG-1 & GHG-2: Compute if factor is provided (overrides caller-supplied values)
     if (emissionFactorId && data.valueRaw != null) {
         const factor = await prisma.emissionFactor.findUniqueOrThrow({
             where: { id: emissionFactorId },
