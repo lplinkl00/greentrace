@@ -3,7 +3,9 @@ import { withAuth } from '@/lib/auth'
 import { UserRole } from '@prisma/client'
 import { sendToAudit } from '@/lib/checklist-workflow'
 
-export const POST = withAuth([UserRole.AGGREGATOR_MANAGER], async (request: Request, context: any, user: any) => {
+export const POST = withAuth(
+  [UserRole.AGGREGATOR_MANAGER, UserRole.SUPER_ADMIN],
+  async (request: Request, context: any, user: any) => {
     const { id } = context.params
     const body = await request.json()
 
@@ -17,4 +19,5 @@ export const POST = withAuth([UserRole.AGGREGATOR_MANAGER], async (request: Requ
     } catch (e: any) {
         return NextResponse.json({ error: e.message }, { status: 400 })
     }
-})
+  }
+)
