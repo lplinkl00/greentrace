@@ -1,3 +1,247 @@
+# Regulation Profile Import Implementation Plan
+
+> **For Claude:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.
+
+**Goal:** Add a two-tab creation flow to `/aggregator/regulation-profiles/new` — Manual (existing shell form) + Import JSON (file upload/paste with preview and AI prompt template) — backed by a new `POST /api/regulation-profiles/import` endpoint.
+
+**Architecture:** Three independent pieces wired together: (1) `importProfile()` lib function does the full nested Prisma create, (2) the import API route validates + calls it, (3) the page replaces the existing single-form with a tabbed layout that includes the import UI and the collapsible prompt template drawer.
+
+**Tech Stack:** Next.js 14 App Router, TypeScript, Prisma v7 + PrismaPg adapter, Tailwind CSS, React useState/useEffect, `withAuth` middleware pattern.
+
+---
+
+## Context
+
+- Design doc: `docs/plans/2026-03-19-regulation-profile-import-design.md`
+- Existing page to replace: `src/app/(aggregator)/aggregator/regulation-profiles/new/page.tsx`
+- Existing lib: `src/lib/regulation-profiles.ts`
+- Fixture format reference: `prisma/fixtures/iscc-eu.json`
+- `RegulationCode` enum values: `ISCC_EU`, `ISCC_PLUS`, `RSPO_PC`, `RSPO_SCCS`
+- `RequirementDataType` values: `ABSOLUTE_QUANTITY`, `RATE`, `DOCUMENT_ONLY`, `TEXT_RESPONSE`
+- `RequirementCriticality` values: `CRITICAL`, `NON_CRITICAL`
+- `GhgScope` values: `SCOPE1`, `SCOPE2`, `SCOPE3` (nullable)
+- Auth pattern: `withAuth([UserRole.SUPER_ADMIN], async (request, context, user) => {...})`
+- No test files exist in this project — verification is done by running `bun run build` and browser smoke-testing via `mcp__Claude_Preview__*` tools
+
+---
+
+### Task 1: Add `importProfile()` to regulation-profiles lib
+
+**Files:**
+- Modify: `src/lib/regulation-profiles.ts`
+
+**Step 1: Add the fixture type and importProfile function**
+
+At the top of `src/lib/regulation-profiles.ts`, after the existing imports, add a `RegulationProfileFixture` TypeScript type, then add the `importProfile()` function after `createProfile()`.
+
+Add this to `src/lib/regulation-profiles.ts` (after the existing imports, before `getProfiles`):
+
+```typescript
+// ─── Fixture import types ────────────────────────────────────────────────────
+
+export type FixtureRequirement = {
+    code: string
+    name: string
+    description: string
+    guidanceText?: string | null
+    dataType: string
+    criticality: string
+    ghgScope?: string | null
+    unit?: string | null
+    requiresForm?: boolean
+    displayOrder?: number
+}
+
+export type FixtureCategory = {
+    code: string
+    name: string
+    displayOrder?: number
+    requirements: FixtureRequirement[]
+}
+
+export type FixturePillar = {
+    code: string
+    name: string
+    displayOrder?: number
+    categories: FixtureCategory[]
+}
+
+export type RegulationProfileFixture = {
+    regulation: RegulationCode
+    version: string
+    name: string
+    description?: string | null
+    pillars: FixturePillar[]
+}
+```
+
+Then add `importProfile()` right after `createProfile()`:
+
+```typescript
+export async function importProfile(fixture: RegulationProfileFixture) {
+    return prisma.regulationProfile.create({
+        data: {
+            regulation: fixture.regulation,
+            version: fixture.version,
+            name: fixture.name,
+            description: fixture.description ?? null,
+            pillars: {
+                create: fixture.pillars.map((pillar, pi) => ({
+                    code: pillar.code,
+                    name: pillar.name,
+                    displayOrder: pillar.displayOrder ?? pi,
+                    categories: {
+                        create: pillar.categories.map((cat, ci) => ({
+                            code: cat.code,
+                            name: cat.name,
+                            displayOrder: cat.displayOrder ?? ci,
+                            requirements: {
+                                create: cat.requirements.map((req, ri) => ({
+                                    code: req.code,
+                                    name: req.name,
+                                    description: req.description,
+                                    guidanceText: req.guidanceText ?? null,
+                                    dataType: req.dataType as any,
+                                    criticality: req.criticality as any,
+                                    ghgScope: req.ghgScope ?? null,
+                                    unit: req.unit ?? null,
+                                    requiresForm: req.requiresForm ?? false,
+                                    displayOrder: req.displayOrder ?? ri,
+                                })),
+                            },
+                        })),
+                    },
+                })),
+            },
+        },
+        include: { _count: { select: { pillars: true } } },
+    })
+}
+```
+
+**Step 2: Verify TypeScript compiles**
+
+```bash
+cd "D:/Claude Code" && bun run build 2>&1 | tail -20
+```
+
+Expected: Build succeeds (or only pre-existing lint errors, no new type errors).
+
+**Step 3: Commit**
+
+```bash
+cd "D:/Claude Code" && git add src/lib/regulation-profiles.ts && git commit -m "feat: add importProfile() lib function for full nested profile create"
+```
+
+---
+
+### Task 2: Create the import API route
+
+**Files:**
+- Create: `src/app/api/regulation-profiles/import/route.ts`
+
+**Step 1: Create the route file**
+
+```typescript
+import { NextResponse } from 'next/server'
+import { withAuth } from '@/lib/auth'
+import { UserRole, RegulationCode } from '@prisma/client'
+import { importProfile, RegulationProfileFixture } from '@/lib/regulation-profiles'
+import { prisma } from '@/lib/prisma'
+
+const VALID_REGULATIONS = Object.values(RegulationCode) as string[]
+
+export const POST = withAuth(
+    [UserRole.SUPER_ADMIN],
+    async (request: Request, _context: any, _user: any) => {
+        let body: any
+        try {
+            body = await request.json()
+        } catch {
+            return NextResponse.json(
+                { error: { message: 'Invalid JSON body.' } },
+                { status: 400 }
+            )
+        }
+
+        const { regulation, version, name, pillars } = body
+
+        // Validate required fields
+        if (!regulation || !VALID_REGULATIONS.includes(regulation)) {
+            return NextResponse.json(
+                { error: { message: `regulation must be one of: ${VALID_REGULATIONS.join(', ')}` } },
+                { status: 422 }
+            )
+        }
+        if (!version || typeof version !== 'string' || !version.trim()) {
+            return NextResponse.json(
+                { error: { message: 'version is required.' } },
+                { status: 422 }
+            )
+        }
+        if (!name || typeof name !== 'string' || !name.trim()) {
+            return NextResponse.json(
+                { error: { message: 'name is required.' } },
+                { status: 422 }
+            )
+        }
+        if (!Array.isArray(pillars) || pillars.length === 0) {
+            return NextResponse.json(
+                { error: { message: 'pillars must be a non-empty array.' } },
+                { status: 422 }
+            )
+        }
+
+        // Duplicate check
+        const existing = await prisma.regulationProfile.findUnique({
+            where: { regulation_version: { regulation, version } },
+        })
+        if (existing) {
+            return NextResponse.json(
+                { error: { message: `A profile for ${regulation} version "${version}" already exists.` } },
+                { status: 409 }
+            )
+        }
+
+        try {
+            const profile = await importProfile(body as RegulationProfileFixture)
+            return NextResponse.json({ data: profile }, { status: 201 })
+        } catch (e: any) {
+            return NextResponse.json(
+                { error: { message: e.message ?? 'Failed to import profile.' } },
+                { status: 500 }
+            )
+        }
+    }
+)
+```
+
+**Step 2: Verify TypeScript compiles**
+
+```bash
+cd "D:/Claude Code" && bun run build 2>&1 | tail -20
+```
+
+Expected: Build succeeds.
+
+**Step 3: Commit**
+
+```bash
+cd "D:/Claude Code" && git add src/app/api/regulation-profiles/import/route.ts && git commit -m "feat: add POST /api/regulation-profiles/import endpoint"
+```
+
+---
+
+### Task 3: Replace the new profile page with two-tab layout
+
+**Files:**
+- Replace: `src/app/(aggregator)/aggregator/regulation-profiles/new/page.tsx`
+
+**Step 1: Write the full page**
+
+Replace the entire file with:
+
+```tsx
 'use client'
 
 import { useState, useRef } from 'react'
@@ -156,6 +400,7 @@ function countStats(fixture: RegulationProfileFixture) {
 export default function NewRegulationProfilePage() {
     const router = useRouter()
 
+    // Tab
     const [tab, setTab] = useState<Tab>('manual')
 
     // Manual form state
@@ -200,7 +445,6 @@ export default function NewRegulationProfilePage() {
             return
         }
 
-        setManualSubmitting(false)
         router.push('/aggregator/regulation-profiles')
     }
 
@@ -237,7 +481,6 @@ export default function NewRegulationProfilePage() {
         const reader = new FileReader()
         reader.onload = ev => parseJson((ev.target?.result as string) ?? '')
         reader.readAsText(file)
-        e.target.value = ''  // allow re-uploading same filename
     }
 
     // ── Import submit ────────────────────────────────────────────────────────
@@ -262,7 +505,6 @@ export default function NewRegulationProfilePage() {
             return
         }
 
-        setImporting(false)
         router.push('/aggregator/regulation-profiles')
     }
 
@@ -286,7 +528,11 @@ export default function NewRegulationProfilePage() {
         URL.revokeObjectURL(url)
     }
 
+    // ── Stats derived ────────────────────────────────────────────────────────
+
     const stats = fixture ? countStats(fixture) : null
+
+    // ─────────────────────────────────────────────────────────────────────────
 
     return (
         <div className="max-w-2xl space-y-6">
@@ -334,6 +580,7 @@ export default function NewRegulationProfilePage() {
                                 ))}
                             </select>
                         </div>
+
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Version</label>
                             <input
@@ -342,6 +589,7 @@ export default function NewRegulationProfilePage() {
                                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
                             />
                         </div>
+
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
                             <input
@@ -350,6 +598,7 @@ export default function NewRegulationProfilePage() {
                                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
                             />
                         </div>
+
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Description <span className="text-gray-400 font-normal">(optional)</span>
@@ -360,7 +609,9 @@ export default function NewRegulationProfilePage() {
                                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
                             />
                         </div>
+
                         {manualError && <p className="text-sm text-red-600">{manualError}</p>}
+
                         <div className="flex gap-3 pt-2">
                             <button
                                 type="submit" disabled={manualSubmitting}
@@ -400,11 +651,13 @@ export default function NewRegulationProfilePage() {
                                 onChange={handleFileUpload}
                             />
                         </div>
+
                         <div className="flex items-center gap-3 text-xs text-gray-400">
                             <div className="flex-1 h-px bg-gray-200" />
                             or paste JSON below
                             <div className="flex-1 h-px bg-gray-200" />
                         </div>
+
                         <div>
                             <textarea
                                 rows={10}
@@ -415,8 +668,11 @@ export default function NewRegulationProfilePage() {
                                 spellCheck={false}
                             />
                         </div>
+
                         {parseError && (
-                            <p className="text-sm text-red-600">⚠ {parseError}</p>
+                            <p className="text-sm text-red-600 flex items-center gap-1">
+                                ⚠ {parseError}
+                            </p>
                         )}
                     </div>
 
@@ -446,6 +702,7 @@ export default function NewRegulationProfilePage() {
                                 <span>·</span>
                                 <span>{stats.requirements} requirement{stats.requirements !== 1 ? 's' : ''}</span>
                             </div>
+                            {/* Pillar tree */}
                             <div className="space-y-1.5">
                                 {fixture.pillars.map(p => (
                                     <div key={p.code} className="text-xs">
@@ -463,7 +720,9 @@ export default function NewRegulationProfilePage() {
                     )}
 
                     {/* Import button */}
-                    {importError && <p className="text-sm text-red-600">⚠ {importError}</p>}
+                    {importError && (
+                        <p className="text-sm text-red-600">⚠ {importError}</p>
+                    )}
                     <div className="flex gap-3">
                         <button
                             type="button"
@@ -488,9 +747,10 @@ export default function NewRegulationProfilePage() {
                             onClick={() => setPromptOpen(o => !o)}
                             className="w-full flex items-center justify-between px-5 py-3.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
                         >
-                            <span>Don&apos;t have a JSON? Generate one with AI</span>
+                            <span>Don't have a JSON? Generate one with AI</span>
                             {promptOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                         </button>
+
                         {promptOpen && (
                             <div className="border-t border-gray-100 p-5 space-y-4">
                                 <p className="text-xs text-gray-500">
@@ -498,6 +758,7 @@ export default function NewRegulationProfilePage() {
                                     Replace <code className="bg-gray-100 px-1 rounded">[REGULATION]</code> and{' '}
                                     <code className="bg-gray-100 px-1 rounded">[VERSION]</code> before sending.
                                 </p>
+
                                 <div className="relative">
                                     <pre className="bg-gray-50 border border-gray-200 rounded-md p-4 text-xs font-mono whitespace-pre-wrap text-gray-700 max-h-64 overflow-y-auto">
                                         {AI_PROMPT}
@@ -511,6 +772,7 @@ export default function NewRegulationProfilePage() {
                                         {copied ? 'Copied!' : 'Copy'}
                                     </button>
                                 </div>
+
                                 <button
                                     type="button"
                                     onClick={handleDownloadTemplate}
@@ -526,3 +788,68 @@ export default function NewRegulationProfilePage() {
         </div>
     )
 }
+```
+
+**Step 2: Verify TypeScript compiles**
+
+```bash
+cd "D:/Claude Code" && bun run build 2>&1 | tail -20
+```
+
+Expected: Build succeeds.
+
+**Step 3: Commit**
+
+```bash
+cd "D:/Claude Code" && git add src/app/(aggregator)/aggregator/regulation-profiles/new/page.tsx && git commit -m "feat: two-tab regulation profile creation with JSON import and AI prompt template"
+```
+
+---
+
+### Task 4: Smoke test the full flow
+
+Start the dev server if not running:
+
+```bash
+cd "D:/Claude Code" && bun run dev
+```
+
+**Test Manual tab:**
+1. Navigate to `http://localhost:3000/aggregator/regulation-profiles` as SUPER_ADMIN
+2. Click "+ New Profile" — verify you land on the new page with two tabs ("Manual" / "Import JSON")
+3. Fill in regulation=ISCC_PLUS, version=test-1, name=Test Shell → click Create Profile
+4. Verify redirect to list and new row appears
+
+**Test Import JSON tab (paste):**
+1. Navigate back to New Profile, click "Import JSON" tab
+2. Paste the contents of `prisma/fixtures/rspo-sccs.json` into the textarea
+3. Verify preview panel appears: regulation badge, version, pillar tree, counts
+4. Click "Import Profile"
+5. Verify redirect to list and new row with correct pillar count appears
+
+**Test Import JSON tab (file upload):**
+1. Click "Import JSON" tab, click "Click to select a .json file"
+2. Select `prisma/fixtures/rspo-pc.json`
+3. Verify preview appears, import succeeds
+
+**Test validation errors:**
+1. Paste `{}` — verify error "regulation must be one of..."
+2. Paste `{ "regulation": "ISCC_EU", "version": "", "name": "x", "pillars": [] }` — verify error about pillars
+
+**Test prompt template:**
+1. Click "Don't have a JSON? Generate one with AI" to expand
+2. Verify the AI prompt text is visible
+3. Click "Copy" — verify button changes to "Copied!"
+4. Click "Download blank template JSON" — verify download starts
+
+**Test duplicate detection:**
+1. Try importing `prisma/fixtures/iscc-eu.json` again (already seeded)
+2. Verify error toast/message: "A profile for ISCC_EU version '2024-v1' already exists."
+
+**Step 5: Final commit if smoke test passes**
+
+```bash
+cd "D:/Claude Code" && git status
+```
+
+If no uncommitted changes, the feature is complete.

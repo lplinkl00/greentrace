@@ -19,6 +19,10 @@ export default function CompanyListPage() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const router = useRouter()
+    const [showModal, setShowModal] = useState(false)
+    const [creating, setCreating] = useState(false)
+    const [createError, setCreateError] = useState<string | null>(null)
+    const [form, setForm] = useState({ name: '', code: '', location: '', country: '' })
 
     useEffect(() => {
         fetch('/api/companies')
@@ -26,6 +30,30 @@ export default function CompanyListPage() {
             .then(d => { setCompanies(d.data ?? []); setLoading(false) })
             .catch(() => { setError('Failed to load companies'); setLoading(false) })
     }, [])
+
+    const handleCreate = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!form.name.trim() || !form.code.trim()) {
+            setCreateError('Company name and code are required.')
+            return
+        }
+        setCreating(true)
+        setCreateError(null)
+        const res = await fetch('/api/companies', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(form),
+        })
+        const data = await res.json()
+        setCreating(false)
+        if (!res.ok) {
+            setCreateError(data.error?.message ?? 'Failed to create company.')
+            return
+        }
+        setCompanies(prev => [data.data, ...prev])
+        setShowModal(false)
+        setForm({ name: '', code: '', location: '', country: '' })
+    }
 
     if (loading) return (
         <div className="flex items-center justify-center h-64">
@@ -42,9 +70,8 @@ export default function CompanyListPage() {
                     <p className="text-sm text-zinc-400 mt-0.5">Manage all registered companies in the network.</p>
                 </div>
                 <button
-                    disabled
-                    title="Coming soon"
-                    className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-lg text-white opacity-50 cursor-not-allowed transition"
+                    onClick={() => { setShowModal(true); setCreateError(null) }}
+                    className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-lg text-white transition hover:opacity-90"
                     style={{ background: 'linear-gradient(135deg, #f97316 0%, #ef4444 100%)' }}
                 >
                     <Plus size={14} /> Add Company
@@ -116,6 +143,79 @@ export default function CompanyListPage() {
                     </table>
                 )}
             </div>
+            {showModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+                        <h2 className="text-lg font-bold text-zinc-900 mb-4">Add Company</h2>
+                        {createError && (
+                            <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg p-3 mb-4">
+                                {createError}
+                            </div>
+                        )}
+                        <form onSubmit={handleCreate} className="space-y-4">
+                            <div>
+                                <label className="block text-xs font-medium text-zinc-500 mb-1">Company Name *</label>
+                                <input
+                                    required
+                                    type="text"
+                                    value={form.name}
+                                    onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                                    className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+                                    placeholder="e.g. Sunrise Palm Mill"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-zinc-500 mb-1">Company Code *</label>
+                                <input
+                                    required
+                                    type="text"
+                                    value={form.code}
+                                    onChange={e => setForm(f => ({ ...f, code: e.target.value }))}
+                                    className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-orange-300"
+                                    placeholder="e.g. MY-SR-003"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-zinc-500 mb-1">Location</label>
+                                <input
+                                    type="text"
+                                    value={form.location}
+                                    onChange={e => setForm(f => ({ ...f, location: e.target.value }))}
+                                    className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+                                    placeholder="e.g. Jalan Sawit 1, Kuala Lumpur"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-zinc-500 mb-1">Country</label>
+                                <input
+                                    type="text"
+                                    value={form.country}
+                                    onChange={e => setForm(f => ({ ...f, country: e.target.value }))}
+                                    className="w-full border border-zinc-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300"
+                                    placeholder="e.g. Malaysia"
+                                />
+                            </div>
+                            <div className="flex gap-3 pt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowModal(false)}
+                                    className="flex-1 text-sm font-medium px-4 py-2 rounded-lg border border-zinc-200 text-zinc-600 hover:bg-zinc-50 transition"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={creating}
+                                    className="flex-1 text-sm font-semibold px-4 py-2 rounded-lg text-white transition disabled:opacity-50"
+                                    style={{ background: 'linear-gradient(135deg, #f97316 0%, #ef4444 100%)' }}
+                                >
+                                    {creating ? 'Creating…' : 'Create Company'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
