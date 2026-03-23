@@ -44,7 +44,7 @@ export async function validateChecklistSubmission(id: string) {
     }
 
     // DA-2: fetch unallocated shipments scoped to this period at DB level
-    const unallocatedShipments = await prisma.shipment.findMany({
+    const unallocatedShipments = await prisma.shipmentRecord.findMany({
         where: {
             companyId: checklist.companyId,
             isccAllocationPct: null,
