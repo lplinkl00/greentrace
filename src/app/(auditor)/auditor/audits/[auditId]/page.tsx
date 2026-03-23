@@ -155,10 +155,10 @@ export default function AuditDetailPage({
                     <span>Findings recorded</span>
                     <span>{Object.keys(findingsMap).length} / {items.length}</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full rounded-full h-2" style={{ backgroundColor: '#e4e4e7' }}>
                     <div
-                        className="bg-green-500 h-2 rounded-full transition-all"
-                        style={{ width: `${items.length > 0 ? (Object.keys(findingsMap).length / items.length) * 100 : 0}%` }}
+                        className="h-2 rounded-full transition-all"
+                        style={{ width: `${items.length > 0 ? (Object.keys(findingsMap).length / items.length) * 100 : 0}%`, backgroundColor: '#22c55e' }}
                     />
                 </div>
             </div>
