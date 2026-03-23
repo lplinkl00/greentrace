@@ -13,13 +13,15 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Email is required' }, { status: 400 })
     }
 
+    const origin = new URL(request.url).origin
+
     try {
         // Generate a recovery link via admin API (bypasses Supabase SMTP)
         const { data, error } = await supabaseAdmin.auth.admin.generateLink({
             type: 'recovery',
             email,
             options: {
-                redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/confirm`,
+                redirectTo: `${origin}/auth/confirm`,
             },
         })
 
@@ -28,7 +30,7 @@ export async function POST(request: Request) {
         // Build a direct link to /auth/confirm so our handler can call verifyOtp.
         // Using action_link (Supabase-hosted) causes Supabase to redirect back with
         // ?code= (PKCE) which our handler doesn't handle — token_hash is needed.
-        const resetLink = `${process.env.NEXT_PUBLIC_APP_URL}/auth/confirm?token_hash=${data.properties.hashed_token}&type=recovery`
+        const resetLink = `${origin}/auth/confirm?token_hash=${data.properties.hashed_token}&type=recovery`
 
         // Send the email via Resend API directly
         const res = await fetch('https://api.resend.com/emails', {
