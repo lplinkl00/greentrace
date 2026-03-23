@@ -1,0 +1,590 @@
+{
+  "regulation": "SEDG",
+  "version": "2025-v2",
+  "name": "Simplified ESG Disclosure Guide (SEDG) Version 2",
+  "description": "The SEDG for SMEs in Supply Chains is developed by Capital Markets Malaysia (CMM), an affiliate of the Securities Commission Malaysia (SC). Published July 2025. Contains 38 recommended disclosures across Environmental, Social and Governance pillars, divided into Basic, Intermediate and Advanced levels to cater for different sustainability maturity levels. Aligned with the ASEAN Simplified ESG Disclosure Guide for SMEs in Supply Chains (ASEAN Capital Markets Forum, April 2025).",
+  "pillars": [
+    {
+      "code": "ENV",
+      "name": "Environmental",
+      "displayOrder": 1,
+      "categories": [
+        {
+          "code": "ENV-01",
+          "name": "Emissions",
+          "displayOrder": 1,
+          "requirements": [
+            {
+              "code": "ENV-01-001",
+              "name": "Total Scope 1 GHG Emissions",
+              "description": "Report total Scope 1 (direct) GHG emissions in metric tonnes of CO2 equivalent. Covers: Carbon dioxide (CO2), Methane (CH4), Nitrous oxide (N2O), HFCs, PFCs, SF6, and NF3. Based on the GHG Protocol Corporate Accounting and Reporting Standard. [SEDG-E1.1 – Basic]",
+              "guidanceText": "Sum all direct GHG emissions from sources owned or controlled by your company. Include combustion of fuels in owned equipment, company vehicles, and any process emissions. Use the GHG Protocol Corporate Standard methodology. Report in metric tonnes of CO2 equivalent (tCO2e).",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "CRITICAL",
+              "ghgScope": "SCOPE1",
+              "unit": "tCO2e",
+              "requiresForm": true,
+              "displayOrder": 1
+            },
+            {
+              "code": "ENV-01-002",
+              "name": "Total Scope 2 GHG Emissions",
+              "description": "Report total Scope 2 (indirect) GHG emissions in metric tonnes of CO2 equivalent. Covers indirect emissions from the generation of purchased electricity, heat, or steam consumed by the company. [SEDG-E1.2 – Basic]",
+              "guidanceText": "Sum indirect GHG emissions from all purchased electricity, heating, cooling, and steam. Apply the applicable grid emission factor for your location. Report in metric tonnes of CO2 equivalent (tCO2e). Market-based or location-based methods are both acceptable; disclose which method is used.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "CRITICAL",
+              "ghgScope": "SCOPE2",
+              "unit": "tCO2e",
+              "requiresForm": true,
+              "displayOrder": 2
+            },
+            {
+              "code": "ENV-01-003",
+              "name": "Scope 1 GHG Emissions Reduction",
+              "description": "Report total Scope 1 GHG emissions reduced as a direct result of reduction initiatives, in metric tonnes of CO2 equivalent. [SEDG-E1.3 – Intermediate]",
+              "guidanceText": "Calculate the reduction achieved compared to a baseline year or business-as-usual scenario, attributable directly to specific reduction initiatives (e.g. fuel switching, efficiency improvements, process changes). Document each initiative and its attributed reduction separately before summing.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "CRITICAL",
+              "ghgScope": "SCOPE1",
+              "unit": "tCO2e",
+              "requiresForm": true,
+              "displayOrder": 3
+            },
+            {
+              "code": "ENV-01-004",
+              "name": "Scope 2 GHG Emissions Reduction",
+              "description": "Report total Scope 2 GHG emissions reduced as a direct result of reduction initiatives, in metric tonnes of CO2 equivalent. [SEDG-E1.4 – Intermediate]",
+              "guidanceText": "Calculate the Scope 2 reduction attributable directly to specific initiatives (e.g. renewable energy procurement, energy efficiency upgrades). Compare against a baseline or business-as-usual scenario. Document each initiative and its attributed reduction separately before summing.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "CRITICAL",
+              "ghgScope": "SCOPE2",
+              "unit": "tCO2e",
+              "requiresForm": true,
+              "displayOrder": 4
+            },
+            {
+              "code": "ENV-01-005",
+              "name": "Total Scope 3 GHG Emissions",
+              "description": "Report total Scope 3 (other indirect) GHG emissions in metric tonnes of CO2 equivalent. Covers all other indirect emissions in the company's value chain not included in Scope 1 or Scope 2, based on the GHG Protocol Corporate Value Chain (Scope 3) Standard. [SEDG-E1.5 – Advanced]",
+              "guidanceText": "Identify relevant Scope 3 categories for your business (e.g. purchased goods and services, upstream transportation, business travel, waste generated in operations, use of sold products). Report the total across all material categories. Use supplier-specific or industry-average emission factors as available.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "NON_CRITICAL",
+              "ghgScope": "SCOPE3",
+              "unit": "tCO2e",
+              "requiresForm": true,
+              "displayOrder": 5
+            },
+            {
+              "code": "ENV-01-006",
+              "name": "Scope 3 GHG Emissions Reduction",
+              "description": "Report total Scope 3 GHG emissions reduced as a direct result of reduction initiatives, in metric tonnes of CO2 equivalent. [SEDG-E1.6 – Advanced]",
+              "guidanceText": "Calculate the Scope 3 reduction attributable directly to specific initiatives (e.g. supplier engagement programmes, product redesign, logistics optimisation). Compare against a baseline or business-as-usual scenario. Document each initiative and its attributed reduction separately before summing.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "NON_CRITICAL",
+              "ghgScope": "SCOPE3",
+              "unit": "tCO2e",
+              "requiresForm": true,
+              "displayOrder": 6
+            },
+            {
+              "code": "ENV-01-007",
+              "name": "Total Scope 1 and 2 GHG Intensity",
+              "description": "Report total Scope 1 and 2 GHG intensity in metric tonnes CO2 equivalent per unit of organisation-specific metrics. New in SEDG Version 2. [SEDG-E1.7 – Advanced]",
+              "guidanceText": "Divide total combined Scope 1 and Scope 2 emissions (tCO2e) by a relevant organisation-specific denominator (e.g. revenue in MYR, units produced, square metres of floor space, number of employees). Disclose the denominator used. This metric enables year-on-year performance tracking independent of business growth.",
+              "dataType": "RATE",
+              "criticality": "NON_CRITICAL",
+              "ghgScope": null,
+              "unit": "tCO2e per organisation-specific unit",
+              "requiresForm": true,
+              "displayOrder": 7
+            }
+          ]
+        },
+        {
+          "code": "ENV-02",
+          "name": "Energy",
+          "displayOrder": 2,
+          "requirements": [
+            {
+              "code": "ENV-02-001",
+              "name": "Energy Consumption",
+              "description": "Report the consumption of the following energy types in joules or watthours: renewable fuel sources, non-renewable fuel sources, electricity, heating (if applicable), cooling (if applicable), steam (if applicable). [SEDG-E2.1 – Basic]",
+              "guidanceText": "Collect consumption data from utility bills, meter readings, and fuel delivery records for each energy type. Convert all values to a consistent unit (joules or watthours). Renewable fuel sources include solar, wind, biomass and hydropower. Non-renewable fuel sources include diesel, natural gas, petrol, and coal. Report each sub-category separately.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": "joules or watthours",
+              "requiresForm": true,
+              "displayOrder": 1
+            },
+            {
+              "code": "ENV-02-002",
+              "name": "Energy Consumption Reduction",
+              "description": "Report the reduction in consumption of the following energy types achieved as a direct result of conservation and efficiency initiatives, in joules or watthours: non-renewable fuel sources, electricity, heating (if applicable), cooling (if applicable), steam (if applicable). [SEDG-E2.2 – Intermediate]",
+              "guidanceText": "Calculate the reduction compared to a baseline year or business-as-usual scenario, attributable directly to specific conservation or efficiency initiatives (e.g. LED lighting upgrades, equipment replacement, insulation improvements). Document each initiative. Note: renewable fuel sources are excluded from this reduction metric as the focus is on reducing non-renewable consumption.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": "joules or watthours",
+              "requiresForm": true,
+              "displayOrder": 2
+            }
+          ]
+        },
+        {
+          "code": "ENV-03",
+          "name": "Water",
+          "displayOrder": 3,
+          "requirements": [
+            {
+              "code": "ENV-03-001",
+              "name": "Total Water Withdrawn",
+              "description": "Report the total water withdrawn from all areas, and a breakdown of this total by type in litres: purchased water, surface water (if applicable), groundwater (if applicable), seawater (if applicable), produced water (if applicable). New in SEDG Version 2. [SEDG-E3.1 – Basic]",
+              "guidanceText": "Collect water withdrawal data from utility bills, water meters, and extraction records. Report in litres. Include all water sources used in company operations. 'Produced water' refers to water extracted as a by-product of industrial processes (e.g. from oil and gas operations). Report only applicable sources; mark non-applicable categories as N/A.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": "litres",
+              "requiresForm": true,
+              "displayOrder": 1
+            },
+            {
+              "code": "ENV-03-002",
+              "name": "Total Water Withdrawn Reduction",
+              "description": "Report the reduction in total water withdrawn from all areas, and a breakdown of this total by type in litres: purchased water, surface water (if applicable), groundwater (if applicable), seawater (if applicable), produced water (if applicable). [SEDG-E3.2 – Intermediate]",
+              "guidanceText": "Calculate the reduction compared to a baseline year or business-as-usual scenario, attributable directly to specific water conservation initiatives (e.g. recycling, process efficiency, rainwater harvesting). Document each initiative and its attributed reduction. Report by water source type, consistent with SEDG-E3.1 categories.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": "litres",
+              "requiresForm": true,
+              "displayOrder": 2
+            }
+          ]
+        },
+        {
+          "code": "ENV-04",
+          "name": "Waste",
+          "displayOrder": 4,
+          "requirements": [
+            {
+              "code": "ENV-04-001",
+              "name": "Total Waste",
+              "description": "Report total waste in metric tonnes: generated, diverted from disposal, and directed to disposal. [SEDG-E4.1 – Basic]",
+              "guidanceText": "Collect waste data from waste contractor records, internal waste logs, and disposal manifests. Report three figures: total waste generated (all waste produced), total waste diverted from disposal (sent to recycling, reuse, or other recovery), and total waste directed to disposal (sent to landfill, incineration, etc.). The sum of diverted and directed should equal total generated.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": "metric tonnes",
+              "requiresForm": true,
+              "displayOrder": 1
+            },
+            {
+              "code": "ENV-04-002",
+              "name": "Total Waste by Category",
+              "description": "Report total waste generated, diverted from disposal, and directed to disposal, each broken down by: hazardous waste, non-hazardous waste, sector-specific waste streams, and material composition — all in metric tonnes. [SEDG-E4.2 – Intermediate]",
+              "guidanceText": "Break down the three waste totals from SEDG-E4.1 into waste categories. Hazardous waste is defined by national regulations (e.g. Malaysia Scheduled Wastes under EQA). Sector-specific streams are waste types unique to your industry. Material composition refers to the material make-up of waste (e.g. paper, plastic, metal, organic). Report only applicable categories.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": "metric tonnes",
+              "requiresForm": true,
+              "displayOrder": 2
+            },
+            {
+              "code": "ENV-04-003",
+              "name": "Waste Diverted from Disposal by Recovery Stream",
+              "description": "Report total hazardous and non-hazardous waste diverted from disposal, broken down by recovery stream in metric tonnes: preparation for reuse, recycling, and other recovery options. [SEDG-E4.3 – Advanced]",
+              "guidanceText": "For waste diverted from disposal, report the quantity by recovery method. 'Preparation for reuse' includes cleaning, sorting, or repair. 'Recycling' includes material recovery processes. 'Other recovery' includes energy recovery from waste. Report separately for hazardous and non-hazardous waste streams.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "NON_CRITICAL",
+              "ghgScope": null,
+              "unit": "metric tonnes",
+              "requiresForm": true,
+              "displayOrder": 3
+            },
+            {
+              "code": "ENV-04-004",
+              "name": "Waste Directed to Disposal by Disposal Stream",
+              "description": "Report total hazardous and non-hazardous waste directed to disposal, broken down by disposal stream in metric tonnes: incineration (with energy recovery), incineration (without energy recovery), landfilling, and other disposal options. [SEDG-E4.4 – Advanced]",
+              "guidanceText": "For waste directed to disposal, report the quantity by disposal method. Obtain this breakdown from waste disposal contractor manifests and certificates of disposal. Report separately for hazardous and non-hazardous waste. Ensure disposal methods comply with applicable environmental regulations.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "NON_CRITICAL",
+              "ghgScope": null,
+              "unit": "metric tonnes",
+              "requiresForm": true,
+              "displayOrder": 4
+            }
+          ]
+        },
+        {
+          "code": "ENV-05",
+          "name": "Materials",
+          "displayOrder": 5,
+          "requirements": [
+            {
+              "code": "ENV-05-001",
+              "name": "Materials Used for Primary Products and Services",
+              "description": "List the materials and total weights used to produce and package the company's primary products and services in metric tonnes, if any. [SEDG-E5.1 – Basic]",
+              "guidanceText": "Identify all significant raw materials and packaging materials consumed in the production of your primary products and services. Obtain weight data from purchase records, production logs, or inventory systems. List each material type by name and its total weight in metric tonnes for the reporting period.",
+              "dataType": "TEXT_RESPONSE",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": "metric tonnes",
+              "requiresForm": true,
+              "displayOrder": 1
+            },
+            {
+              "code": "ENV-05-002",
+              "name": "Recycled Input Materials Percentage",
+              "description": "Report the percentage of recycled input materials used to manufacture the company's primary products and services. [SEDG-E5.2 – Advanced]",
+              "guidanceText": "Calculate: (weight of recycled input materials / total weight of all input materials) × 100. Recycled materials include post-consumer and post-industrial recycled content. Obtain data from material specifications and supplier declarations. Report as a percentage.",
+              "dataType": "RATE",
+              "criticality": "NON_CRITICAL",
+              "ghgScope": null,
+              "unit": "%",
+              "requiresForm": true,
+              "displayOrder": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "SOC",
+      "name": "Social",
+      "displayOrder": 2,
+      "categories": [
+        {
+          "code": "SOC-01",
+          "name": "Human Rights and Labour Practices",
+          "displayOrder": 1,
+          "requirements": [
+            {
+              "code": "SOC-01-001",
+              "name": "Child Labour and Forced Labour Incidents",
+              "description": "Report the number and nature of child labour and forced labour incidents, if any. Includes: number and description of child labour incidents; number and description of forced labour incidents. [SEDG-S1.1 – Basic]",
+              "guidanceText": "Review HR records, worker interviews, and supplier audit findings for the reporting period. Report zero if no incidents were identified. For each incident, describe the nature (e.g. type of violation, how discovered, corrective action taken). Child labour refers to work that deprives children of their childhood, potential and dignity. Forced labour includes any work extracted under threat or coercion.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": "number of incidents",
+              "requiresForm": true,
+              "displayOrder": 1
+            },
+            {
+              "code": "SOC-01-002",
+              "name": "Operations and Suppliers with Significant Labour Risk",
+              "description": "List the operations and suppliers considered to have significant risk for incidents of child labour and forced labour, including type of operation or supplier and locations at risk. [SEDG-S1.2 – Intermediate]",
+              "guidanceText": "Conduct a risk assessment of your operations and supply chain to identify areas with elevated risk of child or forced labour. Consider factors such as: countries with weak labour protections, industries with known labour risks, temporary or migrant worker populations, and complex multi-tier supply chains. For each high-risk operation or supplier, record the type and location.",
+              "dataType": "TEXT_RESPONSE",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": true,
+              "displayOrder": 2
+            }
+          ]
+        },
+        {
+          "code": "SOC-02",
+          "name": "Employee Management",
+          "displayOrder": 2,
+          "requirements": [
+            {
+              "code": "SOC-02-001",
+              "name": "Average Training Hours per Employee",
+              "description": "Report the average hours of training per employee. [SEDG-S2.1 – Basic]",
+              "guidanceText": "Calculate total training hours delivered to all employees during the reporting period, then divide by the total number of employees (use average headcount if it varied significantly during the period). Include all formal training: induction, on-the-job, safety, technical, and professional development. Exclude informal coaching and mentoring.",
+              "dataType": "RATE",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": "hours per employee",
+              "requiresForm": true,
+              "displayOrder": 1
+            },
+            {
+              "code": "SOC-02-002",
+              "name": "Total Employees and Turnover Rate",
+              "description": "Report the total number of employees and the employee turnover rate. [SEDG-S2.2 – Intermediate]",
+              "guidanceText": "Report headcount as of the last day of the reporting period or use the average for the period. Turnover rate = (number of employees who left during the period / average total employees) × 100. Include voluntary and involuntary departures. Exclude temporary contract expirations if not considered employees.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": "number (employees); % (turnover rate)",
+              "requiresForm": true,
+              "displayOrder": 2
+            },
+            {
+              "code": "SOC-02-003",
+              "name": "Employees Meeting Minimum Wage Laws",
+              "description": "Report the percentage of employees meeting or above applicable minimum wage laws, if any. New in SEDG Version 2. [SEDG-S2.3 – Basic]",
+              "guidanceText": "Review payroll records to confirm that all employees are remunerated at or above the applicable statutory minimum wage. Calculate: (number of employees paid at or above minimum wage / total employees) × 100. Report as a percentage. If your jurisdiction has no minimum wage law, state this and report N/A.",
+              "dataType": "RATE",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": "%",
+              "requiresForm": true,
+              "displayOrder": 3
+            }
+          ]
+        },
+        {
+          "code": "SOC-03",
+          "name": "Diversity, Equity and Inclusion",
+          "displayOrder": 3,
+          "requirements": [
+            {
+              "code": "SOC-03-001",
+              "name": "Employee Diversity by Gender and Age",
+              "description": "Report the percentage of the company's employees by gender and by age. [SEDG-S3.1 – Basic]",
+              "guidanceText": "Report gender breakdown as percentages of total employees. For age, use standard bands (e.g. under 30, 30–50, over 50) or those mandated by Bursa Malaysia guidelines. Obtain data from HR records. Report as of the last day of the reporting period or use the average for the period.",
+              "dataType": "RATE",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": "%",
+              "requiresForm": true,
+              "displayOrder": 1
+            },
+            {
+              "code": "SOC-03-002",
+              "name": "Director Diversity by Gender and Age",
+              "description": "Report the percentage of the company's directors by gender and by age. [SEDG-S3.2 – Intermediate]",
+              "guidanceText": "Report the gender and age breakdown of all board directors (or equivalent governing body members) as a percentage of total directors. Use the same age bands as SEDG-S3.1 for consistency. Obtain data from the company's register of directors. Report as of the last day of the reporting period.",
+              "dataType": "RATE",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": "%",
+              "requiresForm": true,
+              "displayOrder": 2
+            }
+          ]
+        },
+        {
+          "code": "SOC-04",
+          "name": "Occupational Health and Safety",
+          "displayOrder": 4,
+          "requirements": [
+            {
+              "code": "SOC-04-001",
+              "name": "Fatalities and Injuries",
+              "description": "Report the number of work-related fatalities and injuries in the company, if any. [SEDG-S4.1 – Basic]",
+              "guidanceText": "Report the total number of work-related fatalities and recordable injuries (injuries requiring medical treatment beyond first aid) that occurred during the reporting period. Include all employees and contractors under the company's direct supervision. Report zero if no incidents occurred. Maintain incident records as required by the Occupational Safety and Health Act (OSHA) 1994 or applicable national law.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": "number of incidents",
+              "requiresForm": true,
+              "displayOrder": 1
+            },
+            {
+              "code": "SOC-04-002",
+              "name": "Health and Safety Training",
+              "description": "Report the total number and percentage of employees trained on health and safety standards. [SEDG-S4.2 – Intermediate]",
+              "guidanceText": "Count all employees who received formal health and safety training during the reporting period. Include induction safety training, OSHA-mandated training, chemical handling (SDS/COSHH), first aid, fire safety, and any other formal H&S courses. Calculate: (number trained / total employees) × 100 for the percentage.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": "number (trained); % (of total employees)",
+              "requiresForm": true,
+              "displayOrder": 2
+            }
+          ]
+        },
+        {
+          "code": "SOC-05",
+          "name": "Community Engagement",
+          "displayOrder": 5,
+          "requirements": [
+            {
+              "code": "SOC-05-001",
+              "name": "Community Investments and Donations",
+              "description": "Report the total amount of community investments and donations. [SEDG-S5.1 – Basic]",
+              "guidanceText": "Sum all monetary contributions made to community programmes, charitable donations, and social investment initiatives during the reporting period. Include cash donations, in-kind contributions at fair value, and employee volunteer time at cost. Exclude sponsorships with a direct commercial benefit. Report in Malaysian Ringgit (MYR).",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": "MYR",
+              "requiresForm": true,
+              "displayOrder": 1
+            },
+            {
+              "code": "SOC-05-002",
+              "name": "Operations with Negative Community Impact",
+              "description": "List the company's operations with significant negative impact on local communities. [SEDG-S5.2 – Advanced]",
+              "guidanceText": "Identify operations that have caused or may cause significant negative impacts on local communities, such as noise, pollution, traffic, displacement, or reduced access to resources. For each identified operation, describe the nature of the impact, the affected community, and any mitigation measures in place or planned.",
+              "dataType": "TEXT_RESPONSE",
+              "criticality": "NON_CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": true,
+              "displayOrder": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "GOV",
+      "name": "Governance",
+      "displayOrder": 3,
+      "categories": [
+        {
+          "code": "GOV-01",
+          "name": "Governance Structure",
+          "displayOrder": 1,
+          "requirements": [
+            {
+              "code": "GOV-01-001",
+              "name": "Number of Directors",
+              "description": "Report the number of directors in the company. [SEDG-G1.1 – Basic]",
+              "guidanceText": "Report the total number of directors on the board (or equivalent governing body) as of the last day of the reporting period. Include executive and non-executive directors. If the company has no formal board (e.g. sole proprietorship or partnership), describe the equivalent governance structure.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": "number",
+              "requiresForm": true,
+              "displayOrder": 1
+            },
+            {
+              "code": "GOV-01-002",
+              "name": "Governance Structure",
+              "description": "List the governance structure of the board, including committees of the board and management, if applicable. [SEDG-G1.2 – Intermediate]",
+              "guidanceText": "Describe the board composition, including the roles of executive vs. non-executive directors, independent directors, and any board committees (e.g. Audit Committee, Risk Committee, Sustainability Committee). Include the management reporting structure relevant to ESG oversight. Reference the Malaysian Code on Corporate Governance (MCCG) where applicable.",
+              "dataType": "TEXT_RESPONSE",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": true,
+              "displayOrder": 2
+            }
+          ]
+        },
+        {
+          "code": "GOV-02",
+          "name": "Policy Commitments",
+          "displayOrder": 2,
+          "requirements": [
+            {
+              "code": "GOV-02-001",
+              "name": "List of Company Policies",
+              "description": "List the company's policies, including but not limited to: Code of Conduct, Anti-Corruption Policy, Whistleblowing Policy, Health and Safety Policy. [SEDG-G2.1 – Basic]",
+              "guidanceText": "List all formal written policies in place at the company. At minimum, include a Code of Conduct, Anti-Corruption Policy, Whistleblowing Policy, and Health and Safety Policy. For each policy, note the title, date of last review or approval, and whether it is publicly available. Policies should be approved by the board or senior management.",
+              "dataType": "TEXT_RESPONSE",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": true,
+              "displayOrder": 1
+            }
+          ]
+        },
+        {
+          "code": "GOV-03",
+          "name": "Risk Management and Reporting",
+          "displayOrder": 3,
+          "requirements": [
+            {
+              "code": "GOV-03-001",
+              "name": "Year of Last Audited Financial Report",
+              "description": "Report the year of the last submitted audited financial report. [SEDG-G3.1 – Basic]",
+              "guidanceText": "Report the financial year covered by the most recent audited financial statements submitted to the relevant authority (e.g. SSM in Malaysia). Audited financials are a key indicator of financial transparency and governance maturity. If the company is not required to submit audited financials, state the reason.",
+              "dataType": "TEXT_RESPONSE",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": "year",
+              "requiresForm": true,
+              "displayOrder": 1
+            },
+            {
+              "code": "GOV-03-002",
+              "name": "List of Operational and Activity Risks",
+              "description": "List the risks of company operations and activities, including but not limited to: regulatory compliance risk and business continuity risk. [SEDG-G3.2 – Intermediate]",
+              "guidanceText": "Conduct a risk assessment of your company's operations and activities. For each identified risk, describe: the risk type, its likelihood and potential impact, and the controls or mitigation measures in place. At minimum, address regulatory compliance risk and business continuity risk. Align with your company's enterprise risk management framework if one exists.",
+              "dataType": "TEXT_RESPONSE",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": true,
+              "displayOrder": 2
+            },
+            {
+              "code": "GOV-03-003",
+              "name": "List of Sustainability Risks",
+              "description": "List the sustainability risks of the company, if applicable, including but not limited to: climate-related physical risk and climate-related transition risk. [SEDG-G3.3 – Advanced]",
+              "guidanceText": "Identify sustainability-specific risks including climate-related risks (physical risks such as flooding or extreme heat; transition risks such as carbon pricing or changing consumer preferences), biodiversity risks, social risks, and supply chain sustainability risks. Align with TCFD recommendations and IFRS S1/S2 where possible. Describe likelihood, impact, and management approach for each risk.",
+              "dataType": "TEXT_RESPONSE",
+              "criticality": "NON_CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": true,
+              "displayOrder": 3
+            }
+          ]
+        },
+        {
+          "code": "GOV-04",
+          "name": "Anti-Corruption",
+          "displayOrder": 4,
+          "requirements": [
+            {
+              "code": "GOV-04-001",
+              "name": "Confirmed Corruption Incidents",
+              "description": "Report the total number and nature of confirmed incidents of corruption, if any. [SEDG-G4.1 – Basic]",
+              "guidanceText": "Report the number of confirmed corruption incidents (bribery, fraud, kickbacks, conflicts of interest, money laundering) identified during the reporting period through internal audits, whistleblowing reports, regulatory investigations, or other means. Report zero if no confirmed incidents occurred. For each incident, describe the nature, how it was discovered, and the response taken.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": "number of incidents",
+              "requiresForm": true,
+              "displayOrder": 1
+            },
+            {
+              "code": "GOV-04-002",
+              "name": "Anti-Bribery and Anti-Corruption Training",
+              "description": "Report the total number and percentage of employees who have received training on the company's anti-bribery and anti-corruption policy. [SEDG-G4.2 – Intermediate]",
+              "guidanceText": "Count all employees who completed formal anti-bribery and anti-corruption (ABAC) training during the reporting period or who hold a valid training certificate. Calculate: (number trained / total employees) × 100. Training should cover the company's ABAC policy, applicable laws (e.g. MACC Act 2009), and reporting procedures. Priority groups include those in procurement, sales, and finance.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": "number (trained); % (of total employees)",
+              "requiresForm": true,
+              "displayOrder": 2
+            },
+            {
+              "code": "GOV-04-003",
+              "name": "List of Corruption Risks",
+              "description": "List the significant risks related to corruption faced by the company. [SEDG-G4.3 – Advanced]",
+              "guidanceText": "Conduct a corruption risk assessment to identify areas of the business most exposed to bribery, fraud, or other corrupt practices. Consider: high-value procurement, government permit processes, customer-facing roles, third-party intermediaries, and geographies with elevated corruption risk. For each risk, describe the nature and the controls in place. Reference the Malaysian Anti-Corruption Commission (MACC) guidelines and the Adequate Procedures framework under Section 17A MACC Act.",
+              "dataType": "TEXT_RESPONSE",
+              "criticality": "NON_CRITICAL",
+              "ghgScope": null,
+              "unit": null,
+              "requiresForm": true,
+              "displayOrder": 3
+            }
+          ]
+        },
+        {
+          "code": "GOV-05",
+          "name": "Customer Privacy",
+          "displayOrder": 5,
+          "requirements": [
+            {
+              "code": "GOV-05-001",
+              "name": "Customer Data Privacy Complaints",
+              "description": "Report the total number and nature of substantiated complaints received concerning breaches of customer privacy and loss of customer data, if any. [SEDG-G5.1 – Intermediate]",
+              "guidanceText": "Report the number of substantiated complaints (complaints investigated and confirmed to be valid) relating to breaches of customer privacy or loss of customer data received during the reporting period. Report zero if no substantiated complaints were received. For each complaint, describe the nature of the breach, number of customers affected, and the remedial action taken. Ensure compliance with the Personal Data Protection Act (PDPA) 2010 in Malaysia.",
+              "dataType": "ABSOLUTE_QUANTITY",
+              "criticality": "CRITICAL",
+              "ghgScope": null,
+              "unit": "number of complaints",
+              "requiresForm": true,
+              "displayOrder": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

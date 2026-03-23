@@ -29,11 +29,12 @@ type CompanyStats = {
 }
 
 const STATUS_STYLE: Record<string, { bg: string; color: string }> = {
-    DRAFT: { bg: '#f4f4f5', color: '#71717a' },
-    SUBMITTED: { bg: '#eff6ff', color: '#2563eb' },
+    DRAFT:        { bg: '#f4f4f5', color: '#71717a' },
+    SUBMITTED:    { bg: '#eff6ff', color: '#2563eb' },
     UNDER_REVIEW: { bg: '#fef9c3', color: '#92400e' },
-    CERTIFIED: { bg: '#f0fdf4', color: '#15803d' },
-    REJECTED: { bg: '#fef2f2', color: '#dc2626' },
+    UNDER_AUDIT:  { bg: '#fff7ed', color: '#c2410c' },
+    CERTIFIED:    { bg: '#f0fdf4', color: '#15803d' },
+    LOCKED:       { bg: '#1c1917', color: '#fafaf9' },
 }
 
 export default function CompanyDashboardPage() {

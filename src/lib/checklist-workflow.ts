@@ -19,16 +19,7 @@ export async function validateChecklistSubmission(id: string) {
                 }
             },
             massBalanceEntries: true,
-            company: {
-                include: {
-                    shipments: {
-                        // Scope to shipments in this period
-                        where: {
-                            isccAllocationPct: null, // DA-2 rule
-                        }
-                    }
-                }
-            }
+            company: true
         }
     })
 
@@ -52,11 +43,18 @@ export async function validateChecklistSubmission(id: string) {
         errors.push(`REC-2 Flag: ${unacknowledgedFlags.length} data entries have unacknowledged >2% discrepancies.`)
     }
 
-    // DA-2 rule
-    // Filter to shipments strictly within this period
-    const unallocatedShipments = checklist.company.shipments.filter(shipment =>
-        shipment.shipmentDate >= checklist.periodStart && shipment.shipmentDate <= checklist.periodEnd
-    )
+    // DA-2: fetch unallocated shipments scoped to this period at DB level
+    const unallocatedShipments = await prisma.shipmentRecord.findMany({
+        where: {
+            companyId: checklist.companyId,
+            isccAllocationPct: null,
+            shipmentDate: {
+                gte: checklist.periodStart,
+                lte: checklist.periodEnd,
+            },
+        },
+        select: { id: true },
+    })
     if (unallocatedShipments.length > 0) {
         errors.push(`DA-2 Flag: ${unallocatedShipments.length} shipments strictly during this period require double-accounting allocation confirmation.`)
     }
