@@ -45,11 +45,24 @@ describe('POST /api/auth/reset-password', () => {
         }))
 
         const emailHtml: string = lastFetchBody?.html ?? ''
-        expect(emailHtml).toContain('https://app.greentrace.xyz/auth/confirm')
         expect(emailHtml).toContain('token_hash=abc123hashedtoken')
         expect(emailHtml).toContain('type=recovery')
         // Must NOT send the Supabase-hosted verification URL
         expect(emailHtml).not.toContain('sub.supabase.co')
+    })
+
+    it('derives base URL from the request origin, not NEXT_PUBLIC_APP_URL', async () => {
+        const { POST } = await import('./route')
+
+        await POST(new Request('https://greentrace-dev.vercel.app/api/auth/reset-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: 'user@example.com' }),
+        }))
+
+        const emailHtml: string = lastFetchBody?.html ?? ''
+        expect(emailHtml).toContain('https://greentrace-dev.vercel.app/auth/confirm')
+        expect(emailHtml).not.toContain('app.greentrace.xyz')
     })
 
     it('returns 400 when email is missing', async () => {
