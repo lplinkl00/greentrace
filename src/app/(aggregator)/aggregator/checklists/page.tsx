@@ -13,12 +13,13 @@ type Checklist = {
     company: { id: string; name: string; code: string } | null
 }
 
-const STATUS_COLORS: Record<string, string> = {
-    DRAFT: 'bg-gray-100 text-gray-700',
-    SUBMITTED: 'bg-blue-100 text-blue-700',
-    UNDER_REVIEW: 'bg-yellow-100 text-yellow-700',
-    CERTIFIED: 'bg-green-100 text-green-700',
-    RETURNED: 'bg-red-100 text-red-700',
+const STATUS: Record<string, { bg: string; color: string }> = {
+    DRAFT:        { bg: '#f4f4f5', color: '#71717a' },
+    SUBMITTED:    { bg: '#eff6ff', color: '#2563eb' },
+    UNDER_REVIEW: { bg: '#fef9c3', color: '#92400e' },
+    UNDER_AUDIT:  { bg: '#fff7ed', color: '#c2410c' },
+    CERTIFIED:    { bg: '#f0fdf4', color: '#15803d' },
+    LOCKED:       { bg: '#1c1917', color: '#fafaf9' },
 }
 
 export default function ChecklistsPage() {
@@ -88,9 +89,14 @@ export default function ChecklistsPage() {
                                         {cl._count.items}
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[cl.status] ?? 'bg-gray-100 text-gray-700'}`}>
+                                        {(() => { const s = STATUS[cl.status] ?? STATUS.DRAFT; return (
+                                        <span
+                                            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold"
+                                            style={{ backgroundColor: s.bg, color: s.color }}
+                                        >
                                             {cl.status.replace(/_/g, ' ')}
                                         </span>
+                                        ); })()}
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <a
