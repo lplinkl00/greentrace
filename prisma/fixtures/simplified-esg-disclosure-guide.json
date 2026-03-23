@@ -1,0 +1,706 @@
+{
+  "id": "sedg-v2",
+  "version": "2.0",
+  "publishedDate": "2025-07-01",
+  "title": "Simplified ESG Disclosure Guide (SEDG) Version 2",
+  "subtitle": "For SMEs in Supply Chains",
+  "publishedBy": "Capital Markets Malaysia (CMM)",
+  "publisherAffiliation": "Affiliate of the Securities Commission Malaysia (SC)",
+  "contact": "general@capitalmarketsmalaysia.com",
+  "description": "The SEDG is a guide to help companies decide what Environmental, Social and Governance (ESG) disclosures to track and report. It provides SMEs (as data preparers) with a simple and standard set of disclosures to track and report, and stakeholders (as data requesters) with a simple and standard set of disclosures to ask for.",
+  "targetUsers": "SMEs that are compelled to track and report on ESG data — usually because they want to, they are being asked to, or they want to qualify for incentives.",
+  "totalDisclosures": 38,
+  "versionHistory": {
+    "v1": {
+      "launchedDate": "2023-10-01",
+      "totalDisclosures": 35,
+      "notes": "Initial release"
+    },
+    "v2": {
+      "launchedDate": "2025-07-01",
+      "totalDisclosures": 38,
+      "newDisclosures": ["SEDG-E1.7", "SEDG-E3.1", "SEDG-S2.3"],
+      "notes": "Three new disclosures added (2 Environmental, 1 Social). Fully aligned with the ASEAN Simplified ESG Disclosure Guide for SMEs in Supply Chains launched by the ASEAN Capital Markets Forum in April 2025."
+    }
+  },
+  "maturityLevels": {
+    "BASIC": {
+      "label": "Basic",
+      "description": "Entry-level disclosures for companies at early stages of sustainability reporting."
+    },
+    "INTERMEDIATE": {
+      "label": "Intermediate",
+      "description": "More detailed disclosures for companies with some sustainability reporting experience."
+    },
+    "ADVANCED": {
+      "label": "Advanced",
+      "description": "Comprehensive disclosures for companies with mature sustainability reporting capabilities."
+    }
+  },
+  "referenceFrameworks": [
+    { "name": "Global Reporting Initiative (GRI)", "type": "Global" },
+    { "name": "FTSE4Good (F4G)", "type": "Global" },
+    { "name": "IFRS S1 & S2 (ISSB)", "type": "Global" },
+    { "name": "Task Force on Climate-Related Financial Disclosures (TCFD)", "type": "Global" },
+    { "name": "GHG Protocol Corporate Accounting and Reporting Standard", "type": "Global" },
+    { "name": "GHG Protocol Corporate Value Chain (Scope 3) Standard", "type": "Global" },
+    { "name": "CDP", "type": "Global" },
+    { "name": "Bursa Malaysia Listing Requirements", "type": "Local" },
+    { "name": "Bursa Malaysia Sustainability Reporting Guide 3.0", "type": "Local" },
+    { "name": "Principles-based SRI Taxonomy for the Malaysian Capital Market", "type": "Local" },
+    { "name": "Malaysian Code on Corporate Governance (MCCG)", "type": "Local" },
+    { "name": "Principles on Good Governance (PGG)", "type": "Local" },
+    { "name": "Malaysian Code for Institutional Investors (MCII)", "type": "Local" }
+  ],
+  "pillars": [
+    {
+      "code": "E",
+      "name": "Environmental",
+      "displayOrder": 1,
+      "topics": [
+        {
+          "code": "SEDG-E1",
+          "name": "Emissions",
+          "displayOrder": 1,
+          "overview": "Greenhouse gas (GHG) emissions are a major contributor to climate change and are governed by the UN Framework Convention on Climate Change and the Kyoto Protocol. This topic covers: Carbon dioxide (CO2), Methane (CH4), Nitrous oxide (N2O), Hydrofluorocarbons (HFCs), Perfluorocarbons (PFCs), Sulphur hexafluoride (SF6), and Nitrogen trifluoride (NF3). Reporting is based on the GHG Protocol Corporate Accounting and Reporting Standard and the GHG Protocol Corporate Value Chain (Scope 3) Standard.",
+          "disclosures": [
+            {
+              "code": "SEDG-E1.1",
+              "level": "BASIC",
+              "isNewInV2": false,
+              "title": "Total Scope 1 GHG emissions",
+              "description": "Report total Scope 1 (direct) GHG emissions in metric tonnes of CO2 equivalent.",
+              "unit": "metric tonnes CO2 equivalent",
+              "dataFormat": "number"
+            },
+            {
+              "code": "SEDG-E1.2",
+              "level": "BASIC",
+              "isNewInV2": false,
+              "title": "Total Scope 2 GHG emissions",
+              "description": "Report total Scope 2 (indirect) GHG emissions in metric tonnes of CO2 equivalent.",
+              "unit": "metric tonnes CO2 equivalent",
+              "dataFormat": "number"
+            },
+            {
+              "code": "SEDG-E1.3",
+              "level": "INTERMEDIATE",
+              "isNewInV2": false,
+              "title": "Scope 1 GHG emissions reduction",
+              "description": "Report total Scope 1 GHG emissions reduced as a direct result of reduction initiatives, in metric tonnes of CO2 equivalent.",
+              "unit": "metric tonnes CO2 equivalent",
+              "dataFormat": "number"
+            },
+            {
+              "code": "SEDG-E1.4",
+              "level": "INTERMEDIATE",
+              "isNewInV2": false,
+              "title": "Scope 2 GHG emissions reduction",
+              "description": "Report total Scope 2 GHG emissions reduced as a direct result of reduction initiatives, in metric tonnes of CO2 equivalent.",
+              "unit": "metric tonnes CO2 equivalent",
+              "dataFormat": "number"
+            },
+            {
+              "code": "SEDG-E1.5",
+              "level": "ADVANCED",
+              "isNewInV2": false,
+              "title": "Total Scope 3 GHG emissions",
+              "description": "Report total Scope 3 (other indirect) GHG emissions in metric tonnes of CO2 equivalent.",
+              "unit": "metric tonnes CO2 equivalent",
+              "dataFormat": "number"
+            },
+            {
+              "code": "SEDG-E1.6",
+              "level": "ADVANCED",
+              "isNewInV2": false,
+              "title": "Scope 3 GHG emissions reduction",
+              "description": "Report total Scope 3 GHG emissions reduced as a direct result of reduction initiatives, in metric tonnes of CO2 equivalent.",
+              "unit": "metric tonnes CO2 equivalent",
+              "dataFormat": "number"
+            },
+            {
+              "code": "SEDG-E1.7",
+              "level": "ADVANCED",
+              "isNewInV2": true,
+              "title": "Total Scope 1 and 2 GHG intensity",
+              "description": "Report total Scope 1 and 2 GHG intensity in metric tonnes CO2 equivalent per unit of organisation-specific metrics.",
+              "unit": "metric tonnes CO2 equivalent per unit of organisation-specific metrics",
+              "dataFormat": "number"
+            }
+          ]
+        },
+        {
+          "code": "SEDG-E2",
+          "name": "Energy",
+          "displayOrder": 2,
+          "overview": null,
+          "disclosures": [
+            {
+              "code": "SEDG-E2.1",
+              "level": "BASIC",
+              "isNewInV2": false,
+              "title": "Energy consumption",
+              "description": "Report the consumption of the following in joules or watthours.",
+              "unit": "joules or watthours",
+              "dataFormat": "number",
+              "subItems": [
+                "Renewable fuel sources",
+                "Non-renewable fuel sources",
+                "Electricity",
+                "Heating (if applicable)",
+                "Cooling (if applicable)",
+                "Steam (if applicable)"
+              ]
+            },
+            {
+              "code": "SEDG-E2.2",
+              "level": "INTERMEDIATE",
+              "isNewInV2": false,
+              "title": "Energy consumption reduction",
+              "description": "Report the reduction in consumption of the following, achieved as a direct result of conservation and efficiency initiatives, in joules or watthours.",
+              "unit": "joules or watthours",
+              "dataFormat": "number",
+              "subItems": [
+                "Non-renewable fuel sources",
+                "Electricity",
+                "Heating (if applicable)",
+                "Cooling (if applicable)",
+                "Steam (if applicable)"
+              ]
+            }
+          ]
+        },
+        {
+          "code": "SEDG-E3",
+          "name": "Water",
+          "displayOrder": 3,
+          "overview": null,
+          "disclosures": [
+            {
+              "code": "SEDG-E3.1",
+              "level": "BASIC",
+              "isNewInV2": true,
+              "title": "Total water withdrawn",
+              "description": "Report the total water withdrawn from all areas, and a breakdown of this total by type in litres.",
+              "unit": "litres",
+              "dataFormat": "number",
+              "subItems": [
+                "Purchased water",
+                "Surface water (if applicable)",
+                "Groundwater (if applicable)",
+                "Seawater (if applicable)",
+                "Produced water (if applicable)"
+              ]
+            },
+            {
+              "code": "SEDG-E3.2",
+              "level": "INTERMEDIATE",
+              "isNewInV2": false,
+              "title": "Total water withdrawn reduction",
+              "description": "Report the reduction in total water withdrawn from all areas, and a breakdown of this total by type in litres.",
+              "unit": "litres",
+              "dataFormat": "number",
+              "subItems": [
+                "Purchased water",
+                "Surface water (if applicable)",
+                "Groundwater (if applicable)",
+                "Seawater (if applicable)",
+                "Produced water (if applicable)"
+              ]
+            }
+          ]
+        },
+        {
+          "code": "SEDG-E4",
+          "name": "Waste",
+          "displayOrder": 4,
+          "overview": null,
+          "disclosures": [
+            {
+              "code": "SEDG-E4.1",
+              "level": "BASIC",
+              "isNewInV2": false,
+              "title": "Total waste",
+              "description": "Report total waste in metric tonnes.",
+              "unit": "metric tonnes",
+              "dataFormat": "number",
+              "subItems": [
+                "Generated",
+                "Diverted from disposal",
+                "Directed to disposal"
+              ]
+            },
+            {
+              "code": "SEDG-E4.2",
+              "level": "INTERMEDIATE",
+              "isNewInV2": false,
+              "title": "Total waste by category",
+              "description": "Report total waste generated, diverted from disposal, and directed to disposal, each broken down into metric tonnes by waste category.",
+              "unit": "metric tonnes",
+              "dataFormat": "number",
+              "subCategories": [
+                {
+                  "name": "Hazardous waste",
+                  "subItems": ["Generated", "Diverted from disposal", "Directed to disposal"]
+                },
+                {
+                  "name": "Non-hazardous waste",
+                  "subItems": ["Generated", "Diverted from disposal", "Directed to disposal"]
+                },
+                {
+                  "name": "Sector-specific waste streams",
+                  "subItems": ["Generated", "Diverted from disposal", "Directed to disposal"]
+                },
+                {
+                  "name": "Material composition",
+                  "subItems": ["Generated", "Diverted from disposal", "Directed to disposal"]
+                }
+              ]
+            },
+            {
+              "code": "SEDG-E4.3",
+              "level": "ADVANCED",
+              "isNewInV2": false,
+              "title": "Waste diverted from disposal by recovery stream",
+              "description": "Report total hazardous and non-hazardous waste diverted from disposal broken down into the following recovery streams in metric tonnes.",
+              "unit": "metric tonnes",
+              "dataFormat": "number",
+              "subCategories": [
+                {
+                  "name": "Hazardous",
+                  "subItems": [
+                    "Diverted from disposal (preparation for reuse)",
+                    "Diverted from disposal (recycling)",
+                    "Diverted from disposal (other recovery)"
+                  ]
+                },
+                {
+                  "name": "Non-hazardous",
+                  "subItems": [
+                    "Diverted from disposal (preparation for reuse)",
+                    "Diverted from disposal (recycling)",
+                    "Diverted from disposal (other recovery)"
+                  ]
+                }
+              ]
+            },
+            {
+              "code": "SEDG-E4.4",
+              "level": "ADVANCED",
+              "isNewInV2": false,
+              "title": "Waste directed to disposal by disposal stream",
+              "description": "Report total hazardous and non-hazardous waste directed to disposal broken down into the following disposal streams in metric tonnes.",
+              "unit": "metric tonnes",
+              "dataFormat": "number",
+              "subCategories": [
+                {
+                  "name": "Hazardous",
+                  "subItems": [
+                    "Directed to disposal (incineration with energy recovery)",
+                    "Directed to disposal (incineration without energy recovery)",
+                    "Directed to disposal (landfilling)",
+                    "Directed to disposal (other disposal options)"
+                  ]
+                },
+                {
+                  "name": "Non-hazardous",
+                  "subItems": [
+                    "Directed to disposal (incineration with energy recovery)",
+                    "Directed to disposal (incineration without energy recovery)",
+                    "Directed to disposal (landfilling)",
+                    "Directed to disposal (other disposal options)"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "code": "SEDG-E5",
+          "name": "Materials",
+          "displayOrder": 5,
+          "overview": null,
+          "disclosures": [
+            {
+              "code": "SEDG-E5.1",
+              "level": "BASIC",
+              "isNewInV2": false,
+              "title": "List of materials for primary products and services",
+              "description": "List the materials and total weights used to produce and package the company's primary products and services in metric tonnes, if any.",
+              "unit": "metric tonnes",
+              "dataFormat": "list"
+            },
+            {
+              "code": "SEDG-E5.2",
+              "level": "ADVANCED",
+              "isNewInV2": false,
+              "title": "Recycled input materials percentage",
+              "description": "Report the percentage of recycled input materials used to manufacture the company's primary products and services.",
+              "unit": "percent",
+              "dataFormat": "number"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "S",
+      "name": "Social",
+      "displayOrder": 2,
+      "topics": [
+        {
+          "code": "SEDG-S1",
+          "name": "Human Rights and Labour Practices",
+          "displayOrder": 1,
+          "overview": null,
+          "disclosures": [
+            {
+              "code": "SEDG-S1.1",
+              "level": "BASIC",
+              "isNewInV2": false,
+              "title": "Child labour and forced labour incidents",
+              "description": "Report the number and nature of child labour and forced labour incidents, if any.",
+              "unit": null,
+              "dataFormat": "number+description",
+              "subItems": [
+                "Number of child labour incidents, if any",
+                "Nature of child labour incidents, if any",
+                "Number of forced labour incidents, if any",
+                "Nature of forced labour incidents, if any"
+              ]
+            },
+            {
+              "code": "SEDG-S1.2",
+              "level": "INTERMEDIATE",
+              "isNewInV2": false,
+              "title": "Operations and suppliers with significant labour risk",
+              "description": "List the operations and suppliers considered to have significant risk for incidents of child labour and forced labour, including type of operation or supplier and locations at risk.",
+              "unit": null,
+              "dataFormat": "list",
+              "subItems": [
+                "List of operations and suppliers with significant risk of child labour",
+                "List of operations and suppliers with significant risk of forced labour"
+              ],
+              "riskFields": [
+                "Type of operation or supplier",
+                "Locations at risk"
+              ]
+            }
+          ]
+        },
+        {
+          "code": "SEDG-S2",
+          "name": "Employee Management",
+          "displayOrder": 2,
+          "overview": null,
+          "disclosures": [
+            {
+              "code": "SEDG-S2.1",
+              "level": "BASIC",
+              "isNewInV2": false,
+              "title": "Average training hours per employee",
+              "description": "Report the average hours of training per employee.",
+              "unit": "hours",
+              "dataFormat": "number"
+            },
+            {
+              "code": "SEDG-S2.2",
+              "level": "INTERMEDIATE",
+              "isNewInV2": false,
+              "title": "Total employees and turnover rate",
+              "description": "Report the total number of employees and the turnover rate.",
+              "unit": null,
+              "dataFormat": "number+percent",
+              "subItems": [
+                "Number of employees",
+                "Turnover rate"
+              ]
+            },
+            {
+              "code": "SEDG-S2.3",
+              "level": "BASIC",
+              "isNewInV2": true,
+              "title": "Employees meeting minimum wage laws",
+              "description": "Report the percentage of employees meeting or above applicable minimum wage laws, if any.",
+              "unit": "percent",
+              "dataFormat": "number"
+            }
+          ]
+        },
+        {
+          "code": "SEDG-S3",
+          "name": "Diversity, Equity and Inclusion",
+          "displayOrder": 3,
+          "overview": null,
+          "disclosures": [
+            {
+              "code": "SEDG-S3.1",
+              "level": "BASIC",
+              "isNewInV2": false,
+              "title": "Employee diversity",
+              "description": "Report the percentage of the company's employees by gender and age.",
+              "unit": "percent",
+              "dataFormat": "number",
+              "subItems": [
+                "Percentage of employees by gender",
+                "Percentage of employees by age"
+              ]
+            },
+            {
+              "code": "SEDG-S3.2",
+              "level": "INTERMEDIATE",
+              "isNewInV2": false,
+              "title": "Director diversity",
+              "description": "Report the percentage of the company's directors by gender and age.",
+              "unit": "percent",
+              "dataFormat": "number",
+              "subItems": [
+                "Percentage of directors by gender",
+                "Percentage of directors by age"
+              ]
+            }
+          ]
+        },
+        {
+          "code": "SEDG-S4",
+          "name": "Occupational Health and Safety",
+          "displayOrder": 4,
+          "overview": null,
+          "disclosures": [
+            {
+              "code": "SEDG-S4.1",
+              "level": "BASIC",
+              "isNewInV2": false,
+              "title": "Fatalities and injuries",
+              "description": "Report the number of fatalities and injuries in the company, if any.",
+              "unit": "number",
+              "dataFormat": "number",
+              "subItems": [
+                "Number of fatalities",
+                "Number of injuries"
+              ]
+            },
+            {
+              "code": "SEDG-S4.2",
+              "level": "INTERMEDIATE",
+              "isNewInV2": false,
+              "title": "Health and safety training",
+              "description": "Report the total number and percentage of employees trained on health and safety standards.",
+              "unit": null,
+              "dataFormat": "number+percent",
+              "subItems": [
+                "Number of employees trained in health and safety standards",
+                "Percentage of employees trained in health and safety standards"
+              ]
+            }
+          ]
+        },
+        {
+          "code": "SEDG-S5",
+          "name": "Community Engagement",
+          "displayOrder": 5,
+          "overview": null,
+          "disclosures": [
+            {
+              "code": "SEDG-S5.1",
+              "level": "BASIC",
+              "isNewInV2": false,
+              "title": "Community investments and donations",
+              "description": "Report the total amount of community investments and donations.",
+              "unit": "MYR",
+              "dataFormat": "number"
+            },
+            {
+              "code": "SEDG-S5.2",
+              "level": "ADVANCED",
+              "isNewInV2": false,
+              "title": "Operations with negative community impact",
+              "description": "List the company's operations with negative impact on local communities.",
+              "unit": null,
+              "dataFormat": "list"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "code": "G",
+      "name": "Governance",
+      "displayOrder": 3,
+      "topics": [
+        {
+          "code": "SEDG-G1",
+          "name": "Governance Structure",
+          "displayOrder": 1,
+          "overview": null,
+          "disclosures": [
+            {
+              "code": "SEDG-G1.1",
+              "level": "BASIC",
+              "isNewInV2": false,
+              "title": "Number of directors",
+              "description": "Report the number of directors in the company.",
+              "unit": "number",
+              "dataFormat": "number"
+            },
+            {
+              "code": "SEDG-G1.2",
+              "level": "INTERMEDIATE",
+              "isNewInV2": false,
+              "title": "Governance structure",
+              "description": "List the governance structure of the board, including committees of the board and management, if applicable.",
+              "unit": null,
+              "dataFormat": "structure"
+            }
+          ]
+        },
+        {
+          "code": "SEDG-G2",
+          "name": "Policy Commitments",
+          "displayOrder": 2,
+          "overview": null,
+          "disclosures": [
+            {
+              "code": "SEDG-G2.1",
+              "level": "BASIC",
+              "isNewInV2": false,
+              "title": "List of company policies",
+              "description": "List the company's policies, including but not limited to: Code of Conduct, Anti-Corruption Policy, Whistleblowing Policy, Health and Safety Policy.",
+              "unit": null,
+              "dataFormat": "list",
+              "examplePolicies": [
+                "Code of Conduct",
+                "Anti-Corruption Policy",
+                "Whistleblowing Policy",
+                "Health and Safety Policy"
+              ]
+            }
+          ]
+        },
+        {
+          "code": "SEDG-G3",
+          "name": "Risk Management and Reporting",
+          "displayOrder": 3,
+          "overview": null,
+          "disclosures": [
+            {
+              "code": "SEDG-G3.1",
+              "level": "BASIC",
+              "isNewInV2": false,
+              "title": "Year of last audited financial report",
+              "description": "Report the year of the last submitted audited financial report.",
+              "unit": "year",
+              "dataFormat": "year"
+            },
+            {
+              "code": "SEDG-G3.2",
+              "level": "INTERMEDIATE",
+              "isNewInV2": false,
+              "title": "List of operational and activity risks",
+              "description": "List the risks of company operations and activities, including but not limited to: Regulatory compliance risk, Business continuity risk.",
+              "unit": null,
+              "dataFormat": "list",
+              "exampleRisks": [
+                "Regulatory compliance risk",
+                "Business continuity risk"
+              ]
+            },
+            {
+              "code": "SEDG-G3.3",
+              "level": "ADVANCED",
+              "isNewInV2": false,
+              "title": "List of sustainability risks",
+              "description": "List the sustainability risks of company if applicable, including but not limited to: Climate-related physical risk, Climate-related transition risk.",
+              "unit": null,
+              "dataFormat": "list",
+              "exampleRisks": [
+                "Climate-related physical risk",
+                "Climate-related transition risk"
+              ]
+            }
+          ]
+        },
+        {
+          "code": "SEDG-G4",
+          "name": "Anti-Corruption",
+          "displayOrder": 4,
+          "overview": null,
+          "disclosures": [
+            {
+              "code": "SEDG-G4.1",
+              "level": "BASIC",
+              "isNewInV2": false,
+              "title": "Confirmed corruption incidents",
+              "description": "Report the total number and nature of confirmed incidents of corruption, if any.",
+              "unit": null,
+              "dataFormat": "number+description",
+              "subItems": [
+                "Number of confirmed incidents of corruption, if any",
+                "Nature of confirmed incidents of corruption, if any"
+              ]
+            },
+            {
+              "code": "SEDG-G4.2",
+              "level": "INTERMEDIATE",
+              "isNewInV2": false,
+              "title": "Anti-bribery and anti-corruption training",
+              "description": "Report the total number and percentage of employees who have received training on the company's anti-bribery and anti-corruption policy.",
+              "unit": null,
+              "dataFormat": "number+percent",
+              "subItems": [
+                "Number of employees trained on anti-bribery and anti-corruption",
+                "Percentage of employees trained on anti-bribery and anti-corruption"
+              ]
+            },
+            {
+              "code": "SEDG-G4.3",
+              "level": "ADVANCED",
+              "isNewInV2": false,
+              "title": "List of corruption risks",
+              "description": "List the significant risks related to corruption.",
+              "unit": null,
+              "dataFormat": "list"
+            }
+          ]
+        },
+        {
+          "code": "SEDG-G5",
+          "name": "Customer Privacy",
+          "displayOrder": 5,
+          "overview": null,
+          "disclosures": [
+            {
+              "code": "SEDG-G5.1",
+              "level": "INTERMEDIATE",
+              "isNewInV2": false,
+              "title": "Customer data privacy complaints",
+              "description": "Report the total number and nature of substantiated complaints received concerning breaches of customer privacy and loss of customer data, if any.",
+              "unit": null,
+              "dataFormat": "number+description",
+              "subItems": [
+                "Number of customer data privacy complaints, if any",
+                "Nature of customer data privacy complaints, if any"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "disclosureTemplate": {
+    "generalInformation": [
+      "Name of Organisation",
+      "Date of Disclosure",
+      "Disclosure Period",
+      "Location of Headquarters",
+      "Entities Included",
+      "Locations Included"
+    ],
+    "declarationText": "This data report represents our company's disclosures as guided by the Simplified ESG Disclosure Guide (SEDG). It contains information that is true to the best of our knowledge at the time of publication."
+  },
+  "metadata": {
+    "sourceFile": "SEDG-v2.pdf",
+    "createdAt": "2026-03-23",
+    "alignedWith": "ASEAN Simplified ESG Disclosure Guide for SMEs in Supply Chains (ASEAN Capital Markets Forum, April 2025)"
+  }
+}
