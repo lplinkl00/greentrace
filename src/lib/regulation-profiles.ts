@@ -1,5 +1,5 @@
 import { prisma } from './prisma'
-import { GHGScope, RegulationCode, RequirementDataType, RequirementCriticality } from '@prisma/client'
+import { GHGScope, RequirementDataType, RequirementCriticality } from '@prisma/client'
 
 // ─── Fixture import types ────────────────────────────────────────────────────
 
@@ -31,7 +31,7 @@ export type FixturePillar = {
 }
 
 export type RegulationProfileFixture = {
-    regulation: RegulationCode
+    regulation: string
     version: string
     name: string
     description?: string | null
@@ -40,7 +40,7 @@ export type RegulationProfileFixture = {
 
 // ─── Regulation Profiles ────────────────────────────────────────────────────
 
-export async function getProfiles(regulation?: RegulationCode) {
+export async function getProfiles(regulation?: string) {
     return prisma.regulationProfile.findMany({
         where: { regulation: regulation || undefined },
         orderBy: { createdAt: 'desc' },
@@ -73,7 +73,7 @@ export async function getProfileById(id: string) {
 }
 
 export async function createProfile(data: {
-    regulation: RegulationCode
+    regulation: string
     version: string
     name: string
     description?: string

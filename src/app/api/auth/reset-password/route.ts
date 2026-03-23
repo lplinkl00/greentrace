@@ -25,6 +25,11 @@ export async function POST(request: Request) {
 
         if (error) throw error
 
+        // Build a direct link to /auth/confirm so our handler can call verifyOtp.
+        // Using action_link (Supabase-hosted) causes Supabase to redirect back with
+        // ?code= (PKCE) which our handler doesn't handle — token_hash is needed.
+        const resetLink = `${process.env.NEXT_PUBLIC_APP_URL}/auth/confirm?token_hash=${data.properties.hashed_token}&type=recovery`
+
         // Send the email via Resend API directly
         const res = await fetch('https://api.resend.com/emails', {
             method: 'POST',
@@ -40,7 +45,7 @@ export async function POST(request: Request) {
                     <p>Hi,</p>
                     <p>You requested a password reset for your GreenTrace account.</p>
                     <p>Click the link below to choose a new password:</p>
-                    <p><a href="${data.properties.action_link}">Reset Password</a></p>
+                    <p><a href="${resetLink}">Reset Password</a></p>
                     <p>This link expires in 1 hour. If you did not request this, you can safely ignore this email.</p>
                     <p>— The GreenTrace Team</p>
                 `,
