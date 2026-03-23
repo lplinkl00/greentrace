@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server'
 import { withAuth } from '@/lib/auth'
-import { UserRole, RegulationCode } from '@prisma/client'
+import { UserRole } from '@prisma/client'
 import { importProfile, RegulationProfileFixture } from '@/lib/regulation-profiles'
-
-const VALID_REGULATIONS = Object.values(RegulationCode) as string[]
 
 export const POST = withAuth(
     [UserRole.SUPER_ADMIN],
@@ -20,9 +18,9 @@ export const POST = withAuth(
 
         const { regulation, version, name, pillars } = body
 
-        if (!regulation || typeof regulation !== 'string' || !VALID_REGULATIONS.includes(regulation)) {
+        if (!regulation || typeof regulation !== 'string' || !regulation.trim()) {
             return NextResponse.json(
-                { data: null, error: { code: 'VALIDATION_ERROR', message: `regulation must be one of: ${VALID_REGULATIONS.join(', ')}` }, meta: null },
+                { data: null, error: { code: 'VALIDATION_ERROR', message: 'regulation is required.' }, meta: null },
                 { status: 422 }
             )
         }
