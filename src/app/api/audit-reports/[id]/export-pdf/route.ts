@@ -87,7 +87,9 @@ export const POST = withAuth(
 
         const report = await prisma.auditReport.findUnique({
             where: { id },
-            include: { audit: { include: { company: true } } },
+            include: {
+                audit: { include: { company: true } },
+            },
         })
         if (!report) return NextResponse.json({ error: 'Not found' }, { status: 404 })
         if (report.status !== AuditReportStatus.FINAL) {
@@ -95,7 +97,8 @@ export const POST = withAuth(
         }
 
         const content = report.contentJson as unknown as ReportContentJson
-        const options = (report.reportOptions as unknown as ReportOptions) ?? DEFAULT_REPORT_OPTIONS
+        // reportOptions is a Json? scalar — cast via unknown to avoid Prisma include type narrowing
+        const options = ((report as unknown as Record<string, unknown>).reportOptions as ReportOptions | null) ?? DEFAULT_REPORT_OPTIONS
 
         const docElement = React.createElement(ReportDocument, { report, content, options }) as unknown as React.ReactElement<import('@react-pdf/renderer').DocumentProps>
         const pdfBuffer  = await renderToBuffer(docElement)
