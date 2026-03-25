@@ -140,6 +140,7 @@ export async function createReportVersion(
         version: number
         generatedBy: LLMProvider
         llmModel: string
+        reportOptions?: Record<string, unknown> | null
     },
     userId: string
 ) {
@@ -156,6 +157,7 @@ export async function createReportVersion(
             reviewedById: userId,
             reviewedAt: new Date(),
             status: AuditReportStatus.DRAFT,
+            reportOptions: existingReport.reportOptions as any,
         },
     })
 }

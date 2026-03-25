@@ -12,13 +12,24 @@ export const POST = withAuth(
             return NextResponse.json({ error: 'auditId is required' }, { status: 400 })
         }
 
+        const VALID_SCHEMES = new Set(['green', 'navy', 'slate', 'amber'])
+        const VALID_PRESETS = new Set(['corporate', 'minimal', 'sustainability'])
+        const rawOpts = body.reportOptions
+        const safeOptions: ReportOptions | undefined =
+            rawOpts &&
+            typeof rawOpts === 'object' &&
+            VALID_SCHEMES.has(rawOpts.colourScheme) &&
+            VALID_PRESETS.has(rawOpts.stylePreset)
+                ? (rawOpts as ReportOptions)
+                : undefined
+
         try {
             const report = await createDraftReport(
                 body.auditId,
                 (body.provider as LLMProviderEnum) ?? 'anthropic',
-                body.model,
+                body.model?.slice(0, 200),
                 user.id,
-                body.reportOptions as ReportOptions | undefined
+                safeOptions
             )
             return NextResponse.json({ data: report })
         } catch (e: any) {
