@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { withAuth } from '@/lib/auth'
 import { UserRole } from '@prisma/client'
 import { createDraftReport } from '@/lib/report-generator'
-import type { LLMProviderEnum } from '@/lib/llm/types'
+import type { LLMProviderEnum, ReportOptions } from '@/lib/llm/types'
 
 export const POST = withAuth(
     [UserRole.AUDITOR, UserRole.SUPER_ADMIN],
@@ -17,7 +17,8 @@ export const POST = withAuth(
                 body.auditId,
                 (body.provider as LLMProviderEnum) ?? 'gemini',
                 body.model,
-                user.id
+                user.id,
+                body.reportOptions as ReportOptions | undefined
             )
             return NextResponse.json({ data: report })
         } catch (e: any) {

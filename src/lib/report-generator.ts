@@ -1,7 +1,8 @@
 import { LLMProvider, AuditReportStatus } from '@prisma/client'
 import { prisma } from './prisma'
 import { generateReport } from './llm'
-import type { ReportPayload, LLMProviderEnum, FindingSummary } from './llm/types'
+import type { ReportPayload, LLMProviderEnum, FindingSummary, ReportOptions } from './llm/types'
+import { DEFAULT_REPORT_OPTIONS } from './llm/types'
 
 /**
  * Builds the full ReportPayload from an audit ID, ready to be sent to the LLM.
@@ -93,9 +94,10 @@ export async function buildReportPayload(auditId: string): Promise<ReportPayload
  */
 export async function createDraftReport(
     auditId: string,
-    provider: LLMProviderEnum = 'gemini',
+    provider: LLMProviderEnum = 'anthropic',
     model: string | undefined,
-    userId: string
+    userId: string,
+    reportOptions?: ReportOptions
 ) {
     const payload = await buildReportPayload(auditId)
     const response = await generateReport(payload, provider, model)
@@ -120,6 +122,7 @@ export async function createDraftReport(
             llmModel: model ?? (provider === 'anthropic' ? 'claude-opus-4-5' : 'gemini-2.5-pro-exp-03-25'),
             generatedAt: new Date(),
             status: AuditReportStatus.DRAFT,
+            reportOptions: (reportOptions ?? DEFAULT_REPORT_OPTIONS) as any,
         },
     })
 
