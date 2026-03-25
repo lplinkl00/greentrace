@@ -3,8 +3,10 @@ import { withAuth } from '@/lib/auth'
 import { UserRole, AuditReportStatus } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import { createClient } from '@supabase/supabase-js'
-import { renderToBuffer, Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer'
-import type { ReportContentJson } from '@/lib/llm/types'
+import { renderToBuffer, Document, Page, Text, View } from '@react-pdf/renderer'
+import type { ReportContentJson, ReportOptions } from '@/lib/llm/types'
+import { DEFAULT_REPORT_OPTIONS } from '@/lib/llm/types'
+import { buildPdfTheme } from '@/lib/pdf-theme'
 import React from 'react'
 
 const supabase = createClient(
@@ -12,58 +14,68 @@ const supabase = createClient(
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-const styles = StyleSheet.create({
-    page: { padding: 48, fontSize: 11, fontFamily: 'Helvetica', color: '#222' },
-    title: { fontSize: 20, fontWeight: 'bold', marginBottom: 6 },
-    subtitle: { fontSize: 12, color: '#555', marginBottom: 24 },
-    sectionHeader: { fontSize: 13, fontWeight: 'bold', marginTop: 16, marginBottom: 6, borderBottomWidth: 1, borderBottomColor: '#ccc', paddingBottom: 4 },
-    pillarHeader: { fontSize: 11, fontWeight: 'bold', marginTop: 10, marginBottom: 4, color: '#2d6a4f' },
-    findingRow: { marginBottom: 6, paddingLeft: 12 },
-    findingCode: { fontWeight: 'bold' },
-    body: { lineHeight: 1.5, marginBottom: 8 },
-    bullet: { paddingLeft: 12, marginBottom: 4 },
-    aiBanner: { backgroundColor: '#fef3cd', padding: 8, marginBottom: 16, borderRadius: 4, fontSize: 10, color: '#856404' },
-    footer: { marginTop: 24, fontSize: 9, color: '#999', textAlign: 'center' },
-})
+function ReportDocument({
+    report,
+    content,
+    options,
+}: {
+    report: any
+    content: ReportContentJson
+    options: ReportOptions
+}) {
+    const { styles } = buildPdfTheme(options)
 
-function ReportDocument({ report, content }: { report: any; content: ReportContentJson }) {
-    return React.createElement(Document, null,
+    return React.createElement(
+        Document, null,
         React.createElement(Page, { size: 'A4', style: styles.page },
+            // AI banner
             React.createElement(View, { style: styles.aiBanner },
-                React.createElement(Text, null, '⚠️ AI-GENERATED DRAFT — This report was generated with AI assistance and has been reviewed and approved by a human auditor.')
+                React.createElement(Text, null,
+                    '⚠️ AI-GENERATED DRAFT — Reviewed and approved by a human auditor.'
+                )
             ),
+            // Title block
             React.createElement(View, null,
-                React.createElement(Text, { style: styles.title }, `${report.audit?.regulation?.replace(/_/g, ' ')} Certification Audit Report`),
-                React.createElement(Text, { style: styles.subtitle }, `${report.audit?.company?.name} · Version ${report.version} · ${new Date(report.generatedAt).toLocaleDateString()}`),
+                React.createElement(Text, { style: styles.title },
+                    `${report.audit?.regulation?.replace(/_/g, ' ')} Certification Audit Report`
+                ),
+                React.createElement(Text, { style: styles.subtitle },
+                    `${report.audit?.company?.name} · Version ${report.version} · ${new Date(report.generatedAt).toLocaleDateString()}`
+                ),
             ),
+            // Executive Summary
             React.createElement(View, null,
                 React.createElement(Text, { style: styles.sectionHeader }, 'Executive Summary'),
                 React.createElement(Text, { style: styles.body }, content.executiveSummary)
             ),
-            ...(content.findingsByPillar ?? []).map(pillar =>
-                React.createElement(View, { key: pillar.pillar },
-                    React.createElement(Text, { style: styles.pillarHeader }, pillar.pillar),
-                    ...(pillar.items ?? []).map(item =>
-                        React.createElement(View, { key: item.requirementCode, style: styles.findingRow },
-                            React.createElement(Text, null,
-                                React.createElement(Text, { style: styles.findingCode }, `[${item.requirementCode}] `),
-                                `${item.requirementName}: ${item.summary} (${item.findingType})`
-                            )
+            // Findings by pillar
+            ...(content.findingsByPillar ?? []).flatMap(pillar => [
+                React.createElement(Text, { key: `ph-${pillar.pillar}`, style: styles.pillarHeader }, pillar.pillar),
+                ...(pillar.items ?? []).map(item =>
+                    React.createElement(View, { key: item.requirementCode, style: styles.findingRow },
+                        React.createElement(Text, null,
+                            React.createElement(Text, { style: styles.findingCode }, `[${item.requirementCode}] `),
+                            `${item.requirementName}: ${item.summary} (${item.findingType})`
                         )
                     )
-                )
-            ),
+                ),
+            ]),
+            // Recommendations
             React.createElement(View, null,
                 React.createElement(Text, { style: styles.sectionHeader }, 'Recommendations'),
                 ...(content.recommendations ?? []).map((r: string, i: number) =>
                     React.createElement(Text, { key: i, style: styles.bullet }, `• ${r}`)
                 )
             ),
+            // Conclusion
             React.createElement(View, null,
                 React.createElement(Text, { style: styles.sectionHeader }, 'Conclusion'),
                 React.createElement(Text, { style: styles.body }, content.conclusion)
             ),
-            React.createElement(Text, { style: styles.footer }, `Generated by GreenTrace · ${new Date().toISOString()}`)
+            // Footer
+            React.createElement(Text, { style: styles.footer },
+                `Generated by GreenTrace · ${new Date().toISOString()}`
+            )
         )
     )
 }
@@ -75,9 +87,7 @@ export const POST = withAuth(
 
         const report = await prisma.auditReport.findUnique({
             where: { id },
-            include: {
-                audit: { include: { company: true } },
-            },
+            include: { audit: { include: { company: true } } },
         })
         if (!report) return NextResponse.json({ error: 'Not found' }, { status: 404 })
         if (report.status !== AuditReportStatus.FINAL) {
@@ -85,46 +95,11 @@ export const POST = withAuth(
         }
 
         const content = report.contentJson as unknown as ReportContentJson
+        const options = (report.reportOptions as unknown as ReportOptions) ?? DEFAULT_REPORT_OPTIONS
 
-        // Render PDF to buffer — pass the inner Document element directly
-        const docElement = React.createElement(
-            Document, null,
-            React.createElement(Page, { size: 'A4', style: styles.page },
-                React.createElement(View, { style: styles.aiBanner },
-                    React.createElement(Text, null, '\u26a0\ufe0f AI-GENERATED DRAFT \u2014 Reviewed and approved by a human auditor.')
-                ),
-                React.createElement(View, null,
-                    React.createElement(Text, { style: styles.title }, `${(report as any).audit?.regulation?.replace(/_/g, ' ')} Certification Audit Report`),
-                    React.createElement(Text, { style: styles.subtitle }, `${(report as any).audit?.company?.name} \u00b7 Version ${report.version} \u00b7 ${new Date(report.generatedAt).toLocaleDateString()}`),
-                ),
-                React.createElement(View, null,
-                    React.createElement(Text, { style: styles.sectionHeader }, 'Executive Summary'),
-                    React.createElement(Text, { style: styles.body }, content.executiveSummary)
-                ),
-                ...(content.findingsByPillar ?? []).flatMap(pillar => [
-                    React.createElement(Text, { key: `ph-${pillar.pillar}`, style: styles.pillarHeader }, pillar.pillar),
-                    ...(pillar.items ?? []).map(item =>
-                        React.createElement(View, { key: item.requirementCode, style: styles.findingRow },
-                            React.createElement(Text, null, `[${item.requirementCode}] ${item.requirementName}: ${item.summary} (${item.findingType})`)
-                        )
-                    )
-                ]),
-                React.createElement(View, null,
-                    React.createElement(Text, { style: styles.sectionHeader }, 'Recommendations'),
-                    ...(content.recommendations ?? []).map((r: string, i: number) =>
-                        React.createElement(Text, { key: i, style: styles.bullet }, `\u2022 ${r}`)
-                    )
-                ),
-                React.createElement(View, null,
-                    React.createElement(Text, { style: styles.sectionHeader }, 'Conclusion'),
-                    React.createElement(Text, { style: styles.body }, content.conclusion)
-                ),
-                React.createElement(Text, { style: styles.footer }, `Generated by GreenTrace \u00b7 ${new Date().toISOString()}`)
-            )
-        )
-        const pdfBuffer = await renderToBuffer(docElement)
+        const docElement = React.createElement(ReportDocument, { report, content, options }) as unknown as React.ReactElement<import('@react-pdf/renderer').DocumentProps>
+        const pdfBuffer  = await renderToBuffer(docElement)
 
-        // Upload to Supabase Storage
         const storagePath = `audit-reports/${report.auditId}/${id}.pdf`
         const { error: uploadError } = await supabase.storage
             .from('greentrace-docs')
@@ -134,16 +109,11 @@ export const POST = withAuth(
             return NextResponse.json({ error: `Storage upload failed: ${uploadError.message}` }, { status: 500 })
         }
 
-        // Generate a signed URL (60 min)
         const { data: signedUrlData } = await supabase.storage
             .from('greentrace-docs')
             .createSignedUrl(storagePath, 3600)
 
-        // Persist pdfPath on the report
-        await prisma.auditReport.update({
-            where: { id },
-            data: { pdfPath: storagePath },
-        })
+        await prisma.auditReport.update({ where: { id }, data: { pdfPath: storagePath } })
 
         return NextResponse.json({ data: { signedUrl: signedUrlData?.signedUrl, pdfPath: storagePath } })
     }
