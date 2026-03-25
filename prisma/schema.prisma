@@ -669,7 +669,8 @@ model AuditReport {
   reviewedBy   User?             @relation(fields: [reviewedById], references: [id])
   reviewedAt   DateTime?
   status       AuditReportStatus @default(DRAFT)
-  pdfPath      String? // Supabase Storage key; set on export
+  pdfPath       String?           // Supabase Storage key; set on export
+  reportOptions Json?             // ReportOptions: { colourScheme, stylePreset }
 
   createdAt DateTime @default(now())
 
