@@ -15,7 +15,7 @@ export const POST = withAuth(
         try {
             const report = await createDraftReport(
                 body.auditId,
-                (body.provider as LLMProviderEnum) ?? 'gemini',
+                (body.provider as LLMProviderEnum) ?? 'anthropic',
                 body.model,
                 user.id,
                 body.reportOptions as ReportOptions | undefined
