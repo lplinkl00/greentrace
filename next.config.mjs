@@ -12,14 +12,35 @@
 
 import fs from 'node:fs'
 
-// Patch 2 – main process fs.promises.readdir (for Next.js route file scanner)
+// Patch 2 – main process readdir (for Next.js route file scanner)
 // On Windows, some directories (e.g. git-incomplete reparse points) are listed
 // by the parent readdir but return EPERM when scanned. Treat them as empty.
-;(function patchFsPromisesReaddir() {
-    const orig = fs.promises.readdir.bind(fs.promises)
+// Patch both promise and callback forms since Next.js uses both.
+;(function patchFsReaddir() {
+    // promises form
+    const origP = fs.promises.readdir.bind(fs.promises)
     fs.promises.readdir = async function (path, options) {
         try {
-            return await orig(path, options)
+            return await origP(path, options)
+        } catch (err) {
+            if (err?.code === 'EPERM') return []
+            throw err
+        }
+    }
+    // callback form
+    const origCb = fs.readdir.bind(fs)
+    fs.readdir = function (path, options, callback) {
+        if (typeof options === 'function') { callback = options; options = undefined }
+        origCb(path, options, function (err, result) {
+            if (err?.code === 'EPERM') callback(null, [])
+            else callback(err, result)
+        })
+    }
+    // sync form (used by @nodelib/fs.scandir inside postcss-loader)
+    const origSync = fs.readdirSync.bind(fs)
+    fs.readdirSync = function (path, options) {
+        try {
+            return origSync(path, options)
         } catch (err) {
             if (err?.code === 'EPERM') return []
             throw err
@@ -73,9 +94,29 @@ const nextConfig = {
                         })
                     }
                 }
+                function patchReaddir(fs) {
+                    if (!fs || typeof fs.readdir !== 'function') return
+                    const orig = fs.readdir.bind(fs)
+                    fs.readdir = function (path, options, callback) {
+                        if (typeof options === 'function') { callback = options; options = undefined }
+                        orig(path, options, function (err, result) {
+                            if (err?.code === 'EPERM') callback(null, [])
+                            else callback(err, result)
+                        })
+                    }
+                    if (typeof fs.readdirSync === 'function') {
+                        const origSync = fs.readdirSync.bind(fs)
+                        fs.readdirSync = function (path, options) {
+                            try { return origSync(path, options) }
+                            catch (err) { if (err?.code === 'EPERM') return []; throw err }
+                        }
+                    }
+                }
                 patchReadlink(compiler.inputFileSystem)
+                patchReaddir(compiler.inputFileSystem)
                 compiler.hooks.afterEnvironment.tap('ReadlinkEisdirFix', () => {
                     patchReadlink(compiler.inputFileSystem)
+                    patchReaddir(compiler.inputFileSystem)
                 })
             },
         })

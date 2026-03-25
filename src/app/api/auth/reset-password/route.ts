@@ -13,17 +13,24 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: 'Email is required' }, { status: 400 })
     }
 
+    const origin = new URL(request.url).origin
+
     try {
         // Generate a recovery link via admin API (bypasses Supabase SMTP)
         const { data, error } = await supabaseAdmin.auth.admin.generateLink({
             type: 'recovery',
             email,
             options: {
-                redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/callback`,
+                redirectTo: `${origin}/auth/confirm`,
             },
         })
 
         if (error) throw error
+
+        // Build a direct link to /auth/confirm so our handler can call verifyOtp.
+        // Using action_link (Supabase-hosted) causes Supabase to redirect back with
+        // ?code= (PKCE) which our handler doesn't handle — token_hash is needed.
+        const resetLink = `${origin}/auth/confirm?token_hash=${data.properties.hashed_token}&type=recovery`
 
         // Send the email via Resend API directly
         const res = await fetch('https://api.resend.com/emails', {
@@ -40,7 +47,7 @@ export async function POST(request: Request) {
                     <p>Hi,</p>
                     <p>You requested a password reset for your GreenTrace account.</p>
                     <p>Click the link below to choose a new password:</p>
-                    <p><a href="${data.properties.action_link}">Reset Password</a></p>
+                    <p><a href="${resetLink}">Reset Password</a></p>
                     <p>This link expires in 1 hour. If you did not request this, you can safely ignore this email.</p>
                     <p>— The GreenTrace Team</p>
                 `,
