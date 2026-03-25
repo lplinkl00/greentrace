@@ -253,7 +253,7 @@ export default function AuditReportPage({
                                             <div key={pillar.pillar}>
                                                 <h3 className="font-semibold text-green-700 mb-2">{pillar.pillar}</h3>
                                                 <div className="space-y-2">
-                                                    {pillar.items.map(item => (
+                                                    {(pillar.items ?? []).map(item => (
                                                         <div key={item.requirementCode} className="pl-4 border-l-2 border-gray-200">
                                                             <p className="font-medium">[{item.requirementCode}] {item.requirementName} <span className="text-xs text-gray-500">({item.findingType})</span></p>
                                                             <p className="text-gray-600">{item.summary}</p>
@@ -265,7 +265,7 @@ export default function AuditReportPage({
                                         <div>
                                             <h3 className="font-semibold text-gray-700 mb-2">Recommendations</h3>
                                             <ul className="list-disc list-inside space-y-1">
-                                                {selectedReport.contentJson.recommendations.map((r, i) => <li key={i}>{r}</li>)}
+                                                {(selectedReport.contentJson.recommendations ?? []).map((r, i) => <li key={i}>{r}</li>)}
                                             </ul>
                                         </div>
                                         <div>
