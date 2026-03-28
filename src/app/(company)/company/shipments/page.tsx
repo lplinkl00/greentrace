@@ -2,7 +2,8 @@ import { getSessionUser } from '@/lib/auth'
 import { getShipments } from '@/lib/shipments'
 import { redirect } from 'next/navigation'
 import { MaterialType } from '@prisma/client'
-import { Ship, AlertTriangle, Plus } from 'lucide-react'
+import { Ship, AlertTriangle } from 'lucide-react'
+import { AddShipmentButton } from '@/components/add-shipment-button'
 
 const MATERIAL_LABELS: Partial<Record<MaterialType, string>> = {
     FFB: 'FFB',
@@ -56,14 +57,7 @@ export default async function CompanyShipmentsPage({
                     <h1 className="text-xl font-bold text-zinc-900">Company Trade &amp; Imports</h1>
                     <p className="text-sm text-zinc-400 mt-0.5">Manage real-time palm oil compliance records and trade volumes.</p>
                 </div>
-                <button
-                    disabled
-                    title="Coming soon"
-                    className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-lg text-white opacity-50 cursor-not-allowed transition"
-                    style={{ background: 'linear-gradient(135deg, #f97316 0%, #ef4444 100%)' }}
-                >
-                    <Plus size={14} /> Add New Record
-                </button>
+                <AddShipmentButton companyId={user.companyId} />
             </div>
 
             <div className="bg-white rounded-xl border border-zinc-100 shadow-card overflow-hidden">

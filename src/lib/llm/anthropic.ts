@@ -5,7 +5,7 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
 export async function callClaude(
     payload: ReportPayload,
-    model = 'claude-opus-4-5'
+    model = 'claude-sonnet-4-6'
 ): Promise<LLMResponse> {
     const systemPrompt = `You are an expert sustainability auditor writing formal ISCC/RSPO certification audit reports. 
 Your output MUST be valid JSON matching the ReportContentJson schema provided. 
