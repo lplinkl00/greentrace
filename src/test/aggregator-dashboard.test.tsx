@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 // Mock next/link so we can inspect hrefs without a Next.js router
@@ -31,12 +31,12 @@ const { default: AggregatorDashboard } = await import(
 
 describe('Aggregator dashboard — Recent Audits section', () => {
     it('View All link points to /aggregator/audits', async () => {
-        const { findByText, findAllByText } = render(<AggregatorDashboard />)
-        // Wait for the component to finish loading (stats are shown)
-        await findByText('Recent Audits')
-        const viewAllLinks = await findAllByText('View All')
-        // The Recent Audits "View All" link is the second one (after Certification Expiry Timeline)
-        const recentAuditsViewAll = viewAllLinks[1]
-        expect(recentAuditsViewAll.closest('a')).toHaveAttribute('href', '/aggregator/audits')
+        render(<AggregatorDashboard />)
+        // Wait for the component to finish loading
+        await screen.findByText('Recent Audits')
+        // Scope the query to the card that contains the "Recent Audits" heading
+        const recentAuditsSection = screen.getByText('Recent Audits').closest('div.bg-white')!
+        const viewAllLink = within(recentAuditsSection).getByRole('link', { name: /view all/i })
+        expect(viewAllLink).toHaveAttribute('href', '/aggregator/audits')
     })
 })

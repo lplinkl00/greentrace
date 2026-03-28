@@ -60,14 +60,22 @@ export default function AuditDetailPage({
 
     const handleSaveAll = async () => {
         setSaving(true)
-        const findingsArray = Object.values(findingsMap).filter(f => f.findingType && f.findingType !== 'NOT_ASSESSED')
-        await fetch('/api/audit-findings', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ auditId: params.auditId, findings: findingsArray }),
-        })
-        setSaving(false)
-        await refreshAudit()
+        try {
+            const findingsArray = Object.values(findingsMap).filter(f => f.findingType && f.findingType !== 'NOT_ASSESSED')
+            const res = await fetch('/api/audit-findings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ auditId: params.auditId, findings: findingsArray }),
+            })
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}))
+                alert(`Save failed: ${data.error ?? res.status}`)
+                return
+            }
+            await refreshAudit()
+        } finally {
+            setSaving(false)
+        }
     }
 
     const handleAdvanceStatus = async () => {
