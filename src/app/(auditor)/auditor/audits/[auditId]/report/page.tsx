@@ -37,7 +37,7 @@ export default function AuditReportPage({
 
     const loadReports = useCallback(async () => {
         setLoading(true)
-        const res = await fetch(`/api/audit-reports/${params.auditId}?auditId=${params.auditId}`)
+        const res = await fetch(`/api/audit-reports?auditId=${params.auditId}`)
         const data = await res.json()
         const list: AuditReport[] = data.data ?? []
         setReports(list)
