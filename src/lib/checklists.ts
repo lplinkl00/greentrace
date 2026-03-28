@@ -1,11 +1,11 @@
 import { prisma } from './prisma'
-import { MaterialType, RegulationCode } from '@prisma/client'
+import { MaterialType } from '@prisma/client'
 
 // ─── Checklist CRUD ────────────────────────────────────────────────────
 
 export async function getChecklists(filters: {
     companyId?: string
-    regulation?: RegulationCode
+    regulation?: string
     status?: string
     year?: string
 }) {
