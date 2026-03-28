@@ -78,25 +78,41 @@ export default function AuditDetailPage({
 
         if (!nextStatus) { setStatusUpdating(false); return }
 
-        await fetch(`/api/audits/${params.auditId}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: nextStatus }),
-        })
-        setStatusUpdating(false)
-        await refreshAudit()
+        try {
+            const res = await fetch(`/api/audits/${params.auditId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: nextStatus }),
+            })
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}))
+                alert(`Status update failed: ${data.error ?? res.status}`)
+                return
+            }
+            await refreshAudit()
+        } finally {
+            setStatusUpdating(false)
+        }
     }
 
     const handlePublish = async () => {
         if (!confirm('Publishing this audit will mark the checklist as CERTIFIED and update the company\'s certification status. This cannot be undone. Continue?')) return
         setPublishing(true)
-        const res = await fetch(`/api/audits/${params.auditId}/publish`, { method: 'POST' })
-        const data = await res.json()
-        setPublishing(false)
-        if (data.error) {
-            alert(`Publish failed: ${data.error}`)
-        } else {
-            await refreshAudit()
+        try {
+            const res = await fetch(`/api/audits/${params.auditId}/publish`, { method: 'POST' })
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}))
+                alert(`Publish failed: ${data.error ?? res.status}`)
+                return
+            }
+            const data = await res.json()
+            if (data.error) {
+                alert(`Publish failed: ${data.error}`)
+            } else {
+                await refreshAudit()
+            }
+        } finally {
+            setPublishing(false)
         }
     }
 
