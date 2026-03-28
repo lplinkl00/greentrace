@@ -188,7 +188,7 @@ export default function AggregatorDashboard() {
                 <div className="bg-white rounded-xl border border-zinc-100 shadow-card p-6">
                     <div className="flex items-center justify-between mb-4">
                         <h2 className="font-semibold text-zinc-800 text-sm">Recent Audits</h2>
-                        <Link href="/aggregator/checklists" className="text-xs text-orange-500 hover:text-orange-600 flex items-center gap-1 transition">
+                        <Link href="/aggregator/audits" className="text-xs text-orange-500 hover:text-orange-600 flex items-center gap-1 transition">
                             View All <ArrowRight size={12} />
                         </Link>
                     </div>
