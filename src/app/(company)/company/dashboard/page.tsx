@@ -46,8 +46,13 @@ export default function CompanyDashboardPage() {
         fetch('/api/dashboard/company/current')
             .then(r => r.json())
             .then(d => {
-                if (d.error) throw new Error(d.error)
-                setStats(d.data)
+                if (d.error === 'User is not associated with a company') {
+                    setError('no_company')
+                } else if (d.error) {
+                    throw new Error(d.error)
+                } else {
+                    setStats(d.data)
+                }
             })
             .catch((e: Error) => setError(e.message))
             .finally(() => setLoading(false))
@@ -56,6 +61,12 @@ export default function CompanyDashboardPage() {
     if (loading) return (
         <div className="flex items-center justify-center h-64">
             <div className="w-6 h-6 rounded-full border-2 border-orange-400 border-t-transparent animate-spin" />
+        </div>
+    )
+    if (error === 'no_company') return (
+        <div className="flex flex-col items-center justify-center h-64 text-zinc-400 text-sm gap-2">
+            <p className="font-medium text-zinc-600">No company associated</p>
+            <p>Your account is not linked to a company. Contact your administrator.</p>
         </div>
     )
     if (error) return <div className="text-red-500 text-sm p-4">Error: {error}</div>
