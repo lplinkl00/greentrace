@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { CheckCircle2, Leaf, AlertTriangle, ArrowRight, FileText, Clock } from 'lucide-react'
 
@@ -206,11 +206,11 @@ export default function CompanyDashboardPage() {
                     <h2 className="font-semibold text-zinc-800 text-sm mb-4">Quick Tools</h2>
                     <div className="grid grid-cols-2 gap-2">
                         {([
-                            { label: 'Scan/Edit', icon: CheckCircle2, href: `/company/checklists/${stats.checklistId}` },
-                            { label: 'Report', icon: FileText, href: '/company/checklists' },
-                            { label: 'Help Desk', icon: AlertTriangle, href: '#' },
-                            { label: 'Setup', icon: Clock, href: '/company/settings' },
-                        ] as const).map(t => {
+                            { label: 'Scan/Edit',   icon: CheckCircle2,  href: `/company/checklists/${stats.checklistId}` },
+                            { label: 'Import',      icon: FileText,      href: '/company/imports' },
+                            { label: 'Setup',       icon: Clock,         href: '/company/settings' },
+                            { label: 'Compliance',  icon: AlertTriangle, href: '/company/checklists' },
+                        ] as { label: string; icon: React.ElementType; href: string }[]).map(t => {
                             const Icon = t.icon
                             return (
                                 <Link
