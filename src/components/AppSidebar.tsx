@@ -34,7 +34,7 @@ const NAV_CONFIG: Record<string, { items: NavItem[]; cta: RoleCta; roleLabel: st
     },
     company: {
         roleLabel: 'Company Staff',
-        cta: { href: '/company/checklists', label: 'New Entry' },
+        cta: { href: '/company/checklists', label: 'Checklists' },
         items: [
             { href: '/company/dashboard', label: 'Dashboard', icon: LayoutDashboard },
             { href: '/company/checklists', label: 'Compliance', icon: ClipboardCheck },
