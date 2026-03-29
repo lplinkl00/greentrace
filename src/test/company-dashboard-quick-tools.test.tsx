@@ -40,15 +40,12 @@ describe('Company dashboard quick tools', () => {
         expect(importLink.getAttribute('href')).toBe('/company/imports')
     })
 
-    it('Help Desk tool does not link to dead hash anchor', async () => {
-        render(<CompanyDashboard />)
-        // Wait for the dashboard to load
+    it('no quick tool links to a dead hash anchor', async () => {
+        const { container } = render(<CompanyDashboard />)
+        // Wait for the dashboard to finish loading
         await screen.findByText('Quick Tools')
-        const links = document.querySelectorAll('a')
-        const helpLink = Array.from(links).find(l => l.textContent?.includes('Help') || l.textContent?.includes('Support'))
-        // Either it's removed or points somewhere real
-        if (helpLink) {
-            expect(helpLink.getAttribute('href')).not.toBe('#')
-        }
+        const links = Array.from(container.querySelectorAll('a'))
+        const deadLinks = links.filter(l => l.getAttribute('href') === '#')
+        expect(deadLinks).toHaveLength(0)
     })
 })
