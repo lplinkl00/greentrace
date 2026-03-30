@@ -20,7 +20,7 @@ describe('AuditReportPage — loadReports fetch URL', () => {
         )
 
         // Wait for loading to finish (the empty-state message appears)
-        await findByText('No report generated yet.')
+        await findByText('No report generated yet')
 
         expect(global.fetch).toHaveBeenCalledWith(
             '/api/audit-reports?auditId=audit-123'
@@ -32,7 +32,7 @@ describe('AuditReportPage — loadReports fetch URL', () => {
             <AuditReportPage params={{ auditId: 'audit-123' }} />
         )
 
-        await findByText('No report generated yet.')
+        await findByText('No report generated yet')
 
         const calls = (global.fetch as ReturnType<typeof vi.fn>).mock.calls
         const urls = calls.map((c: unknown[]) => c[0] as string)

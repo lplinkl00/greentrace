@@ -182,9 +182,9 @@ export async function getAuditorStats(auditorId: string) {
     })
 
     const auditsDueSoon = activeAudits.filter(a => {
-        if (!a.conductedDate) return false
+        if (!a.conductedDate) return true  // no scheduled date → always show in queue
         const diffDays = (a.conductedDate.getTime() - new Date().getTime()) / (1000 * 3600 * 24)
-        return diffDays >= 0 && diffDays <= 14
+        return diffDays <= 14  // include past-due AND upcoming within 14 days
     })
 
     // Reports that need review/finalisation (DRAFT state)

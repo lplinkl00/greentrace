@@ -34,13 +34,14 @@ const NAV_CONFIG: Record<string, { items: NavItem[]; cta: RoleCta; roleLabel: st
     },
     company: {
         roleLabel: 'Company Staff',
-        cta: { href: '/company/checklists', label: 'New Entry' },
+        cta: { href: '/company/checklists', label: 'Checklists' },
         items: [
             { href: '/company/dashboard', label: 'Dashboard', icon: LayoutDashboard },
             { href: '/company/checklists', label: 'Compliance', icon: ClipboardCheck },
             { href: '/company/production', label: 'Production', icon: Factory },
             { href: '/company/shipments', label: 'Trade Ledger', icon: Ship },
             { href: '/company/imports', label: 'Imports', icon: Package },
+            { href: '/company/profile', label: 'Profile', icon: Building2 },
             { href: '/company/settings', label: 'Settings', icon: Settings },
         ],
     },
