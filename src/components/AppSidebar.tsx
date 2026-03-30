@@ -41,6 +41,7 @@ const NAV_CONFIG: Record<string, { items: NavItem[]; cta: RoleCta; roleLabel: st
             { href: '/company/production', label: 'Production', icon: Factory },
             { href: '/company/shipments', label: 'Trade Ledger', icon: Ship },
             { href: '/company/imports', label: 'Imports', icon: Package },
+            { href: '/company/profile', label: 'Profile', icon: Building2 },
             { href: '/company/settings', label: 'Settings', icon: Settings },
         ],
     },
