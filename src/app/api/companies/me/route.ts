@@ -8,7 +8,7 @@ const COMPANY_SELECT = {
     country: true, latitude: true, longitude: true, isActive: true,
 } as const
 
-export async function GET() {
+export async function GET(_request: Request) {
     const user = await getSessionUser()
     if (!user) return new NextResponse('Unauthorized', { status: 401 })
     if (!user.companyId) return NextResponse.json(
