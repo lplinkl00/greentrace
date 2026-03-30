@@ -3,77 +3,68 @@ import { AuditStatus, ChecklistItemStatus, ChecklistStatus } from '@prisma/clien
 
 // --- Aggregator / Portfolio Stats ---
 export async function getPortfolioStats() {
-    const totalCompanies = await prisma.company.count()
+    const [
+        totalCompanies,
+        certifiedCompanies,
+        activeAuditsCount,
+        openFindingsCount,
+        ghgResult,
+        timelineData,
+    ] = await Promise.all([
+        prisma.company.count(),
 
-    // Certified companies (have at least one CERTIFIED checklist)
-    const certifiedCompanies = await prisma.company.count({
-        where: {
-            checklists: { some: { status: ChecklistStatus.CERTIFIED } }
-        }
-    })
+        prisma.company.count({
+            where: { checklists: { some: { status: ChecklistStatus.CERTIFIED } } }
+        }),
 
-    const activeAuditsCount = await prisma.audit.count({
-        where: {
-            status: { in: [AuditStatus.SCHEDULED, AuditStatus.IN_PROGRESS, AuditStatus.FINDINGS_REVIEW] }
-        }
-    })
-
-    const openFindingsCount = await prisma.auditFinding.count({
-        where: {
-            findingType: { in: ['NON_CONFORMANT_MAJOR', 'NON_CONFORMANT_MINOR'] },
-            // Only count findings from audits that aren't withdrawn
-            checklistItem: {
-                checklist: {
-                    audits: { some: { status: { not: AuditStatus.WITHDRAWN } } }
-                }
+        prisma.audit.count({
+            where: {
+                status: { in: [AuditStatus.SCHEDULED, AuditStatus.IN_PROGRESS, AuditStatus.FINDINGS_REVIEW] }
             }
-        }
-    })
+        }),
 
-    // Calculate total GHG across all CERTIFIED checklists
-    const allCertifiedChecklists = await prisma.checklist.findMany({
-        where: { status: ChecklistStatus.CERTIFIED },
-        include: {
-            items: {
-                include: {
-                    dataEntries: {
-                        where: { emissionFactorId: { not: null } },
-                        select: { valueConverted: true }
+        prisma.auditFinding.count({
+            where: {
+                findingType: { in: ['NON_CONFORMANT_MAJOR', 'NON_CONFORMANT_MINOR'] },
+                checklistItem: {
+                    checklist: {
+                        audits: { some: { status: { not: AuditStatus.WITHDRAWN } } }
                     }
                 }
             }
-        }
-    })
+        }),
 
-    let totalGhg = 0
-    for (const c of allCertifiedChecklists) {
-        for (const i of c.items) {
-            for (const e of i.dataEntries) {
-                totalGhg += e.valueConverted?.toNumber() ?? 0
+        // DB-level aggregate instead of loading all items into memory
+        prisma.dataEntry.aggregate({
+            _sum: { valueConverted: true },
+            where: {
+                emissionFactorId: { not: null },
+                checklistItem: { checklist: { status: ChecklistStatus.CERTIFIED } }
             }
-        }
-    }
+        }),
 
-    // Timeline data (companies with their cert expiry dates based on their latest CERTIFIED checklist)
-    const timelineData = await prisma.company.findMany({
-        include: {
-            checklists: {
-                where: { status: ChecklistStatus.CERTIFIED },
-                orderBy: { periodEnd: 'desc' },
-                take: 1
+        prisma.company.findMany({
+            include: {
+                checklists: {
+                    where: { status: ChecklistStatus.CERTIFIED },
+                    orderBy: { periodEnd: 'desc' },
+                    take: 1
+                }
             }
-        }
-    })
+        }),
+    ])
 
-    const expiryTimeline = timelineData.map(company => {
-        const latestCert = company.checklists[0]
-        return {
-            companyId: company.id,
-            companyName: company.name,
-            latestCertEnd: latestCert ? latestCert.periodEnd : null,
-            regulation: latestCert ? latestCert.regulation : null
-        }
-    }).filter(m => m.latestCertEnd !== null)
+    const expiryTimeline = timelineData
+        .map(company => {
+            const latestCert = company.checklists[0]
+            return {
+                companyId: company.id,
+                companyName: company.name,
+                latestCertEnd: latestCert ? latestCert.periodEnd : null,
+                regulation: latestCert ? latestCert.regulation : null,
+            }
+        })
+        .filter(m => m.latestCertEnd !== null)
         .sort((a, b) => a.latestCertEnd!.getTime() - b.latestCertEnd!.getTime())
 
     return {
@@ -81,8 +72,8 @@ export async function getPortfolioStats() {
         certifiedCompanies,
         activeAuditsCount,
         openFindingsCount,
-        totalGhgKgCo2e: totalGhg,
-        expiryTimeline
+        totalGhgKgCo2e: ghgResult._sum.valueConverted?.toNumber() ?? 0,
+        expiryTimeline,
     }
 }
 
