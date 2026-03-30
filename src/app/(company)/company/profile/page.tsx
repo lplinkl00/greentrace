@@ -36,7 +36,7 @@ export default function CompanyProfilePage() {
         try {
             const [profileRes, sessionRes] = await Promise.all([
                 fetch('/api/companies/me'),
-                fetch('/api/auth/me').catch(() => null),
+                fetch('/api/auth/session').catch(() => null),
             ])
             if (!profileRes.ok) {
                 setError('Failed to load company profile.')
