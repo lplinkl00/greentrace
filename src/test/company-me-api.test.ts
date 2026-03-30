@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { NextRequest } from 'next/server'
+import { UserRole } from '@prisma/client'
 
 // Mock prisma
 vi.mock('@/lib/prisma', () => ({
@@ -14,7 +15,6 @@ vi.mock('@/lib/prisma', () => ({
 // Mock auth
 vi.mock('@/lib/auth', () => ({
     getSessionUser: vi.fn(),
-    withAuth: vi.fn(),
 }))
 
 import { prisma } from '@/lib/prisma'
@@ -43,7 +43,7 @@ describe('GET /api/companies/me', () => {
 
     it('returns 400 if user has no companyId', async () => {
         vi.mocked(getSessionUser).mockResolvedValue({
-            id: 'u-1', email: 'a@b.com', name: 'A', role: 'COMPANY_STAFF' as any,
+            id: 'u-1', email: 'a@b.com', name: 'A', role: UserRole.COMPANY_STAFF,
             companyId: null, organisationId: null,
         })
         const res = await GET(new NextRequest('http://localhost/api/companies/me'))
@@ -52,7 +52,7 @@ describe('GET /api/companies/me', () => {
 
     it('returns company data for authenticated user', async () => {
         vi.mocked(getSessionUser).mockResolvedValue({
-            id: 'u-1', email: 'a@b.com', name: 'A', role: 'COMPANY_STAFF' as any,
+            id: 'u-1', email: 'a@b.com', name: 'A', role: UserRole.COMPANY_STAFF,
             companyId: 'co-1', organisationId: null,
         })
         vi.mocked(prisma.company.findUnique).mockResolvedValue(mockCompany as any)
@@ -68,7 +68,7 @@ describe('PATCH /api/companies/me', () => {
 
     it('returns 403 for COMPANY_STAFF', async () => {
         vi.mocked(getSessionUser).mockResolvedValue({
-            id: 'u-1', email: 'a@b.com', name: 'A', role: 'COMPANY_STAFF' as any,
+            id: 'u-1', email: 'a@b.com', name: 'A', role: UserRole.COMPANY_STAFF,
             companyId: 'co-1', organisationId: null,
         })
         const req = new NextRequest('http://localhost/api/companies/me', {
@@ -82,7 +82,7 @@ describe('PATCH /api/companies/me', () => {
 
     it('updates and returns company for COMPANY_MANAGER', async () => {
         vi.mocked(getSessionUser).mockResolvedValue({
-            id: 'u-1', email: 'a@b.com', name: 'A', role: 'COMPANY_MANAGER' as any,
+            id: 'u-1', email: 'a@b.com', name: 'A', role: UserRole.COMPANY_MANAGER,
             companyId: 'co-1', organisationId: null,
         })
         const updated = { ...mockCompany, name: 'New Name' }
