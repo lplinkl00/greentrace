@@ -1,22 +1,6 @@
-'use client'
-
-import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Building2, BarChart3, ClipboardList, AlertTriangle, TrendingUp, ArrowRight } from 'lucide-react'
-
-type PortfolioStats = {
-    totalCompanies: number
-    certifiedCompanies: number
-    activeAuditsCount: number
-    openFindingsCount: number
-    totalGhgKgCo2e: number
-    expiryTimeline: Array<{
-        companyId: string
-        companyName: string
-        latestCertEnd: string
-        regulation: string
-    }>
-}
+import { getPortfolioStats } from '@/lib/dashboard'
 
 function StatCard({
     icon: Icon,
@@ -45,23 +29,8 @@ function StatCard({
     )
 }
 
-export default function AggregatorDashboard() {
-    const [stats, setStats] = useState<PortfolioStats | null>(null)
-    const [loading, setLoading] = useState(true)
-
-    useEffect(() => {
-        fetch('/api/dashboard/portfolio')
-            .then(r => r.json())
-            .then(d => { setStats(d.data); setLoading(false) })
-            .catch(() => setLoading(false))
-    }, [])
-
-    if (loading) return (
-        <div className="flex items-center justify-center h-64">
-            <div className="w-6 h-6 rounded-full border-2 border-orange-400 border-t-transparent animate-spin" />
-        </div>
-    )
-    if (!stats) return <div className="text-red-500 p-4 text-sm">Error loading dashboard</div>
+export default async function AggregatorDashboard() {
+    const stats = await getPortfolioStats()
 
     const complianceRate = stats.totalCompanies > 0
         ? Math.round((stats.certifiedCompanies / stats.totalCompanies) * 100)
@@ -139,7 +108,7 @@ export default function AggregatorDashboard() {
                             </thead>
                             <tbody className="divide-y divide-zinc-50">
                                 {stats.expiryTimeline.map(item => {
-                                    const expiryDate = new Date(item.latestCertEnd)
+                                    const expiryDate = new Date(item.latestCertEnd!)
                                     const diffDays = (expiryDate.getTime() - Date.now()) / (1000 * 3600 * 24)
                                     const accentColor = diffDays <= 0 ? '#ef4444' : diffDays <= 60 ? '#f97316' : '#22c55e'
                                     const badge = diffDays <= 0
@@ -160,7 +129,7 @@ export default function AggregatorDashboard() {
                                             </td>
                                             <td className="px-6 py-3.5 whitespace-nowrap">
                                                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-zinc-100 text-zinc-600">
-                                                    {item.regulation.replace(/_/g, ' ')}
+                                                    {item.regulation!.replace(/_/g, ' ')}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-3.5 whitespace-nowrap">
