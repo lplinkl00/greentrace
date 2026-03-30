@@ -163,43 +163,38 @@ export async function getCompanyStats(companyId: string) {
 
 // --- Auditor Stats ---
 export async function getAuditorStats(auditorId: string) {
-    const activeAudits = await prisma.audit.findMany({
-        where: {
-            auditorId,
-            status: { in: [AuditStatus.SCHEDULED, AuditStatus.IN_PROGRESS, AuditStatus.FINDINGS_REVIEW] }
-        },
-        include: { company: { select: { name: true } } },
-        orderBy: { conductedDate: 'asc' }
-    })
+    const [activeAudits, reportsToFinalise, totalFindings] = await Promise.all([
+        prisma.audit.findMany({
+            where: {
+                auditorId,
+                status: { in: [AuditStatus.SCHEDULED, AuditStatus.IN_PROGRESS, AuditStatus.FINDINGS_REVIEW] }
+            },
+            include: { company: { select: { name: true } } },
+            orderBy: { conductedDate: 'asc' }
+        }),
+
+        prisma.auditReport.findMany({
+            where: { status: 'DRAFT', audit: { auditorId } },
+            orderBy: { version: 'desc' },
+            distinct: ['auditId'],
+            include: { audit: { include: { company: true } } }
+        }),
+
+        prisma.auditFinding.count({
+            where: {
+                checklistItem: {
+                    checklist: {
+                        audits: { some: { auditorId, status: { not: AuditStatus.WITHDRAWN } } }
+                    }
+                }
+            }
+        }),
+    ])
 
     const auditsDueSoon = activeAudits.filter(a => {
         if (!a.conductedDate) return false
         const diffDays = (a.conductedDate.getTime() - new Date().getTime()) / (1000 * 3600 * 24)
         return diffDays >= 0 && diffDays <= 14
-    })
-
-    // Reports that need review/finalisation (DRAFT state)
-    const reportsToFinalise = await prisma.auditReport.findMany({
-        where: {
-            status: 'DRAFT',
-            audit: { auditorId }
-        },
-        // Only get the latest version per audit
-        orderBy: { version: 'desc' },
-        distinct: ['auditId'],
-        include: {
-            audit: { include: { company: true } }
-        }
-    })
-
-    const totalFindings = await prisma.auditFinding.count({
-        where: {
-            checklistItem: {
-                checklist: {
-                    audits: { some: { auditorId, status: { not: AuditStatus.WITHDRAWN } } }
-                }
-            }
-        }
     })
 
     return {
