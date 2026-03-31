@@ -64,51 +64,93 @@ export default function AuditReportPage({ params }: { params: { auditId: string 
     const handleGenerate = async () => {
         setGenerating(true)
         setError(null)
-        const res = await fetch('/api/audit-reports/generate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ auditId: params.auditId, provider, reportOptions }),
-        })
-        const data = await res.json()
-        setGenerating(false)
-        if (data.error) setError(data.error)
-        else await loadReports()
+        try {
+            const res = await fetch('/api/audit-reports/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ auditId: params.auditId, provider, reportOptions }),
+            })
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}))
+                setError((data as { error?: string }).error ?? 'Generation failed. Please try again.')
+                return
+            }
+            const data = await res.json()
+            if ((data as { error?: string }).error) setError((data as { error?: string }).error!)
+            else await loadReports()
+        } catch {
+            setError('Network error — please check your connection and try again.')
+        } finally {
+            setGenerating(false)
+        }
     }
 
     const handleSaveEdit = async () => {
         if (!selectedReport || !editContent) return
         setSaving(true)
         setError(null)
-        const res = await fetch(`/api/audit-reports/${selectedReport.id}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contentJson: editContent }),
-        })
-        const data = await res.json()
-        setSaving(false)
-        if (data.error) setError(data.error)
-        else await loadReports()
+        try {
+            const res = await fetch(`/api/audit-reports/${selectedReport.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contentJson: editContent }),
+            })
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}))
+                setError((data as { error?: string }).error ?? 'Save failed. Please try again.')
+                return
+            }
+            const data = await res.json()
+            if ((data as { error?: string }).error) setError((data as { error?: string }).error!)
+            else await loadReports()
+        } catch {
+            setError('Network error — please check your connection and try again.')
+        } finally {
+            setSaving(false)
+        }
     }
 
     const handleFinalise = async () => {
         if (!selectedReport) return
         if (!confirm('Mark this report as FINAL? It will become read-only.')) return
         setFinalising(true)
-        const res  = await fetch(`/api/audit-reports/${selectedReport.id}/finalise`, { method: 'POST' })
-        const data = await res.json()
-        setFinalising(false)
-        if (data.error) setError(data.error)
-        else await loadReports()
+        setError(null)
+        try {
+            const res = await fetch(`/api/audit-reports/${selectedReport.id}/finalise`, { method: 'POST' })
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}))
+                setError((data as { error?: string }).error ?? 'Finalise failed. Please try again.')
+                return
+            }
+            const data = await res.json()
+            if ((data as { error?: string }).error) setError((data as { error?: string }).error!)
+            else await loadReports()
+        } catch {
+            setError('Network error — please check your connection and try again.')
+        } finally {
+            setFinalising(false)
+        }
     }
 
     const handleExportPdf = async () => {
         if (!selectedReport) return
         setExporting(true)
-        const res  = await fetch(`/api/audit-reports/${selectedReport.id}/export-pdf`, { method: 'POST' })
-        const data = await res.json()
-        setExporting(false)
-        if (data.error) setError(data.error)
-        else if (data.data?.signedUrl) window.open(data.data.signedUrl, '_blank')
+        setError(null)
+        try {
+            const res = await fetch(`/api/audit-reports/${selectedReport.id}/export-pdf`, { method: 'POST' })
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}))
+                setError((data as { error?: string }).error ?? 'Export failed. Please try again.')
+                return
+            }
+            const data = await res.json()
+            if ((data as { error?: string; data?: { signedUrl?: string } }).error) setError((data as { error?: string }).error!)
+            else if ((data as { data?: { signedUrl?: string } }).data?.signedUrl) window.open((data as { data: { signedUrl: string } }).data.signedUrl, '_blank')
+        } catch {
+            setError('Network error — please check your connection and try again.')
+        } finally {
+            setExporting(false)
+        }
     }
 
     const isFinal = selectedReport?.status === 'FINAL'
