@@ -1,15 +1,24 @@
 import { render, screen } from '@testing-library/react'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 
 vi.mock('next/link', () => ({
     default: ({ href, children }: any) => <a href={href}>{children}</a>,
 }))
 
-beforeEach(() => {
-    vi.spyOn(global, 'fetch').mockResolvedValue({
-        json: async () => ({ error: 'User is not associated with a company' }),
-    } as any)
-})
+vi.mock('@/lib/auth', () => ({
+    getSessionUser: vi.fn().mockResolvedValue({
+        id: 'user-1',
+        email: 'test@test.com',
+        name: 'Test User',
+        role: 'COMPANY_MANAGER',
+        companyId: null,
+        organisationId: null,
+    }),
+}))
+
+vi.mock('@/lib/dashboard', () => ({
+    getCompanyStats: vi.fn(),
+}))
 
 const { default: CompanyDashboard } = await import(
     '@/app/(company)/company/dashboard/page'
@@ -17,7 +26,7 @@ const { default: CompanyDashboard } = await import(
 
 describe('Company dashboard — no associated company', () => {
     it('shows a friendly message instead of a red error screen', async () => {
-        render(<CompanyDashboard />)
+        render(await CompanyDashboard())
         const msg = await screen.findByText(/no company associated/i)
         expect(msg).toBeInTheDocument()
         expect(screen.queryByText(/^Error:/)).not.toBeInTheDocument()

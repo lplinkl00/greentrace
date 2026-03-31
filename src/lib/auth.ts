@@ -3,6 +3,7 @@ import { prisma } from './prisma'
 import { createClient } from './supabase-server'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import { cache } from 'react'
 
 export type SessionUser = {
     id: string
@@ -13,7 +14,7 @@ export type SessionUser = {
     organisationId: string | null
 }
 
-export async function getSessionUser(): Promise<SessionUser | null> {
+export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
     const supabase = createClient(cookies())
     const { data: { user: supabaseUser }, error } = await supabase.auth.getUser()
 
@@ -41,11 +42,8 @@ export async function getSessionUser(): Promise<SessionUser | null> {
         companyId: resolvedCompanyId,
         organisationId: user.organisationId,
     }
-}
+})
 
-/**
- * Higher-order function to protect API routes with role-based access control.
- */
 export function withAuth(
     roles: UserRole[],
     handler: (request: Request, context: any, user: SessionUser) => Promise<NextResponse> | NextResponse
