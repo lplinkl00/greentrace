@@ -30,8 +30,8 @@ export default async function AuditorDashboardPage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="bg-white rounded-xl border border-zinc-100 shadow-card p-5">
                     <div className="flex items-start justify-between mb-2">
-                        <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">Audits Completed</p>
-                        <CheckCircle2 size={15} className="text-green-500 mt-0.5" />
+                        <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">Active Audits</p>
+                        <ClipboardList size={15} className="text-blue-400 mt-0.5" />
                     </div>
                     <p className="text-2xl font-bold text-zinc-900">{stats.activeAuditsCount}</p>
                     <Link href="/auditor/audits" className="text-xs text-orange-500 hover:text-orange-600 mt-1.5 flex items-center gap-1 transition">
@@ -50,11 +50,11 @@ export default async function AuditorDashboardPage() {
 
                 <div className="bg-white rounded-xl border border-zinc-100 shadow-card p-5">
                     <div className="flex items-start justify-between mb-2">
-                        <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">Avg. Completion Time</p>
-                        <ClipboardList size={15} className="text-blue-400 mt-0.5" />
+                        <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">Total Findings</p>
+                        <AlertTriangle size={15} className="text-red-400 mt-0.5" />
                     </div>
                     <p className="text-2xl font-bold text-zinc-900">{stats.totalFindings}</p>
-                    <p className="text-xs text-zinc-400 mt-1">Total findings across audits</p>
+                    <p className="text-xs text-zinc-400 mt-1">Across all assigned audits</p>
                 </div>
             </div>
 
