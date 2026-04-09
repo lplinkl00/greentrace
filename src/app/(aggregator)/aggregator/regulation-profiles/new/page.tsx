@@ -45,18 +45,11 @@ type RegulationProfileFixture = {
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const REGULATION_OPTIONS = [
-    { value: 'ISCC_EU', label: 'ISCC EU' },
-    { value: 'ISCC_PLUS', label: 'ISCC PLUS' },
-    { value: 'RSPO_PC', label: 'RSPO PC' },
-    { value: 'RSPO_SCCS', label: 'RSPO SCCS' },
-]
-
 const AI_PROMPT = `You are a compliance data engineer. Generate a GreenTrace regulation profile JSON for [REGULATION] version [VERSION].
 
 Follow this exact schema:
 {
-  "regulation": "ISCC_EU|ISCC_PLUS|RSPO_PC|RSPO_SCCS",
+  "regulation": "string (e.g. 'ISCC_EU', 'RSPO_PC', 'SEDG', 'MSPO')",
   "version": "string (e.g. '2024-v1')",
   "name": "string",
   "description": "string",
@@ -92,7 +85,7 @@ Follow this exact schema:
 Output only valid JSON. No explanation.`
 
 const BLANK_TEMPLATE: RegulationProfileFixture = {
-    regulation: 'ISCC_EU',
+    regulation: 'MY_REGULATION',
     version: '1.0',
     name: 'My Profile',
     description: '',
@@ -128,12 +121,9 @@ const BLANK_TEMPLATE: RegulationProfileFixture = {
 
 // ─── Validation ──────────────────────────────────────────────────────────────
 
-const VALID_REGULATIONS = ['ISCC_EU', 'ISCC_PLUS', 'RSPO_PC', 'RSPO_SCCS']
-
 function validateFixture(obj: any): string | null {
     if (!obj || typeof obj !== 'object') return 'JSON must be an object.'
-    if (!VALID_REGULATIONS.includes(obj.regulation))
-        return `"regulation" must be one of: ${VALID_REGULATIONS.join(', ')}`
+    if (!obj.regulation?.trim()) return '"regulation" is required.'
     if (!obj.version?.trim()) return '"version" is required.'
     if (!obj.name?.trim()) return '"name" is required.'
     if (!Array.isArray(obj.pillars) || obj.pillars.length === 0)
@@ -159,7 +149,7 @@ export default function NewRegulationProfilePage() {
     const [tab, setTab] = useState<Tab>('manual')
 
     // Manual form state
-    const [regulation, setRegulation] = useState('ISCC_EU')
+    const [regulation, setRegulation] = useState('')
     const [version, setVersion] = useState('')
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
@@ -323,16 +313,12 @@ export default function NewRegulationProfilePage() {
                     </p>
                     <form onSubmit={handleManualSubmit} className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Regulation</label>
-                            <select
-                                value={regulation}
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Regulation Code</label>
+                            <input
+                                type="text" required placeholder="e.g. ISCC_EU, RSPO_PC, SEDG" value={regulation}
                                 onChange={e => setRegulation(e.target.value)}
                                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400"
-                            >
-                                {REGULATION_OPTIONS.map(opt => (
-                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                ))}
-                            </select>
+                            />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Version</label>

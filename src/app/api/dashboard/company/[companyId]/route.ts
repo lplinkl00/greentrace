@@ -14,7 +14,9 @@ export const GET = withAuth(
             }
             const stats = await getCompanyStats(companyId)
             if (!stats) return NextResponse.json({ error: 'No checklist found for this company' }, { status: 404 })
-            return NextResponse.json({ data: stats })
+            return NextResponse.json({ data: stats }, {
+                headers: { 'Cache-Control': 'private, max-age=30, stale-while-revalidate=60' }
+            })
         } catch (e: any) {
             return NextResponse.json({ error: e.message }, { status: 500 })
         }

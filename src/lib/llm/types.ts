@@ -50,3 +50,19 @@ export interface LLMResponse {
     tokensUsed: number
     rawText: string
 }
+
+// ─── Report customisation options ─────────────────────────────────────────
+
+export type ColourScheme = 'green' | 'navy' | 'slate' | 'amber'
+
+export type StylePreset = 'corporate' | 'minimal' | 'sustainability'
+
+export interface ReportOptions {
+    colourScheme: ColourScheme
+    stylePreset: StylePreset
+}
+
+export const DEFAULT_REPORT_OPTIONS: ReportOptions = {
+    colourScheme: 'green',
+    stylePreset: 'sustainability',
+}

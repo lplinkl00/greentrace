@@ -1,64 +1,34 @@
-'use client'
-
-import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { CheckCircle2, Leaf, AlertTriangle, ArrowRight, FileText, Clock } from 'lucide-react'
-
-type CompanyStats = {
-    checklistId: string
-    periodStart: string
-    periodEnd: string
-    regulation: string
-    status: string
-    progress: {
-        totalItems: number
-        completedItems: number
-        byPillar: Array<{
-            pillar: string
-            total: number
-            completed: number
-            percentage: number
-        }>
-    }
-    ghgTotalKgCo2e: number
-    massBalance: {
-        totalEntries: number
-        discrepancies: number
-    }
-    reconciliationAlerts: number
-}
+import { getSessionUser } from '@/lib/auth'
+import { getCompanyStats } from '@/lib/dashboard'
 
 const STATUS_STYLE: Record<string, { bg: string; color: string }> = {
-    DRAFT: { bg: '#f4f4f5', color: '#71717a' },
-    SUBMITTED: { bg: '#eff6ff', color: '#2563eb' },
+    DRAFT:        { bg: '#f4f4f5', color: '#71717a' },
+    SUBMITTED:    { bg: '#eff6ff', color: '#2563eb' },
     UNDER_REVIEW: { bg: '#fef9c3', color: '#92400e' },
-    CERTIFIED: { bg: '#f0fdf4', color: '#15803d' },
-    REJECTED: { bg: '#fef2f2', color: '#dc2626' },
+    UNDER_AUDIT:  { bg: '#fff7ed', color: '#c2410c' },
+    CERTIFIED:    { bg: '#f0fdf4', color: '#15803d' },
+    LOCKED:       { bg: '#1c1917', color: '#fafaf9' },
 }
 
-export default function CompanyDashboardPage() {
-    const [stats, setStats] = useState<CompanyStats | null>(null)
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState<string | null>(null)
+export default async function CompanyDashboardPage() {
+    const user = await getSessionUser()
 
-    useEffect(() => {
-        fetch('/api/dashboard/company/current')
-            .then(r => r.json())
-            .then(d => {
-                if (d.error) throw new Error(d.error)
-                setStats(d.data)
-            })
-            .catch((e: Error) => setError(e.message))
-            .finally(() => setLoading(false))
-    }, [])
+    if (!user?.companyId) {
+        return (
+            <div className="flex flex-col items-center justify-center h-64 text-zinc-400 text-sm gap-2">
+                <p className="font-medium text-zinc-600">No company associated</p>
+                <p>Your account is not linked to a company. Contact your administrator.</p>
+            </div>
+        )
+    }
 
-    if (loading) return (
-        <div className="flex items-center justify-center h-64">
-            <div className="w-6 h-6 rounded-full border-2 border-orange-400 border-t-transparent animate-spin" />
-        </div>
-    )
-    if (error) return <div className="text-red-500 text-sm p-4">Error: {error}</div>
-    if (!stats) return <div className="text-zinc-400 text-sm p-4">No active checklists found.</div>
+    const stats = await getCompanyStats(user.companyId)
+
+    if (!stats) {
+        return <div className="text-zinc-400 text-sm p-4">No active checklists found.</div>
+    }
 
     const progressPct = stats.progress.totalItems > 0
         ? Math.round((stats.progress.completedItems / stats.progress.totalItems) * 100)
@@ -194,11 +164,11 @@ export default function CompanyDashboardPage() {
                     <h2 className="font-semibold text-zinc-800 text-sm mb-4">Quick Tools</h2>
                     <div className="grid grid-cols-2 gap-2">
                         {([
-                            { label: 'Scan/Edit', icon: CheckCircle2, href: `/company/checklists/${stats.checklistId}` },
-                            { label: 'Report', icon: FileText, href: '/company/checklists' },
-                            { label: 'Help Desk', icon: AlertTriangle, href: '#' },
-                            { label: 'Setup', icon: Clock, href: '/company/settings' },
-                        ] as const).map(t => {
+                            { label: 'Scan/Edit',   icon: CheckCircle2,  href: `/company/checklists/${stats.checklistId}` },
+                            { label: 'Import',      icon: FileText,      href: '/company/imports' },
+                            { label: 'Setup',       icon: Clock,         href: '/company/settings' },
+                            { label: 'Compliance',  icon: AlertTriangle, href: '/company/checklists' },
+                        ] as { label: string; icon: React.ElementType; href: string }[]).map(t => {
                             const Icon = t.icon
                             return (
                                 <Link

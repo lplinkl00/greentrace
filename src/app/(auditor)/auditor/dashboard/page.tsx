@@ -1,53 +1,22 @@
-'use client'
-
-import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { ClipboardList, FileText, AlertTriangle, ArrowRight, Calendar, CheckCircle2 } from 'lucide-react'
-
-type AuditorStats = {
-    activeAuditsCount: number
-    auditsDueSoon: Array<{
-        id: string
-        companyName: string
-        regulation: string
-        conductedDate: string
-        status: string
-    }>
-    reportsToFinalise: Array<{
-        id: string
-        auditId: string
-        companyName: string
-        version: number
-        generatedAt: string
-    }>
-    totalFindings: number
-}
+import { getSessionUser } from '@/lib/auth'
+import { getAuditorStats } from '@/lib/dashboard'
 
 const AUDIT_STATUS_STYLE: Record<string, { bg: string; color: string; label: string }> = {
-    SCHEDULED: { bg: '#eff6ff', color: '#2563eb', label: 'Scheduled' },
-    IN_PROGRESS: { bg: '#fff7ed', color: '#c2410c', label: 'In Progress' },
-    COMPLETED: { bg: '#f0fdf4', color: '#15803d', label: 'Completed' },
-    PUBLISHED: { bg: '#f0fdf4', color: '#15803d', label: 'Published' },
-    PENDING: { bg: '#f4f4f5', color: '#71717a', label: 'Pending' },
+    SCHEDULED:       { bg: '#eff6ff', color: '#2563eb', label: 'Scheduled' },
+    IN_PROGRESS:     { bg: '#fff7ed', color: '#c2410c', label: 'In Progress' },
+    COMPLETED:       { bg: '#f0fdf4', color: '#15803d', label: 'Completed' },
+    PUBLISHED:       { bg: '#f0fdf4', color: '#15803d', label: 'Published' },
+    FINDINGS_REVIEW: { bg: '#fef9c3', color: '#92400e', label: 'Findings Review' },
+    PENDING:         { bg: '#f4f4f5', color: '#71717a', label: 'Pending' },
 }
 
-export default function AuditorDashboardPage() {
-    const [stats, setStats] = useState<AuditorStats | null>(null)
-    const [loading, setLoading] = useState(true)
+export default async function AuditorDashboardPage() {
+    const user = await getSessionUser()
+    if (!user) return null
 
-    useEffect(() => {
-        fetch('/api/dashboard/auditor')
-            .then(r => r.json())
-            .then(d => { setStats(d.data); setLoading(false) })
-            .catch(() => setLoading(false))
-    }, [])
-
-    if (loading) return (
-        <div className="flex items-center justify-center h-64">
-            <div className="w-6 h-6 rounded-full border-2 border-orange-400 border-t-transparent animate-spin" />
-        </div>
-    )
-    if (!stats) return <div className="text-red-500 text-sm p-4">Error loading dashboard</div>
+    const stats = await getAuditorStats(user.id)
 
     return (
         <div className="space-y-6">
@@ -61,8 +30,8 @@ export default function AuditorDashboardPage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="bg-white rounded-xl border border-zinc-100 shadow-card p-5">
                     <div className="flex items-start justify-between mb-2">
-                        <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">Audits Completed</p>
-                        <CheckCircle2 size={15} className="text-green-500 mt-0.5" />
+                        <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">Active Audits</p>
+                        <ClipboardList size={15} className="text-blue-400 mt-0.5" />
                     </div>
                     <p className="text-2xl font-bold text-zinc-900">{stats.activeAuditsCount}</p>
                     <Link href="/auditor/audits" className="text-xs text-orange-500 hover:text-orange-600 mt-1.5 flex items-center gap-1 transition">
@@ -81,11 +50,11 @@ export default function AuditorDashboardPage() {
 
                 <div className="bg-white rounded-xl border border-zinc-100 shadow-card p-5">
                     <div className="flex items-start justify-between mb-2">
-                        <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">Avg. Completion Time</p>
-                        <ClipboardList size={15} className="text-blue-400 mt-0.5" />
+                        <p className="text-xs font-medium text-zinc-400 uppercase tracking-wide">Total Findings</p>
+                        <AlertTriangle size={15} className="text-red-400 mt-0.5" />
                     </div>
                     <p className="text-2xl font-bold text-zinc-900">{stats.totalFindings}</p>
-                    <p className="text-xs text-zinc-400 mt-1">Total findings across audits</p>
+                    <p className="text-xs text-zinc-400 mt-1">Across all assigned audits</p>
                 </div>
             </div>
 
@@ -123,7 +92,7 @@ export default function AuditorDashboardPage() {
                                                 <p className="text-xs text-zinc-400 mt-0.5">
                                                     {audit.regulation.replace(/_/g, ' ')}
                                                     <span className="mx-1.5 text-zinc-200">·</span>
-                                                    {new Date(audit.conductedDate).toLocaleDateString()}
+                                                    {audit.conductedDate ? new Date(audit.conductedDate).toLocaleDateString() : '—'}
                                                 </p>
                                             </div>
                                             <span

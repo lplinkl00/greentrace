@@ -11,11 +11,11 @@ const FINDING_TYPES = [
     { value: 'NOT_ASSESSED', label: '— Not Assessed' },
 ]
 
-const STATUS_COLORS: Record<string, string> = {
-    SCHEDULED: 'bg-blue-100 text-blue-800',
-    IN_PROGRESS: 'bg-yellow-100 text-yellow-800',
-    FINDINGS_REVIEW: 'bg-purple-100 text-purple-800',
-    PUBLISHED: 'bg-green-100 text-green-800',
+const STATUS_STYLES: Record<string, { backgroundColor: string; color: string }> = {
+    SCHEDULED:       { backgroundColor: '#eff6ff', color: '#2563eb' },
+    IN_PROGRESS:     { backgroundColor: '#fef9c3', color: '#92400e' },
+    FINDINGS_REVIEW: { backgroundColor: '#faf5ff', color: '#7e22ce' },
+    PUBLISHED:       { backgroundColor: '#f0fdf4', color: '#15803d' },
 }
 
 export default function AuditDetailPage({
@@ -60,14 +60,22 @@ export default function AuditDetailPage({
 
     const handleSaveAll = async () => {
         setSaving(true)
-        const findingsArray = Object.values(findingsMap).filter(f => f.findingType && f.findingType !== 'NOT_ASSESSED')
-        await fetch('/api/audit-findings', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ auditId: params.auditId, findings: findingsArray }),
-        })
-        setSaving(false)
-        await refreshAudit()
+        try {
+            const findingsArray = Object.values(findingsMap).filter(f => f.findingType && f.findingType !== 'NOT_ASSESSED')
+            const res = await fetch('/api/audit-findings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ auditId: params.auditId, findings: findingsArray }),
+            })
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}))
+                alert(`Save failed: ${data.error ?? res.status}`)
+                return
+            }
+            await refreshAudit()
+        } finally {
+            setSaving(false)
+        }
     }
 
     const handleAdvanceStatus = async () => {
@@ -78,29 +86,45 @@ export default function AuditDetailPage({
 
         if (!nextStatus) { setStatusUpdating(false); return }
 
-        await fetch(`/api/audits/${params.auditId}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: nextStatus }),
-        })
-        setStatusUpdating(false)
-        await refreshAudit()
+        try {
+            const res = await fetch(`/api/audits/${params.auditId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: nextStatus }),
+            })
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}))
+                alert(`Status update failed: ${data.error ?? res.status}`)
+                return
+            }
+            await refreshAudit()
+        } finally {
+            setStatusUpdating(false)
+        }
     }
 
     const handlePublish = async () => {
         if (!confirm('Publishing this audit will mark the checklist as CERTIFIED and update the company\'s certification status. This cannot be undone. Continue?')) return
         setPublishing(true)
-        const res = await fetch(`/api/audits/${params.auditId}/publish`, { method: 'POST' })
-        const data = await res.json()
-        setPublishing(false)
-        if (data.error) {
-            alert(`Publish failed: ${data.error}`)
-        } else {
-            await refreshAudit()
+        try {
+            const res = await fetch(`/api/audits/${params.auditId}/publish`, { method: 'POST' })
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}))
+                alert(`Publish failed: ${data.error ?? res.status}`)
+                return
+            }
+            const data = await res.json()
+            if (data.error) {
+                alert(`Publish failed: ${data.error}`)
+            } else {
+                await refreshAudit()
+            }
+        } finally {
+            setPublishing(false)
         }
     }
 
-    if (loading) return <div className="text-gray-500">Loading audit...</div>
+    if (loading) return <div className="text-zinc-500">Loading audit...</div>
     if (!audit) return <div className="text-red-500">Audit not found.</div>
 
     const items = audit?.checklist?.items ?? []
@@ -112,22 +136,26 @@ export default function AuditDetailPage({
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">
+                    <h1 className="text-2xl font-bold text-zinc-900">
                         Audit: {audit.company?.name}
                     </h1>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-zinc-500">
                         {audit.regulation?.replace(/_/g, ' ')} &bull; {audit.periodStart?.substring(0, 10)} → {audit.periodEnd?.substring(0, 10)}
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${STATUS_COLORS[audit.status] ?? 'bg-gray-100'}`}>
+                    <span
+                        className="text-xs font-semibold px-2.5 py-1 rounded-full"
+                        style={STATUS_STYLES[audit.status] ?? { backgroundColor: '#f4f4f5', color: '#71717a' }}
+                    >
                         {audit.status?.replace(/_/g, ' ')}
                     </span>
                     {canAdvance && (
                         <button
                             onClick={handleAdvanceStatus}
                             disabled={statusUpdating}
-                            className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 disabled:bg-blue-300"
+                            className="text-sm font-semibold px-4 py-2 rounded-lg text-white transition disabled:opacity-50"
+                            style={{ background: 'linear-gradient(135deg, #f97316 0%, #ef4444 100%)' }}
                         >
                             {statusUpdating ? 'Updating...' : audit.status === 'SCHEDULED' ? 'Start Audit' : 'Move to Review'}
                         </button>
@@ -136,37 +164,39 @@ export default function AuditDetailPage({
                         <button
                             onClick={handlePublish}
                             disabled={publishing}
-                            className="bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700 disabled:bg-green-300"
+                            className="text-sm font-semibold px-4 py-2 rounded-lg text-white transition disabled:opacity-50"
+                            style={{ background: '#16a34a' }}
                         >
-                            {publishing ? 'Publishing...' : '🏅 Publish Audit'}
+                            {publishing ? 'Publishing...' : 'Publish Audit'}
                         </button>
                     )}
                 </div>
             </div>
 
             {/* Progress Bar */}
-            <div className="bg-white shadow rounded-lg p-4">
-                <div className="flex justify-between text-sm text-gray-600 mb-1">
+            <div className="bg-white rounded-xl border border-zinc-100 shadow-card p-4">
+                <div className="flex justify-between text-sm text-zinc-600 mb-1">
                     <span>Findings recorded</span>
                     <span>{Object.keys(findingsMap).length} / {items.length}</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-full rounded-full h-2" style={{ backgroundColor: '#e4e4e7' }}>
                     <div
-                        className="bg-green-500 h-2 rounded-full transition-all"
-                        style={{ width: `${items.length > 0 ? (Object.keys(findingsMap).length / items.length) * 100 : 0}%` }}
+                        className="h-2 rounded-full transition-all"
+                        style={{ width: `${items.length > 0 ? (Object.keys(findingsMap).length / items.length) * 100 : 0}%`, backgroundColor: '#22c55e' }}
                     />
                 </div>
             </div>
 
             {/* Finding Entry Table */}
-            <div className="bg-white shadow rounded-lg overflow-hidden">
-                <div className="flex justify-between items-center px-6 py-4 border-b bg-gray-50">
-                    <h2 className="font-semibold text-gray-800">Checklist Items — Finding Entry</h2>
+            <div className="bg-white rounded-xl border border-zinc-100 shadow-card overflow-hidden">
+                <div className="flex justify-between items-center px-6 py-4 border-b border-zinc-100 bg-zinc-50/60">
+                    <h2 className="font-semibold text-zinc-800">Checklist Items — Finding Entry</h2>
                     {audit.status !== 'PUBLISHED' && (
                         <button
                             onClick={handleSaveAll}
                             disabled={saving}
-                            className="bg-gray-800 text-white px-4 py-2 rounded text-sm hover:bg-gray-900 disabled:bg-gray-400"
+                            className="text-sm font-semibold px-4 py-2 rounded-lg text-white transition disabled:opacity-50"
+                            style={{ background: '#18181b' }}
                         >
                             {saving ? 'Saving...' : 'Save All Findings'}
                         </button>
@@ -179,7 +209,7 @@ export default function AuditDetailPage({
                     </div>
                 )}
 
-                <div className="divide-y">
+                <div className="divide-y divide-zinc-50">
                     {items.map((item: any) => {
                         const finding = findingsMap[item.id]
                         const isNonConformant = finding?.findingType?.includes('NON_CONFORMANT')
@@ -188,16 +218,16 @@ export default function AuditDetailPage({
                             <div key={item.id} className="px-6 py-4 space-y-3">
                                 <div className="flex items-start justify-between">
                                     <div>
-                                        <p className="text-sm font-medium text-gray-900">
+                                        <p className="text-sm font-medium text-zinc-900">
                                             {item.requirement?.code} — {item.requirement?.name}
                                         </p>
-                                        <p className="text-xs text-gray-400 mt-0.5">{item.requirement?.pillar} › {item.requirement?.category}</p>
+                                        <p className="text-xs text-zinc-400 mt-0.5">{item.requirement?.pillar} › {item.requirement?.category}</p>
                                     </div>
                                     <select
                                         disabled={audit.status === 'PUBLISHED'}
                                         value={finding?.findingType ?? 'NOT_ASSESSED'}
                                         onChange={e => handleFindingChange(item.id, 'findingType', e.target.value)}
-                                        className="text-sm border-gray-300 rounded ml-4 min-w-48"
+                                        className="text-sm border-zinc-300 rounded ml-4 min-w-48"
                                     >
                                         {FINDING_TYPES.map(ft => (
                                             <option key={ft.value} value={ft.value}>{ft.label}</option>
@@ -209,7 +239,7 @@ export default function AuditDetailPage({
                                     disabled={audit.status === 'PUBLISHED'}
                                     placeholder="Evidence reviewed (required for all assessed items)..."
                                     rows={2}
-                                    className="w-full text-sm rounded border-gray-300 text-gray-700"
+                                    className="w-full text-sm rounded border-zinc-300 text-zinc-700"
                                     value={finding?.evidenceReviewed ?? ''}
                                     onChange={e => handleFindingChange(item.id, 'evidenceReviewed', e.target.value)}
                                 />
@@ -219,7 +249,7 @@ export default function AuditDetailPage({
                                         disabled={audit.status === 'PUBLISHED'}
                                         placeholder="Corrective action required..."
                                         rows={2}
-                                        className="w-full text-sm rounded border-red-200 bg-red-50 text-gray-700"
+                                        className="w-full text-sm rounded border-red-200 bg-red-50 text-zinc-700"
                                         value={finding?.correctiveActionRequired ?? ''}
                                         onChange={e => handleFindingChange(item.id, 'correctiveActionRequired', e.target.value)}
                                     />

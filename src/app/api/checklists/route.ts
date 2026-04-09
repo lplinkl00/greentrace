@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server'
 import { getSessionUser, withAuth } from '@/lib/auth'
-import { UserRole, RegulationCode } from '@prisma/client'
+import { UserRole } from '@prisma/client'
 import { getChecklists, createChecklist } from '@/lib/checklists'
 
 export const GET = withAuth([UserRole.SUPER_ADMIN, UserRole.AGGREGATOR_MANAGER, UserRole.COMPANY_MANAGER, UserRole.COMPANY_STAFF, UserRole.AUDITOR], async (request: Request, _context: any, user) => {
 
     const { searchParams } = new URL(request.url)
     const companyId = searchParams.get('companyId') || undefined
-    const regulation = (searchParams.get('regulation') as RegulationCode) || undefined
+    const regulation = searchParams.get('regulation') || undefined
     const status = searchParams.get('status') || undefined
     const year = searchParams.get('year') || undefined
 

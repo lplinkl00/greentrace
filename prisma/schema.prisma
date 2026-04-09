@@ -16,12 +16,6 @@ enum UserRole {
   AUDITOR
 }
 
-enum RegulationCode {
-  ISCC_EU
-  ISCC_PLUS
-  RSPO_PC
-  RSPO_SCCS
-}
 
 enum RequirementDataType {
   ABSOLUTE_QUANTITY // form01: a measured volume, weight, count
@@ -267,7 +261,7 @@ model User {
 
 model RegulationProfile {
   id          String         @id @default(cuid())
-  regulation  RegulationCode
+  regulation  String
   version     String // e.g. "2024-v1", "RSPO-PC-2023"
   name        String // Human-readable, e.g. "ISCC EU 2024 v1"
   description String?
@@ -346,7 +340,7 @@ model Checklist {
   company    Company           @relation(fields: [companyId], references: [id])
   profileId  String
   profile    RegulationProfile @relation(fields: [profileId], references: [id])
-  regulation RegulationCode // Denormalised for fast filtering without join
+  regulation String // Denormalised for fast filtering without join
 
   // Reporting period: typically calendar year or half-year
   periodStart DateTime
@@ -494,7 +488,7 @@ model MassBalanceEntry {
   company      Company        @relation(fields: [companyId], references: [id])
   checklistId  String
   checklist    Checklist      @relation(fields: [checklistId], references: [id])
-  regulation   RegulationCode
+  regulation   String
   // Period mirrors the parent Checklist period for fast querying
   periodStart  DateTime
   periodEnd    DateTime
@@ -612,7 +606,7 @@ model Audit {
   company     Company        @relation(fields: [companyId], references: [id])
   checklistId String
   checklist   Checklist      @relation(fields: [checklistId], references: [id])
-  regulation  RegulationCode
+  regulation  String
 
   auditType AuditType
   auditorId String
@@ -675,7 +669,8 @@ model AuditReport {
   reviewedBy   User?             @relation(fields: [reviewedById], references: [id])
   reviewedAt   DateTime?
   status       AuditReportStatus @default(DRAFT)
-  pdfPath      String? // Supabase Storage key; set on export
+  pdfPath       String?           // Supabase Storage key; set on export
+  reportOptions Json?             // ReportOptions: { colourScheme, stylePreset }
 
   createdAt DateTime @default(now())
 

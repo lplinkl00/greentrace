@@ -46,7 +46,18 @@ export const PATCH = withAuth(
             return NextResponse.json({ error: 'contentJson is required' }, { status: 400 })
         }
 
-        const existingReport = await prisma.auditReport.findUnique({ where: { id } })
+        const existingReport = await prisma.auditReport.findUnique({
+            where: { id },
+            select: {
+                id: true,
+                auditId: true,
+                version: true,
+                generatedBy: true,
+                llmModel: true,
+                status: true,
+                reportOptions: true,
+            },
+        })
         if (!existingReport) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
         if (existingReport.status === AuditReportStatus.FINAL) {
@@ -56,7 +67,12 @@ export const PATCH = withAuth(
         const newVersion = await createReportVersion(
             existingReport.auditId,
             body.contentJson,
-            existingReport,
+            {
+                version: existingReport.version,
+                generatedBy: existingReport.generatedBy,
+                llmModel: existingReport.llmModel,
+                reportOptions: existingReport.reportOptions as Record<string, unknown> | null,
+            },
             user.id
         )
         return NextResponse.json({ data: newVersion })

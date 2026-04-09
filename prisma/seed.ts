@@ -9,7 +9,7 @@ import {
     ChecklistStatus, ChecklistItemStatus, DueDateStatus,
     MaterialType, ShipmentDirection, CertificationStatus, ShipmentSource,
     AuditType, AuditStatus, FindingType, FindingStatus, AuditReportStatus,
-    DataEntryType, ImportFileType, ImportStatus, RegulationCode, LLMProvider,
+    DataEntryType, ImportFileType, ImportStatus, LLMProvider,
 } from '@prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 import { createClient } from '@supabase/supabase-js'
@@ -349,7 +349,7 @@ async function main() {
         update: {},
         create: {
             companyId: palmStar.id, profileId: profile.id,
-            regulation: RegulationCode.ISCC_EU,
+            regulation: 'ISCC_EU',
             periodStart: new Date('2023-01-01'), periodEnd: new Date('2023-12-31'),
             status: ChecklistStatus.CERTIFIED,
             submittedAt: new Date('2024-01-15'),
@@ -367,7 +367,7 @@ async function main() {
         update: {},
         create: {
             companyId: palmStar.id, profileId: profile.id,
-            regulation: RegulationCode.ISCC_EU,
+            regulation: 'ISCC_EU',
             periodStart: new Date('2024-01-01'), periodEnd: new Date('2024-12-31'),
             status: ChecklistStatus.SUBMITTED,
             submittedAt: new Date('2025-01-20'),
@@ -383,7 +383,7 @@ async function main() {
         update: {},
         create: {
             companyId: greenValley.id, profileId: profile.id,
-            regulation: RegulationCode.ISCC_EU,
+            regulation: 'ISCC_EU',
             periodStart: new Date('2024-01-01'), periodEnd: new Date('2024-12-31'),
             status: ChecklistStatus.DRAFT,
         },
@@ -677,12 +677,12 @@ async function main() {
 
     for (const mb of mbDefs) {
         await prisma.massBalanceEntry.upsert({
-            where: { companyId_checklistId_regulation_materialType: { companyId: palmStar.id, checklistId: ps2024Checklist.id, regulation: RegulationCode.ISCC_EU, materialType: mb.materialType } },
+            where: { companyId_checklistId_regulation_materialType: { companyId: palmStar.id, checklistId: ps2024Checklist.id, regulation: 'ISCC_EU', materialType: mb.materialType } },
             update: {},
             create: {
                 companyId: palmStar.id,
                 checklistId: ps2024Checklist.id,
-                regulation: RegulationCode.ISCC_EU,
+                regulation: 'ISCC_EU',
                 periodStart: new Date('2024-01-01'),
                 periodEnd: new Date('2024-12-31'),
                 materialType: mb.materialType,
@@ -807,7 +807,7 @@ async function main() {
             id: 'seed-audit-ps-2023',
             companyId: palmStar.id,
             checklistId: ps2023Checklist.id,
-            regulation: RegulationCode.ISCC_EU,
+            regulation: 'ISCC_EU',
             auditType: AuditType.SURVEILLANCE,
             auditorId: auditorUser.id,
             periodStart: new Date('2023-01-01'),
@@ -827,7 +827,7 @@ async function main() {
             id: 'seed-audit-ps-2024',
             companyId: palmStar.id,
             checklistId: ps2024Checklist.id,
-            regulation: RegulationCode.ISCC_EU,
+            regulation: 'ISCC_EU',
             auditType: AuditType.RECERTIFICATION,
             auditorId: auditorUser.id,
             periodStart: new Date('2024-01-01'),

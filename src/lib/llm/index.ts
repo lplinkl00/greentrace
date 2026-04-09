@@ -24,7 +24,7 @@ export async function generateReport(
 ): Promise<LLMResponse> {
     switch (provider) {
         case 'anthropic':
-            return callClaude(payload, model ?? 'claude-opus-4-5')
+            return callClaude(payload, model ?? 'claude-sonnet-4-6')
         case 'gemini':
         default:
             return callGemini(payload, model ?? 'gemini-2.5-pro-exp-03-25')

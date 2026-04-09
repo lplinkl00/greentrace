@@ -8,7 +8,9 @@ export const GET = withAuth(
     async (_req: Request, _context: any, user: any) => {
         try {
             const stats = await getAuditorStats(user.id)
-            return NextResponse.json({ data: stats })
+            return NextResponse.json({ data: stats }, {
+                headers: { 'Cache-Control': 'private, max-age=30, stale-while-revalidate=60' }
+            })
         } catch (e: any) {
             return NextResponse.json({ error: e.message }, { status: 500 })
         }
